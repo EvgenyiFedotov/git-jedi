@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require("path");
 
 module.exports = [
   {
@@ -22,7 +23,7 @@ module.exports = [
   },
   {
     mode: "development",
-    entry: "./src/react.tsx",
+    entry: "./src/index.tsx",
     target: "electron-renderer",
     devtool: "source-map",
     module: {
@@ -30,9 +31,13 @@ module.exports = [
         {
           test: /\.ts(x?)$/,
           include: /src/,
-          use: [{ loader: "ts-loader" }]
+          use: ["ts-loader"]
         }
       ]
+    },
+    resolve: {
+      modules: ["node_modules", path.resolve(__dirname, "src")],
+      extensions: [".js", ".ts", ".json", ".tsx"]
     },
     output: {
       path: __dirname + "/dist",
