@@ -27,7 +27,7 @@ export const App = () => {
             <div></div>
           </Branch>
 
-          <div>{gitApi.core.revParse.getCurrentBranch()}</div>
+          <div>{branch}</div>
         </Header>
 
         <div>
