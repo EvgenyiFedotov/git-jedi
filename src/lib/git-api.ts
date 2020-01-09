@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import { execSync } from "child_process";
 
-export const getBranches = () => {
-  return execSync("git branch -a -l | grep -v /origin/")
+export const getBranches = (origin: boolean = false) => {
+  return execSync(`git branch -a -l | grep ${origin ? "" : "-v"} /origin/`)
     .toString()
     .split("\n")
     .map(value => value.trim().replace(/^\* /, ""));
@@ -78,18 +78,20 @@ export const getLogBranch = (options: GetLogBrancOptions = {}) => {
     .split("commit ")
     .filter(Boolean);
 
-  const formatedLogRows = logRows.map(row => {
+  const formatedLogRows = logRows.reduce<Map<string, any>>((memo, row) => {
     let [commits, author, date, sp0, ...noteArr] = row
       .split("\n")
       .map(value => value.trim());
 
-    const [commit, parentCommit] = commits;
+    const [commit, parentCommit] = commits.split(" ");
     author = author.replace("Author: ", "").trim();
     date = date.replace("Date: ", "").trim();
     const note = noteArr.join("\n").trim();
 
-    return { commit, parentCommit, author, date, note };
-  });
+    memo.set(commit, { commit, parentCommit, author, date, note });
+
+    return memo;
+  }, new Map());
 
   return formatedLogRows;
 };
@@ -98,46 +100,6 @@ export const getStatus = () => {
   return execSync("git status -s")
     .toString()
     .split("\n");
-};
-
-export const createDirChatBranch = (path: string) => {
-  execSync(`mkdir -p ${path}`);
-};
-
-export const appendRecordFile = (path: string, value: any) => {
-  // execSync("git pull");
-
-  if (!fs.existsSync(path)) {
-    fs.writeFileSync(path, JSON.stringify([value]), "utf-8");
-  } else {
-    const values = JSON.parse(fs.readFileSync(path, "utf-8"));
-
-    values.push(value);
-
-    fs.writeFileSync(path, JSON.stringify(values));
-  }
-
-  execSync(`git add ${path}`);
-
-  try {
-    execSync(`git commit -m "message"`);
-  } catch (e) {
-    execSync(`git checkout HEAD -- ${path}`);
-  }
-};
-
-export const createMessage = (nameBranch: string, value: string) => {
-  const path = `./chats/${nameBranch}/message-hash`;
-
-  execSync(`head -c 128 </dev/urandom >${path}`);
-  execSync(`git add ${path}`);
-
-  try {
-    execSync(`git commit -m "${value}"`);
-  } catch (e) {
-    // TODO create file message
-    console.log("TODO create file message");
-  }
 };
 
 export const getBranch = () => {

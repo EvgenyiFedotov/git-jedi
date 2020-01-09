@@ -1,10 +1,12 @@
 import * as React from "react";
+import { execSync } from "child_process";
 import * as gitApi from "../lib/git-api";
+import * as gitFs from "../lib/git-fs";
 
 export const App = () => {
   const [branch, setBranch] = React.useState<string>(gitApi.getBranch());
 
-  console.log(gitApi.getParentBranch(branch));
+  console.log(gitApi.getParentBranch());
 
   return (
     <div>
@@ -14,7 +16,7 @@ export const App = () => {
 
       {/* <Log branch="master" /> */}
 
-      <Log branch={branch} parentBranch={gitApi.getParentBranch(branch)} />
+      <Log />
 
       <Status />
     </div>
@@ -53,20 +55,21 @@ interface LogProps {
   parentBranch: string;
 }
 
-const Log: React.FC<LogProps> = props => {
+const Log: React.FC = props => {
   const branchLog = gitApi.getLogBranch({
-    range: props.parentBranch
-      ? [props.parentBranch, props.branch]
-      : [props.branch, ""]
+    range: [gitApi.getParentBranch(), gitApi.getBranch()]
   });
 
   return (
     <div>
-      <h2>Log: {props.branch}</h2>
+      <h2>Log: {gitApi.getBranch()}</h2>
 
       <div>
-        {branchLog.map((log, index) => (
-          <div key={index} style={{ marginBottom: "1rem" }}>
+        {Array.from(branchLog).map(([commit, log]) => (
+          <div key={commit} style={{ marginBottom: "1rem" }}>
+            <div>
+              {log.commit} {log.parentCommit}
+            </div>
             <div>{log.author}</div>
             <div>{log.note}</div>
           </div>
@@ -115,8 +118,8 @@ const Commit: React.FC<CommitProps> = props => {
           if (message) {
             const path = `./chats/${props.branch}`;
 
-            gitApi.createDirChatBranch(path);
-            gitApi.createMessage(props.branch, message);
+            execSync(`mkdir -p ${path}`);
+            gitFs.createMessage(props.branch, message);
           }
         }}
       >
