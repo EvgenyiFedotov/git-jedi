@@ -1,19 +1,22 @@
 import * as React from "react";
-import * as fs from "fs";
-import { execSync } from "child_process";
+import * as gitApi from "../lib/git-api";
 
 export const App = () => {
+  const currBranch = gitApi.getCurrentBranch();
+
+  console.log(currBranch);
+
   return (
     <div>
+      <Commit branch={currBranch} />
+
       <Branches />
 
       <Log branch="master" />
 
-      <Log branch="next" />
+      <Log branch={currBranch} />
 
       <Status />
-
-      <Commit branch="next" />
     </div>
   );
 };
@@ -23,13 +26,13 @@ interface LogProps {
 }
 
 const Branches: React.FC = () => {
-  const branches = execSync("git branch -a -l").toString();
+  const branches = gitApi.getBranches();
 
   return (
     <div>
       <h2>Branches</h2>
       <div>
-        {branches.split("\n").map((branch, index) => (
+        {branches.map((branch, index) => (
           <div key={index} style={{ marginBottom: "1rem" }}>
             {branch}
           </div>
@@ -39,38 +42,9 @@ const Branches: React.FC = () => {
   );
 };
 
-const getBranchLog = (branch: string) => {
-  const log = fs.readFileSync(`./.git/logs/refs/heads/${branch}`, "utf8");
-  const logRows = log.split("\n").filter(Boolean);
-
-  const formatedLogRows = logRows.map(row => {
-    const [info, note] = row.split("	");
-    const [
-      parentCommit,
-      commit,
-      author,
-      authorEmail,
-      dateTime,
-      dateTimeZone
-    ] = info.split(" ");
-
-    return {
-      parentCommit,
-      commit,
-      author,
-      authorEmail,
-      dateTime,
-      dateTimeZone,
-      note
-    };
-  });
-
-  return formatedLogRows;
-};
-
 const Log: React.FC<LogProps> = props => {
   const { branch } = props;
-  const branchLog = getBranchLog(branch);
+  const branchLog = gitApi.getBranchLog(branch);
 
   return (
     <div>
@@ -79,7 +53,9 @@ const Log: React.FC<LogProps> = props => {
       <div>
         {branchLog.map((log, index) => (
           <div key={index} style={{ marginBottom: "1rem" }}>
-            {log.author} {log.commit} {log.note}
+            <div>{log.author}</div>
+            <div>{log.commit}</div>
+            <div>{log.note}</div>
           </div>
         ))}
       </div>
@@ -88,14 +64,14 @@ const Log: React.FC<LogProps> = props => {
 };
 
 const Status: React.FC = () => {
-  const status = execSync("git status -s").toString();
+  const status = gitApi.getStatus();
 
   return (
     <div>
       <h2>Status</h2>
 
       <div>
-        {status.split("\n").map((status, index) => (
+        {status.map((status, index) => (
           <div key={index} style={{ marginBottom: "1rem" }}>
             {status}
           </div>
@@ -103,36 +79,6 @@ const Status: React.FC = () => {
       </div>
     </div>
   );
-};
-
-const createDirChatBranch = (branch: string) => {
-  if (!fs.existsSync("./chats")) {
-    fs.mkdirSync("./chats");
-  }
-
-  const branchPath = `./chats/${branch}`;
-  if (!fs.existsSync(branchPath)) {
-    fs.mkdirSync(branchPath);
-  }
-};
-
-const createFileMessages = (branch: string, message: string) => {
-  const path = `./chats/${branch}/messages`;
-
-  // execSync("git pull");
-
-  if (!fs.existsSync(path)) {
-    fs.writeFileSync(path, JSON.stringify([{ message }]));
-  } else {
-    const messages = JSON.parse(fs.readFileSync(path, "utf-8"));
-
-    messages.push({ message });
-
-    fs.writeFileSync(path, JSON.stringify(messages));
-  }
-
-  execSync(`git add ${path}`);
-  execSync('git commit -m "message"');
 };
 
 interface CommitProps {
@@ -154,8 +100,12 @@ const Commit: React.FC<CommitProps> = props => {
 
       <button
         onClick={() => {
-          createDirChatBranch(props.branch);
-          createFileMessages(props.branch, "test message");
+          if (message) {
+            const path = `./chats/${props.branch}`;
+
+            gitApi.createDirChatBranch(path);
+            gitApi.createMessage(props.branch, message);
+          }
         }}
       >
         Send
