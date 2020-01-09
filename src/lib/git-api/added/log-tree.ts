@@ -15,7 +15,10 @@ const logsToLogsTree = (
 };
 
 export const get = (branchName: string = "master"): Map<string, LogTree> => {
-  const masterLog = core.log.get(branchName);
+  const masterLog = core.log.get([
+    core.log.getParentLabel(branchName)?.name || "",
+    branchName
+  ]);
   const commits = logsToLogsTree(masterLog);
 
   core.branch.getLocal().forEach(branch => {
