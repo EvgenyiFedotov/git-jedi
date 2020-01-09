@@ -4,14 +4,13 @@ import { execSync } from "child_process";
 export const getBranches = () => {
   return execSync("git branch -a -l")
     .toString()
-    .split("\n");
+    .split("\n")
+    .map(value => value.trim().replace(/^\* /, ""));
 };
 
 export const getFullLogBranch = (branch: string) => {
   const log = fs.readFileSync(`./.git/logs/refs/heads/${branch}`, "utf8");
   const logRows = log.split("\n").filter(Boolean);
-
-  getLogBranch("");
 
   const formatedLogRows = logRows.map(row => {
     const [info, note] = row.split("	");
@@ -38,8 +37,40 @@ export const getFullLogBranch = (branch: string) => {
   return formatedLogRows;
 };
 
-export const getLogBranch = (branch: string) => {
-  const logRows = execSync("git log master..HEAD")
+export const getParentBranch = (branch: string = "") => {
+  const labels = execSync(
+    `git log ${branch} --decorate --simplify-by-decoration --oneline`
+  )
+    .toString()
+    .split("\n");
+
+  for (let index = 1; index < labels.length; index += 1) {
+    const label = labels[index];
+    const matched = label.match(/\((.*)\)/);
+
+    if (matched) {
+      const names = matched[1].split(", ");
+
+      for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+        const name = names[nameIndex];
+
+        if (!name.match(/^origin/)) {
+          return name;
+        }
+      }
+    }
+  }
+
+  return "";
+};
+
+interface GetLogBrancOptions {
+  range?: [string, string];
+}
+
+export const getLogBranch = (options: GetLogBrancOptions = {}) => {
+  const { range = [] } = options;
+  const logRows = execSync(`git log ${range.filter(Boolean).join("..")}`)
     .toString()
     .split("commit ")
     .filter(Boolean);
@@ -105,12 +136,8 @@ export const createMessage = (nameBranch: string, value: string) => {
   }
 };
 
-export const getCurrentBranch = () => {
-  const branches = getBranches();
-
-  return (
-    branches
-      .filter(branch => branch.match(/^\* /))
-      .map(branch => branch.replace(/^\* /, ""))[0] || ""
-  );
+export const getBranch = () => {
+  return execSync("git rev-parse --abbrev-ref HEAD")
+    .toString()
+    .replace("\n", "");
 };

@@ -2,28 +2,32 @@ import * as React from "react";
 import * as gitApi from "../lib/git-api";
 
 export const App = () => {
-  const currBranch = gitApi.getCurrentBranch();
+  const [branch, setBranch] = React.useState<string>(gitApi.getBranch());
+
+  console.log(gitApi.getParentBranch(branch));
 
   return (
     <div>
-      <Commit branch={currBranch} />
+      <Commit branch={branch} />
 
-      <Branches />
+      <Branches onClick={nextBranch => setBranch(nextBranch)} />
 
       {/* <Log branch="master" /> */}
 
-      <Log branch={currBranch} />
+      <Log branch={branch} parentBranch={gitApi.getParentBranch(branch)} />
 
       <Status />
     </div>
   );
 };
 
-interface LogProps {
-  branch: string;
+interface BranchesProps {
+  onClick?: (branch: string) => void;
 }
 
-const Branches: React.FC = () => {
+const Branches: React.FC<BranchesProps> = props => {
+  const { onClick = () => {} } = props;
+
   const branches = gitApi.getBranches();
 
   return (
@@ -31,7 +35,11 @@ const Branches: React.FC = () => {
       <h2>Branches</h2>
       <div>
         {branches.map((branch, index) => (
-          <div key={index} style={{ marginBottom: "1rem" }}>
+          <div
+            key={index}
+            style={{ marginBottom: "1rem", cursor: "pointer" }}
+            onClick={() => onClick(branch)}
+          >
             {branch}
           </div>
         ))}
@@ -40,19 +48,26 @@ const Branches: React.FC = () => {
   );
 };
 
+interface LogProps {
+  branch: string;
+  parentBranch: string;
+}
+
 const Log: React.FC<LogProps> = props => {
-  const { branch } = props;
-  const branchLog = gitApi.getLogBranch(branch);
+  const branchLog = gitApi.getLogBranch({
+    range: props.parentBranch
+      ? [props.parentBranch, props.branch]
+      : [props.branch, ""]
+  });
 
   return (
     <div>
-      <h2>Log: {branch}</h2>
+      <h2>Log: {props.branch}</h2>
 
       <div>
         {branchLog.map((log, index) => (
           <div key={index} style={{ marginBottom: "1rem" }}>
             <div>{log.author}</div>
-            <div>{log.commit}</div>
             <div>{log.note}</div>
           </div>
         ))}
