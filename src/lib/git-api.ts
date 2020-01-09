@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { execSync } from "child_process";
 
 export const getBranches = () => {
-  return execSync("git branch -a -l")
+  return execSync("git branch -a -l | grep -v /origin/")
     .toString()
     .split("\n")
     .map(value => value.trim().replace(/^\* /, ""));
@@ -65,26 +65,30 @@ export const getParentBranch = (branch: string = "") => {
 };
 
 interface GetLogBrancOptions {
+  branch?: string;
   range?: [string, string];
 }
 
 export const getLogBranch = (options: GetLogBrancOptions = {}) => {
-  const { range = [] } = options;
-  const logRows = execSync(`git log ${range.filter(Boolean).join("..")}`)
+  const { branch = "", range = [] } = options;
+  const logRows = execSync(
+    `git log ${branch} ${range.filter(Boolean).join("..")} --parents`
+  )
     .toString()
     .split("commit ")
     .filter(Boolean);
 
   const formatedLogRows = logRows.map(row => {
-    let [commit, author, date, sp0, ...noteArr] = row
+    let [commits, author, date, sp0, ...noteArr] = row
       .split("\n")
       .map(value => value.trim());
 
+    const [commit, parentCommit] = commits;
     author = author.replace("Author: ", "").trim();
     date = date.replace("Date: ", "").trim();
     const note = noteArr.join("\n").trim();
 
-    return { commit, author, date, note };
+    return { commit, parentCommit, author, date, note };
   });
 
   return formatedLogRows;
