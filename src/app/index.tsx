@@ -4,15 +4,13 @@ import * as gitApi from "../lib/git-api";
 export const App = () => {
   const currBranch = gitApi.getCurrentBranch();
 
-  console.log(currBranch);
-
   return (
     <div>
       <Commit branch={currBranch} />
 
       <Branches />
 
-      <Log branch="master" />
+      {/* <Log branch="master" /> */}
 
       <Log branch={currBranch} />
 
@@ -44,11 +42,11 @@ const Branches: React.FC = () => {
 
 const Log: React.FC<LogProps> = props => {
   const { branch } = props;
-  const branchLog = gitApi.getBranchLog(branch);
+  const branchLog = gitApi.getLogBranch(branch);
 
   return (
     <div>
-      <h2>Log</h2>
+      <h2>Log: {branch}</h2>
 
       <div>
         {branchLog.map((log, index) => (
@@ -92,8 +90,7 @@ const Commit: React.FC<CommitProps> = props => {
     <div>
       <h2>Commit</h2>
 
-      <input
-        type="text"
+      <textarea
         value={message}
         onChange={event => setMessage(event.currentTarget.value)}
       />

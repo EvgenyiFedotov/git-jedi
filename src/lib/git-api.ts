@@ -7,9 +7,11 @@ export const getBranches = () => {
     .split("\n");
 };
 
-export const getBranchLog = (branch: string) => {
+export const getFullLogBranch = (branch: string) => {
   const log = fs.readFileSync(`./.git/logs/refs/heads/${branch}`, "utf8");
   const logRows = log.split("\n").filter(Boolean);
+
+  getLogBranch("");
 
   const formatedLogRows = logRows.map(row => {
     const [info, note] = row.split("	");
@@ -31,6 +33,27 @@ export const getBranchLog = (branch: string) => {
       dateTimeZone,
       note
     };
+  });
+
+  return formatedLogRows;
+};
+
+export const getLogBranch = (branch: string) => {
+  const logRows = execSync("git log master..HEAD")
+    .toString()
+    .split("commit ")
+    .filter(Boolean);
+
+  const formatedLogRows = logRows.map(row => {
+    let [commit, author, date, sp0, ...noteArr] = row
+      .split("\n")
+      .map(value => value.trim());
+
+    author = author.replace("Author: ", "").trim();
+    date = date.replace("Date: ", "").trim();
+    const note = noteArr.join("\n").trim();
+
+    return { commit, author, date, note };
   });
 
   return formatedLogRows;
