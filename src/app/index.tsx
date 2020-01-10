@@ -31,7 +31,7 @@ export const App = () => {
 
       <Container>
         <Top>
-          <Exec />
+          <Path />
         </Top>
 
         <Log log={log} />
@@ -42,6 +42,7 @@ export const App = () => {
           </managers.Branch>
 
           <InputMessage />
+          <Exec />
         </Bottom>
       </Container>
     </>
@@ -103,6 +104,7 @@ const Commit = styled(ui.Row)`
 
   &:hover {
     box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+    background-color: var(--main-3-color);
   }
 `;
 
@@ -281,5 +283,18 @@ const Exec: React.FC = () => {
 };
 
 const ExecContainer = styled(Panel)`
+  box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
+`;
+
+const Path: React.FC = () => {
+  return (
+    <PathContainer>
+      <Input placeholder="Path" />
+      <ButtonSend>Send</ButtonSend>
+    </PathContainer>
+  );
+};
+
+const PathContainer = styled(Panel)`
   box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
 `;
