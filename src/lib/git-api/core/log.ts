@@ -1,72 +1,60 @@
-import { exetOut } from "./exec-out";
+import { execSync } from "child_process";
 
-const getLabels = (branch: string = "") => {
-  return exetOut(
-    `git log ${branch} --decorate --simplify-by-decoration --oneline`
-  );
-};
-
-interface Label {
-  type: "branch" | "tag";
-  name: string;
-}
-
-export const getParentLabel = (branch: string = ""): Label | null => {
-  const labels = getLabels(branch);
-
-  for (let index = 1; index < labels.length; index += 1) {
-    const label = labels[index];
-    const matched = label.match(/\((.*)\)/);
-
-    if (matched) {
-      const names = matched[1].split(", ");
-
-      for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
-        const name = names[nameIndex];
-
-        if (!name.match(/^origin/)) {
-          return { type: "branch", name };
-        }
-      }
-    }
-  }
-
-  return null;
-};
-
-export interface Log {
-  commit: string;
-  parentCommit: string;
+export interface Commit {
+  hash: string;
+  parentHash: string;
+  dateTime: string;
   author: string;
-  date: string;
+  refs: string[];
   note: string;
 }
 
-const createLog = (commitLine: string): Log => {
-  let [hashs, author, date, sp0, ...noteArr] = commitLine
-    .split("\n")
-    .map(value => value.trim());
+export type Log = Map<string, Commit>;
 
-  const [commit, parentCommit] = hashs.split(" ");
-  const note = noteArr.join("\n").trim();
+type CreateCommit = (commitLine: string) => Commit;
 
-  author = author.replace("Author: ", "").trim();
-  date = date.replace("Date: ", "").trim();
-
-  return { commit, parentCommit, author, date, note };
-};
-
-export const get = (branch: string | [string, string] = "") => {
-  const range =
-    branch instanceof Array ? branch.filter(Boolean).join("..") : branch;
-  const commits = exetOut(`git log ${range} --parents`, "commit ").filter(
-    Boolean
+const createCommit: CreateCommit = commitLine => {
+  const [hash, parentHash, dateTime, author, refs, ...note] = commitLine.split(
+    "\n"
   );
 
-  return commits.reduce<Map<string, Log>>((memo, commit) => {
-    const log = createLog(commit);
+  return {
+    hash,
+    parentHash,
+    dateTime,
+    author,
+    refs: refs.split(", ").filter(Boolean),
+    note: note.join("\n")
+  };
+};
 
-    memo.set(log.commit, log);
+const getBranchOrRange = (branch: string | [string, string] = "") => {
+  return branch instanceof Array ? branch.filter(Boolean).join("..") : branch;
+};
+
+type GetCommitLines = (branch: string | [string, string]) => string[];
+
+const getCommitLines: GetCommitLines = (branch = "") => {
+  const branchRange = getBranchOrRange(branch);
+
+  return execSync(
+    `git log ${branchRange} --pretty=format:"COMMIT::%n%h%n%p%n%ct%n%an%n%D%n%B"`
+  )
+    .toString()
+    .split("COMMIT::")
+    .map(value => value.replace(/^\n/, "").trim())
+    .filter(Boolean);
+};
+
+type Get = (branch?: string | [string, string]) => Log;
+
+export const get: Get = (branch = ""): Log => {
+  const commitLines = getCommitLines(branch);
+
+  return commitLines.reduce<Log>((memo, commitLine) => {
+    const commit = createCommit(commitLine);
+
+    memo.set(commit.hash, commit);
 
     return memo;
   }, new Map());
