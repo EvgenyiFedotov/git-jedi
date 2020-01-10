@@ -4,15 +4,15 @@ interface LogTree extends core.log.Commit {
   branches: string[];
 }
 
-const logsToLogsTree = (
-  logs: Map<string, core.log.Commit>
-): Map<string, LogTree> => {
-  return Array.from(logs.values()).reduce<Map<string, LogTree>>((memo, log) => {
-    memo.set(log.commit, { ...log, branches: [] });
+// const logsToLogsTree = (
+//   logs: Map<string, core.log.Commit>
+// ): Map<string, LogTree> => {
+//   return Array.from(logs.values()).reduce<Map<string, LogTree>>((memo, log) => {
+//     memo.set(log.commit, { ...log, branches: [] });
 
-    return memo;
-  }, new Map());
-};
+//     return memo;
+//   }, new Map());
+// };
 
 export const get = (branchName: string = "master"): Map<string, LogTree> => {
   return new Map();
