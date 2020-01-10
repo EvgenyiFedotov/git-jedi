@@ -1,34 +1,45 @@
 import * as React from "react";
 import styled from "styled-components";
+import { createStore, createEvent, forward } from "effector";
+import { useStore } from "effector-react";
 import { execSync } from "child_process";
 
 import * as gitApi from "../lib/git-api";
 import { GlobalStyle } from "./global-style";
 import * as ui from "./ui";
+import * as managers from "./managers";
+
+const $allRefs = createStore<gitApi.core.log.Refs>(
+  gitApi.layout.log.getAllRefs()
+);
+
+const $showedBranches = createStore<boolean>(false);
+
+const showBranches = createEvent<boolean>();
+
+forward({
+  from: showBranches,
+  to: $showedBranches
+});
 
 export const App = () => {
   const log = gitApi.core.log.get();
-
-  const branchRefs = gitApi.layout.log.getBranchRefs(log);
-
-  const allRefs = gitApi.layout.log.getAllRefs();
-
-  console.log(branchRefs);
-  console.log(allRefs);
 
   return (
     <>
       <GlobalStyle />
 
       <Container>
+        <Top>
+          <Exec />
+        </Top>
+
         <Log log={log} />
 
         <Bottom>
-          <Branches>
-            <Branch>Master</Branch>
-            <Branch>Next</Branch>
-            <Branch>Next-2</Branch>
-          </Branches>
+          <managers.Branch if={useStore($showedBranches)}>
+            <Branches />
+          </managers.Branch>
 
           <InputMessage />
         </Bottom>
@@ -41,6 +52,13 @@ const Container = styled(ui.Column)`
   height: 100%;
   position: relative;
   justify-content: space-between;
+`;
+
+const Top = styled.div`
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: var(--bg-color);
 `;
 
 const Bottom = styled.div`
@@ -74,7 +92,7 @@ const Log: React.FC<LogProps> = props => {
   );
 };
 
-const LogContainer = styled(ui.Column)`
+const LogContainer = styled.div`
   width: 100%;
 `;
 
@@ -105,9 +123,13 @@ const RefsContainer = styled(ui.Row)``;
 const Ref = styled.div``;
 
 const InputMessage: React.FC = () => {
+  const showedBranches = useStore($showedBranches);
+
   return (
     <InputMessageContainer>
-      <CurrentBranch>Master</CurrentBranch>
+      <CurrentBranch onClick={() => showBranches(!showedBranches)}>
+        {gitApi.core.revParse.getCurrentBranch()}
+      </CurrentBranch>
 
       <Input />
 
@@ -116,15 +138,24 @@ const InputMessage: React.FC = () => {
   );
 };
 
-const InputMessageContainer = styled(ui.Row)`
+const Panel = styled(ui.Row)`
   width: 100%;
   flex-wrap: nowrap;
   padding: 0.5rem;
-  box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
   background-color: var(--bg-color);
 `;
 
-const CurrentBranch = styled.div``;
+const InputMessageContainer = styled(Panel)`
+  box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
+`;
+
+const CurrentBranch = styled.div`
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 const Input = styled.input`
   width: 100%;
@@ -144,15 +175,72 @@ const ButtonSend = styled.button`
   cursor: pointer;
 `;
 
-const Branches = styled.div`
+const Branches: React.FC = () => {
+  const allRefs = Array.from($allRefs.getState().values());
+
+  return (
+    <BranchesContainer>
+      {allRefs.map(ref => (
+        <Branch
+          key={ref.value}
+          onClick={() => {
+            showBranches(false);
+          }}
+        >
+          {ref.value}
+        </Branch>
+      ))}
+    </BranchesContainer>
+  );
+};
+
+const BranchesContainer = styled.div`
   box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
 `;
 
-const Branch = styled.div`
+const Branch = styled(ui.Row)`
   padding: 0.5rem;
   cursor: pointer;
+  min-height: 2.5rem;
+  align-items: center;
 
   &:hover {
     background-color: var(--main-3-color);
   }
+`;
+
+const Exec: React.FC = () => {
+  const [value, setValue] = React.useState<string>("");
+  const input = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (input.current) {
+      input.current.focus();
+    }
+  }, []);
+
+  const runExec = () => {
+    console.log(execSync(value).toString());
+  };
+
+  return (
+    <ExecContainer>
+      <Input
+        ref={input}
+        value={value}
+        onChange={event => setValue(event.currentTarget.value)}
+        onKeyPress={event => {
+          if (event.key === "Enter") {
+            runExec();
+          }
+        }}
+      />
+
+      <ButtonSend onClick={runExec}>Send</ButtonSend>
+    </ExecContainer>
+  );
+};
+
+const ExecContainer = styled(Panel)`
+  box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
 `;
