@@ -11,7 +11,7 @@ export const Branches: React.FC<Props> = props => {
   const { onClickBranch = () => {} } = props;
 
   return (
-    <div style={{ display: "flex" }}>
+    <ui.Row>
       {props.list.map(nameBranch => {
         return (
           <ui.Label key={nameBranch} onClick={() => onClickBranch(nameBranch)}>
@@ -19,6 +19,6 @@ export const Branches: React.FC<Props> = props => {
           </ui.Label>
         );
       })}
-    </div>
+    </ui.Row>
   );
 };

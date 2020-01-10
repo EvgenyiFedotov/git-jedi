@@ -8,46 +8,16 @@ import * as ui from "./ui";
 import { Branch } from "./managers";
 
 export const App = () => {
-  const [branch, setBranch] = React.useState<string>("master");
-  const logTree = gitApi.added.logTree.get(branch);
-  const parentLabel = gitApi.core.log.getParentLabel(branch);
+  const log = gitApi.core.log.get();
+
+  console.log(log);
 
   return (
     <>
       <GlobalStyle />
 
       <Container>
-        <Header>
-          <Branch if={!!parentLabel}>
-            <LinkBack
-              onClick={() => parentLabel && setBranch(parentLabel.name)}
-            >
-              Back
-            </LinkBack>
-            <div></div>
-          </Branch>
-
-          <div>{branch}</div>
-        </Header>
-
-        <div>
-          {Array.from(logTree.values())
-            .reverse()
-            .map(message => {
-              return (
-                <Message key={message.commit} style={{ marginBottom: "1rem" }}>
-                  <div>{message.note}</div>
-
-                  <Branch if={!!message.branches.length}>
-                    <Branches
-                      list={message.branches}
-                      onClickBranch={nextBranch => setBranch(nextBranch)}
-                    />
-                  </Branch>
-                </Message>
-              );
-            })}
-        </div>
+        <Log log={log} />
       </Container>
     </>
   );
@@ -75,3 +45,23 @@ const Message = styled(ui.Column)`
 const LinkBack = styled(ui.Link)`
   color: var(--bg-color);
 `;
+
+interface LogProps {
+  log: gitApi.core.log.Log;
+}
+
+const Log: React.FC<LogProps> = props => {
+  return (
+    <LogContainer>
+      {Array.from(props.log.values()).map(log => (
+        <Commit key={log.hash}>
+          {log.hash} {log.parentHash} [{log.refs.join(" / ")}] {log.note}
+        </Commit>
+      ))}
+    </LogContainer>
+  );
+};
+
+const LogContainer = styled(ui.Column)``;
+
+const Commit = styled(ui.Column)``;
