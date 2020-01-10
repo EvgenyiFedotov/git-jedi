@@ -24,6 +24,8 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
+    --bg-color: #30303b;
+    --main-color: #f7f7f7;
     font-size: 14px;
     background-color: var(--bg-color);
     color: var(--main-color);

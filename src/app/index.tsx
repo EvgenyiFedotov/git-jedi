@@ -164,6 +164,7 @@ const Input = styled.input`
   padding: 0.1rem 0.25rem;
   line-height: 1rem;
   border-radius: 2px;
+  color: var(--main-color);
 `;
 
 const ButtonSend = styled.button`
@@ -173,6 +174,7 @@ const ButtonSend = styled.button`
   line-height: 1rem;
   border-radius: 2px;
   cursor: pointer;
+  color: var(--main-color);
 `;
 
 const Branches: React.FC = () => {
