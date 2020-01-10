@@ -2,25 +2,34 @@ import { exetOut } from "./exec-out";
 
 interface Branch {
   name: string;
-  current: boolean;
+  head: boolean;
+  remote: boolean;
 }
 
 const createBranch = (line: string): Branch => {
   if (line.match(/^\* /)) {
-    return { name: line.replace(/^\* /, ""), current: true };
+    return {
+      name: line.replace(/^\* /, ""),
+      head: true,
+      remote: false
+    };
+  } else if (line.match(/^remotes\//)) {
+    return {
+      name: line.replace(/^remotes\//, ""),
+      head: false,
+      remote: true
+    };
+  } else {
+    return {
+      name: line,
+      head: false,
+      remote: false
+    };
   }
-
-  return { name: line, current: false };
 };
 
-export const getLocal = (origin: boolean = false): Branch[] => {
-  const line = exetOut(`git branch -a -l | grep -v /origin/`);
-
-  return line.filter(Boolean).map(createBranch);
-};
-
-export const getOrigin = (): Branch[] => {
-  const line = exetOut(`git branch -a -l | grep /origin/`);
+export const getAll = (remote: boolean = false): Branch[] => {
+  const line = exetOut(`git branch ${remote ? "-a" : ""}`);
 
   return line.filter(Boolean).map(createBranch);
 };

@@ -1,5 +1,5 @@
 import * as core from "./core";
 export { core };
 
-import * as added from "./added";
-export { added };
+import * as layout from "./layout";
+export { layout };

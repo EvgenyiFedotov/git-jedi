@@ -1,15 +1,53 @@
 import { execSync } from "child_process";
 
+export interface Ref {
+  type: "origin" | "tag" | "head" | null;
+  name: string;
+  value: string;
+}
+
+export type Refs = Map<string, Ref>;
+
 export interface Commit {
   hash: string;
   parentHash: string;
   dateTime: string;
   author: string;
-  refs: string[];
+  refs: Refs;
   note: string;
 }
 
 export type Log = Map<string, Commit>;
+
+type CreateRefs = (refStrings: string[]) => Refs;
+
+const createRefs: CreateRefs = refStrings => {
+  return refStrings.reduce((memo, refString) => {
+    if (refString.match(/^HEAD -> /)) {
+      memo.set(refString, {
+        type: "head",
+        name: refString.replace(/^HEAD -> /, ""),
+        value: refString
+      });
+    } else if (refString.match(/^origin\//)) {
+      memo.set(refString, {
+        type: "origin",
+        name: refString.replace(/^origin\//, ""),
+        value: refString
+      });
+    } else if (refString.match(/^tag: /)) {
+      memo.set(refString, {
+        type: "head",
+        name: refString.replace(/^tag: /, ""),
+        value: refString
+      });
+    } else {
+      memo.set(refString, { type: null, name: refString, value: refString });
+    }
+
+    return memo;
+  }, new Map());
+};
 
 type CreateCommit = (commitLine: string) => Commit;
 
@@ -23,7 +61,7 @@ const createCommit: CreateCommit = commitLine => {
     parentHash,
     dateTime,
     author,
-    refs: refs.split(", ").filter(Boolean),
+    refs: createRefs(refs.split(", ").filter(Boolean)),
     note: note.join("\n")
   };
 };

@@ -16,7 +16,7 @@ export const Link = styled.div`
 
 export const Row = styled.div`
   display: flex;
-  flex: 1 0;
+  flex: none;
   align-items: center;
   flex-wrap: wrap;
   min-height: 1.5rem;
@@ -28,7 +28,7 @@ export const Row = styled.div`
 
 export const Column = styled.div`
   display: flex;
-  flex: 1 0;
+  flex: none;
   flex-direction: column;
 
   & > *:not(:last-child) {
