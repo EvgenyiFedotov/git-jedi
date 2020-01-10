@@ -213,6 +213,13 @@ const Branch = styled(ui.Row)`
 
 const Exec: React.FC = () => {
   const [value, setValue] = React.useState<string>("");
+  const HISTORY_COMMAND_LINE = localStorage.getItem("HISTORY_COMMAND_LINE");
+  const [history, setHistory] = React.useState<string[]>(
+    HISTORY_COMMAND_LINE ? (JSON.parse(HISTORY_COMMAND_LINE) as string[]) : []
+  );
+  const [historyIndex, setHistoryIndex] = React.useState<number>(
+    history.length
+  );
   const input = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -222,8 +229,30 @@ const Exec: React.FC = () => {
   }, []);
 
   const runExec = () => {
+    setHistory(prev => {
+      if (prev[prev.length - 1] === value) {
+        return prev;
+      }
+
+      const next = [...prev, value];
+
+      localStorage.setItem("HISTORY_COMMAND_LINE", JSON.stringify(next));
+
+      setHistoryIndex(next.length - 1);
+
+      return next;
+    });
+
     console.log(execSync(value).toString());
   };
+
+  React.useEffect(() => {
+    if (history[historyIndex]) {
+      setValue(history[historyIndex]);
+    } else if (historyIndex === history.length) {
+      setValue("");
+    }
+  }, [historyIndex]);
 
   return (
     <ExecContainer>
@@ -231,9 +260,17 @@ const Exec: React.FC = () => {
         ref={input}
         value={value}
         onChange={event => setValue(event.currentTarget.value)}
-        onKeyPress={event => {
+        onKeyUp={event => {
           if (event.key === "Enter") {
             runExec();
+          } else if (event.key === "ArrowUp") {
+            if (historyIndex > 0) {
+              setHistoryIndex(prev => prev - 1);
+            }
+          } else if (event.key === "ArrowDown") {
+            if (historyIndex <= history.length - 1) {
+              setHistoryIndex(prev => prev + 1);
+            }
           }
         }}
       />
