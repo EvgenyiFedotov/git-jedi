@@ -9,6 +9,14 @@ export const GlobalStyle = createGlobalStyle`
     --main-3-color: #eae9e7;
   }
 
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-color: #30303b;
+      --main-color: #f7f7f7;
+      --main-3-color: #795548;
+    }
+  }
+
   * {
     box-sizing: border-box;
     margin: 0;
@@ -24,9 +32,9 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    --bg-color: #30303b;
+    /* --bg-color: #30303b;
     --main-color: #f7f7f7;
-    --main-3-color: #795548;
+    --main-3-color: #795548; */
     font-size: 14px;
     background-color: var(--bg-color);
     color: var(--main-color);

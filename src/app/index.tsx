@@ -200,6 +200,8 @@ const Branches: React.FC = () => {
 
 const BranchesContainer = styled.div`
   box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  max-height: 10rem;
+  overflow-y: auto;
 `;
 
 const Branch = styled(ui.Row)`

@@ -10,8 +10,8 @@ export const getBranchRefs: GetBranchRefs = log => {
 
 type GetAllRefs = (remote?: boolean) => log.Refs;
 
-export const getAllRefs: GetAllRefs = (remote = false) => {
-  const branches = branch.getAll(remote);
+export const getAllRefs: GetAllRefs = () => {
+  const branches = branch.getAll();
 
   return branches.reduce((memo, branch) => {
     const branchLog = log.get(branch.name);
