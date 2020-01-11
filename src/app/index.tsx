@@ -3,11 +3,14 @@ import styled from "styled-components";
 import { createStore, createEvent, forward } from "effector";
 import { useStore } from "effector-react";
 import { execSync } from "child_process";
+import * as electron from "electron";
 
 import * as gitApi from "../lib/git-api";
 import { GlobalStyle } from "./global-style";
 import * as ui from "./ui";
 import * as managers from "./managers";
+
+const { dialog } = electron.remote;
 
 const $allRefs = createStore<gitApi.core.log.Refs>(
   gitApi.layout.log.getAllRefs()
@@ -20,6 +23,17 @@ const showBranches = createEvent<boolean>();
 forward({
   from: showBranches,
   to: $showedBranches
+});
+
+const $path = createStore<string>("./");
+
+const changePath = createEvent<string>();
+
+forward({
+  from: changePath.map(value => {
+    return value ? value : "./";
+  }),
+  to: $path
 });
 
 export const App = () => {
@@ -291,12 +305,40 @@ const ExecContainer = styled(Panel)`
 const Path: React.FC = () => {
   return (
     <PathContainer>
-      <Input placeholder="Path" />
-      <ButtonSend>Send</ButtonSend>
+      <div>Path:</div>
+      <PathValue
+        onClick={() => {
+          dialog
+            .showOpenDialog({
+              properties: ["openDirectory"],
+              defaultPath: $path.getState()
+            })
+            .then(result => {
+              const {
+                canceled,
+                filePaths: [nextPath]
+              } = result;
+
+              if (canceled === false) {
+                changePath(nextPath);
+              }
+            });
+        }}
+      >
+        {useStore($path)}
+      </PathValue>
     </PathContainer>
   );
 };
 
 const PathContainer = styled(Panel)`
   box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+`;
+
+const PathValue = styled.div`
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
