@@ -129,9 +129,9 @@ const InputMessage: React.FC = () => {
         {gitApi.core.revParse.getCurrentBranch()}
       </CurrentBranch>
 
-      <Input />
+      <ui.Input />
 
-      <ButtonSend onClick={() => {}}>Send</ButtonSend>
+      <ui.Button onClick={() => {}}>Send</ui.Button>
     </InputMessageContainer>
   );
 };
@@ -153,30 +153,6 @@ const CurrentBranch = styled.div`
   &:hover {
     text-decoration: underline;
   }
-`;
-
-const Input = styled.input`
-  width: 100%;
-  border: 1px solid var(--main-color);
-  background-color: var(--bg-color);
-  padding: 0.1rem 0.5rem;
-  line-height: 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 300;
-  border-radius: 2px;
-  color: var(--main-color);
-`;
-
-const ButtonSend = styled.button`
-  border: 1px solid var(--main-color);
-  background-color: var(--bg-color);
-  padding: 0.1rem 0.5rem;
-  line-height: 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 300;
-  border-radius: 2px;
-  cursor: pointer;
-  color: var(--main-color);
 `;
 
 const Branches: React.FC = () => {
@@ -260,7 +236,7 @@ const Exec: React.FC = () => {
 
   return (
     <ExecContainer>
-      <Input
+      <ui.Input
         ref={input}
         value={value}
         onChange={event => setValue(event.currentTarget.value)}
@@ -279,7 +255,7 @@ const Exec: React.FC = () => {
         }}
       />
 
-      <ButtonSend onClick={runExec}>Send</ButtonSend>
+      <ui.Button onClick={runExec}>Send</ui.Button>
     </ExecContainer>
   );
 };

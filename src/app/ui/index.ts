@@ -35,3 +35,27 @@ export const Column = styled.div`
     margin-bottom: 0.5rem;
   }
 `;
+
+export const Input = styled.input`
+  width: 100%;
+  border: 1px solid var(--main-color);
+  background-color: var(--bg-color);
+  padding: 0.1rem 0.5rem;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 300;
+  border-radius: 2px;
+  color: var(--main-color);
+`;
+
+export const Button = styled.button`
+  border: 1px solid var(--main-color);
+  background-color: var(--bg-color);
+  padding: 0.1rem 0.5rem;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 300;
+  border-radius: 2px;
+  cursor: pointer;
+  color: var(--main-color);
+`;
