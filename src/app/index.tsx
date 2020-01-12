@@ -1,6 +1,5 @@
 import * as React from "react";
 import styled from "styled-components";
-import { createStore, createEvent, forward } from "effector";
 import { useStore } from "effector-react";
 import * as electron from "electron";
 
@@ -8,51 +7,18 @@ import * as gitApi from "../lib/git-api";
 import { GlobalStyle } from "./global-style";
 import * as ui from "./ui";
 import * as managers from "./managers";
-import { exec, setPreCommand } from "../lib/git-api/core/exec";
+import { exec } from "../lib/git-api/core/exec";
+
+import {
+  $path,
+  $branches,
+  changePath,
+  $log,
+  $showedBranches,
+  showBranches
+} from "./model";
 
 const { dialog } = electron.remote;
-
-const $path = createStore<string>("./");
-
-const changePath = createEvent<string>();
-
-const reloadAllRefs = createEvent<string>();
-
-forward({
-  from: changePath.map(value => {
-    const nextPath = value ? value : "./";
-
-    setPreCommand(`cd ${nextPath}`);
-
-    return nextPath;
-  }),
-  to: [$path, reloadAllRefs]
-});
-
-const $allRefs = createStore<gitApi.core.types.Refs>(
-  gitApi.layout.log.getAllRefs()
-);
-
-forward({
-  from: reloadAllRefs.map(() => gitApi.layout.log.getAllRefs()),
-  to: $allRefs
-});
-
-const $showedBranches = createStore<boolean>(false);
-
-const showBranches = createEvent<boolean>();
-
-forward({
-  from: showBranches,
-  to: $showedBranches
-});
-
-const $log = createStore<gitApi.core.types.Log>(gitApi.core.log.get());
-
-forward({
-  from: reloadAllRefs.map(() => gitApi.core.log.get()),
-  to: $log
-});
 
 export const App = () => {
   return (
@@ -214,18 +180,18 @@ const ButtonSend = styled.button`
 `;
 
 const Branches: React.FC = () => {
-  const allRefs = useStore($allRefs);
+  const branches = useStore($branches);
 
   return (
     <BranchesContainer>
-      {Array.from(allRefs.values()).map(ref => (
+      {Array.from(branches.values()).map(branch => (
         <Branch
-          key={ref.name}
+          key={branch.name}
           onClick={() => {
             showBranches(false);
           }}
         >
-          {ref.name}
+          {branch.name}
         </Branch>
       ))}
     </BranchesContainer>
