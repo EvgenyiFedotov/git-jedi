@@ -59,3 +59,10 @@ export const Button = styled.button`
   cursor: pointer;
   color: var(--main-color);
 `;
+
+export const Panel = styled(Row)`
+  width: 100%;
+  flex-wrap: nowrap;
+  padding: 0.5rem;
+  background-color: var(--bg-color);
+`;

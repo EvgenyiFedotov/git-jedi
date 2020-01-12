@@ -26,9 +26,10 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   html, body {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    /* width: 100vw;
+    height: 100vh; */
+    /* overflow: hidden; */
+    height: 100%;
   }
 
   body {
@@ -46,5 +47,6 @@ export const GlobalStyle = createGlobalStyle`
 
   #app {
     height: 100%;
+    /* height: 100%; */
   }
 `;
