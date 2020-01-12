@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execSplit } from "./exec";
 
 export interface Ref {
   type: "origin" | "tag" | "head" | null;
@@ -75,11 +75,10 @@ type GetCommitLines = (branch: string | [string, string]) => string[];
 const getCommitLines: GetCommitLines = (branch = "") => {
   const branchRange = getBranchOrRange(branch);
 
-  return execSync(
-    `git log ${branchRange} --pretty=format:"COMMIT::%n%h%n%p%n%ct%n%an%n%D%n%B"`
+  return execSplit(
+    `git log ${branchRange} --pretty=format:"COMMIT::%n%h%n%p%n%ct%n%an%n%D%n%B" --`,
+    "COMMIT::"
   )
-    .toString()
-    .split("COMMIT::")
     .map(value => value.replace(/^\n/, "").trim())
     .filter(Boolean);
 };

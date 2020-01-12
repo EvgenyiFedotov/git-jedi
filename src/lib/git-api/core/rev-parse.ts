@@ -1,7 +1,5 @@
-import { execSync } from "child_process";
+import { exec } from "./exec";
 
 export const getCurrentBranch = () => {
-  return execSync("git rev-parse --abbrev-ref HEAD")
-    .toString()
-    .replace("\n", "");
+  return exec("git rev-parse --abbrev-ref HEAD").replace("\n", "");
 };

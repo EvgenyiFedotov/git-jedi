@@ -2,19 +2,41 @@ import * as React from "react";
 import styled from "styled-components";
 import { createStore, createEvent, forward } from "effector";
 import { useStore } from "effector-react";
-import { execSync } from "child_process";
 import * as electron from "electron";
 
 import * as gitApi from "../lib/git-api";
 import { GlobalStyle } from "./global-style";
 import * as ui from "./ui";
 import * as managers from "./managers";
+import { exec, setPreCommand } from "../lib/git-api/core/exec";
 
 const { dialog } = electron.remote;
+
+const $path = createStore<string>("./");
+
+const changePath = createEvent<string>();
+
+const reloadAllRefs = createEvent<string>();
+
+forward({
+  from: changePath.map(value => {
+    const nextPath = value ? value : "./";
+
+    setPreCommand(`cd ${nextPath}`);
+
+    return nextPath;
+  }),
+  to: [$path, reloadAllRefs]
+});
 
 const $allRefs = createStore<gitApi.core.log.Refs>(
   gitApi.layout.log.getAllRefs()
 );
+
+forward({
+  from: reloadAllRefs.map(() => gitApi.layout.log.getAllRefs()),
+  to: $allRefs
+});
 
 const $showedBranches = createStore<boolean>(false);
 
@@ -25,20 +47,14 @@ forward({
   to: $showedBranches
 });
 
-const $path = createStore<string>("./");
-
-const changePath = createEvent<string>();
+const $log = createStore<gitApi.core.log.Log>(gitApi.core.log.get());
 
 forward({
-  from: changePath.map(value => {
-    return value ? value : "./";
-  }),
-  to: $path
+  from: reloadAllRefs.map(() => gitApi.core.log.get()),
+  to: $log
 });
 
 export const App = () => {
-  const log = gitApi.core.log.get();
-
   return (
     <>
       <GlobalStyle />
@@ -48,7 +64,7 @@ export const App = () => {
           <Path />
         </Top>
 
-        <Log log={log} />
+        <Log log={useStore($log)} />
 
         <Bottom>
           <managers.Branch if={useStore($showedBranches)}>
@@ -177,8 +193,10 @@ const Input = styled.input`
   width: 100%;
   border: 1px solid var(--main-color);
   background-color: var(--bg-color);
-  padding: 0.1rem 0.25rem;
-  line-height: 1rem;
+  padding: 0.1rem 0.5rem;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 300;
   border-radius: 2px;
   color: var(--main-color);
 `;
@@ -186,19 +204,21 @@ const Input = styled.input`
 const ButtonSend = styled.button`
   border: 1px solid var(--main-color);
   background-color: var(--bg-color);
-  padding: 0.1rem 0.25rem;
-  line-height: 1rem;
+  padding: 0.1rem 0.5rem;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 300;
   border-radius: 2px;
   cursor: pointer;
   color: var(--main-color);
 `;
 
 const Branches: React.FC = () => {
-  const allRefs = Array.from($allRefs.getState().values());
+  const allRefs = useStore($allRefs);
 
   return (
     <BranchesContainer>
-      {allRefs.map(ref => (
+      {Array.from(allRefs.values()).map(ref => (
         <Branch
           key={ref.value}
           onClick={() => {
@@ -261,7 +281,7 @@ const Exec: React.FC = () => {
       return next;
     });
 
-    console.log(execSync(value).toString());
+    console.log(exec(value).toString());
   };
 
   React.useEffect(() => {

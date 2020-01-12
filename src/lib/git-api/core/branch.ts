@@ -1,4 +1,4 @@
-import { exetOut } from "./exec-out";
+import { execSplit } from "./exec";
 
 interface Branch {
   name: string;
@@ -29,7 +29,7 @@ const createBranch = (line: string): Branch => {
 };
 
 export const getAll = (remote: boolean = false): Branch[] => {
-  const line = exetOut(`git branch ${remote ? "-a" : ""}`);
+  const line = execSplit(`git branch ${remote ? "-a" : ""}`);
 
   return line.filter(Boolean).map(createBranch);
 };
