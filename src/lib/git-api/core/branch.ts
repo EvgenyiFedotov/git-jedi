@@ -1,12 +1,11 @@
 import { execSplit } from "./exec";
+import { Branch } from "./types";
 
-interface Branch {
-  name: string;
-  head: boolean;
-  remote: boolean;
-}
+type CreateBranch = (line: string) => Branch;
 
-const createBranch = (line: string): Branch => {
+type GetAll = (remote?: boolean) => Branch[];
+
+const createBranch: CreateBranch = line => {
   if (line.match(/^\* /)) {
     return {
       name: line.replace(/^\* /, ""),
@@ -28,7 +27,7 @@ const createBranch = (line: string): Branch => {
   }
 };
 
-export const getAll = (remote: boolean = false): Branch[] => {
+export const getAll: GetAll = (remote = false) => {
   const line = execSplit(`git branch ${remote ? "-a" : ""}`);
 
   return line.filter(Boolean).map(createBranch);

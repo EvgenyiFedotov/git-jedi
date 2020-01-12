@@ -29,7 +29,7 @@ forward({
   to: [$path, reloadAllRefs]
 });
 
-const $allRefs = createStore<gitApi.core.log.Refs>(
+const $allRefs = createStore<gitApi.core.types.Refs>(
   gitApi.layout.log.getAllRefs()
 );
 
@@ -47,7 +47,7 @@ forward({
   to: $showedBranches
 });
 
-const $log = createStore<gitApi.core.log.Log>(gitApi.core.log.get());
+const $log = createStore<gitApi.core.types.Log>(gitApi.core.log.get());
 
 forward({
   from: reloadAllRefs.map(() => gitApi.core.log.get()),
@@ -100,7 +100,7 @@ const Bottom = styled.div`
 `;
 
 interface LogProps {
-  log: gitApi.core.log.Log;
+  log: gitApi.core.types.Log;
 }
 
 const Log: React.FC<LogProps> = props => {
@@ -139,12 +139,12 @@ const Commit = styled(ui.Row)`
 `;
 
 interface RefsProps {
-  refs: gitApi.core.log.Refs;
+  refs: gitApi.core.types.Refs;
 }
 
 const Refs: React.FC<RefsProps> = props => {
   const refs = Array.from(props.refs.values()).map(ref => {
-    return <Ref key={ref.value}>{ref.value}</Ref>;
+    return <Ref key={ref.name}>{ref.name}</Ref>;
   });
 
   return <RefsContainer>{refs}</RefsContainer>;
@@ -220,12 +220,12 @@ const Branches: React.FC = () => {
     <BranchesContainer>
       {Array.from(allRefs.values()).map(ref => (
         <Branch
-          key={ref.value}
+          key={ref.name}
           onClick={() => {
             showBranches(false);
           }}
         >
-          {ref.value}
+          {ref.name}
         </Branch>
       ))}
     </BranchesContainer>

@@ -6,3 +6,6 @@ export { log };
 
 import * as revParse from "./rev-parse";
 export { revParse };
+
+import * as types from "./types";
+export { types };
