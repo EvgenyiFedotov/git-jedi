@@ -3,10 +3,18 @@ import styled from "styled-components";
 import { useStore } from "effector-react";
 import * as gitApi from "../../lib/git-api";
 import * as ui from "../ui";
-import { $log } from "../model";
+import { $log, $refs } from "../model";
+
+type HashSlice = (hash: string) => string;
+
+const hashSlice: HashSlice = hash => {
+  return hash && hash.slice(0, 6);
+};
 
 export const Log: React.FC = () => {
   const log = useStore($log);
+
+  console.log($refs.getState());
 
   return (
     <LogContainer>
@@ -14,10 +22,11 @@ export const Log: React.FC = () => {
         <Commit key={log.hash}>
           <ui.Row>
             <div>
-              {log.hash} {log.parentHash[1] || log.parentHash[0]}
+              {hashSlice(log.hash)}{" "}
+              {hashSlice(log.parentHash[1]) || hashSlice(log.parentHash[0])}
             </div>
 
-            {/* <Refs refs={log.refs} /> */}
+            <Refs hash={log.hash} />
           </ui.Row>
 
           <div>{log.note}</div>
@@ -35,6 +44,7 @@ const Commit = styled(ui.Row)`
   padding: 0.5rem;
   cursor: pointer;
   justify-content: space-between;
+  flex-wrap: nowrap;
 
   &:hover {
     box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
@@ -43,13 +53,17 @@ const Commit = styled(ui.Row)`
 `;
 
 interface RefsProps {
-  refs: gitApi.core.types.Refs;
+  hash: string;
 }
 
 const Refs: React.FC<RefsProps> = props => {
-  const refs = Array.from(props.refs.values()).map(ref => {
-    return <div key={ref.name}>{ref.name}</div>;
-  });
+  const refs = useStore($refs).refsByCommits.get(props.hash);
 
-  return <ui.Row>{refs}</ui.Row>;
+  const refList = refs
+    ? Array.from(refs.values()).map(ref => {
+        return <div key={ref.name}>{ref.shortName}</div>;
+      })
+    : [];
+
+  return <ui.Row>{refList}</ui.Row>;
 };

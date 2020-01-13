@@ -13,11 +13,11 @@ export const $branches = createStore<core.showRef.Refs>(
   layout.showRef.getBranches()
 );
 export const $log = createStore<core.types.Log>(core.log.get());
-export const $showedBranches = createStore<boolean>(false);
+export const $showedBranches = createStore<boolean>(true);
 export const $currentBranch = createStore<string>(
   core.revParse.getCurrentBranch()
 );
-export const $refs = createStore<core.showRef.Refs>(core.showRef.get());
+export const $refs = createStore<core.showRef.GetResult>(core.showRef.get());
 
 export const changePath = createEvent<string>();
 export const showBranches = createEvent<boolean>();

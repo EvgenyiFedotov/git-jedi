@@ -5,7 +5,7 @@ type GetBranches = () => showRef.Refs;
 export const getBranches: GetBranches = () => {
   const refs = showRef.get();
 
-  return Array.from(refs.values()).reduce((memo, ref) => {
+  return Array.from(refs.refs.values()).reduce((memo, ref) => {
     if (ref.type === "heads") {
       memo.set(ref.name, ref);
     }

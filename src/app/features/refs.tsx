@@ -9,7 +9,7 @@ export const Refs: React.FC = () => {
 
   return (
     <RefsContainer>
-      {Array.from(refs.values()).map(ref => (
+      {Array.from(refs.refs.values()).map(ref => (
         <Ref key={ref.name}>{ref.shortName}</Ref>
       ))}
     </RefsContainer>
