@@ -1,2 +1,2 @@
-import * as log from "./log";
-export { log };
+import * as showRef from "./show-ref";
+export { showRef };

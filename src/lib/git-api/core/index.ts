@@ -1,6 +1,3 @@
-import * as branch from "./branch";
-export { branch };
-
 import * as log from "./log";
 export { log };
 
@@ -9,3 +6,6 @@ export { revParse };
 
 import * as types from "./types";
 export { types };
+
+import * as showRef from "./show-ref";
+export { showRef };

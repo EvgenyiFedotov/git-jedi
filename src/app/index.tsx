@@ -28,6 +28,8 @@ export const App = () => {
         </TopContent>
 
         <Bottom>
+          <features.Refs />
+
           <managers.Branch if={showedBranches}>
             <features.Branches />
           </managers.Branch>

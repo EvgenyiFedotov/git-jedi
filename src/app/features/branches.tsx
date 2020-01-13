@@ -11,7 +11,7 @@ export const Branches: React.FC = () => {
     <BranchesContainer>
       {Array.from(branches.values()).map(branch => (
         <Branch key={branch.name} onClick={() => showBranches(false)}>
-          {branch.name}
+          {branch.shortName}
         </Branch>
       ))}
     </BranchesContainer>

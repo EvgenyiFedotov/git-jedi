@@ -1,17 +1,17 @@
 import * as React from "react";
 import styled from "styled-components";
 import { useStore } from "effector-react";
-import * as gitApi from "../../lib/git-api";
 import * as ui from "../ui";
-import { $showedBranches, showBranches } from "../model";
+import { $showedBranches, showBranches, $currentBranch } from "../model";
 
 export const InputMessage: React.FC = () => {
   const showedBranches = useStore($showedBranches);
+  const currentBranch = useStore($currentBranch);
 
   return (
     <InputMessageContainer>
       <CurrentBranch onClick={() => showBranches(!showedBranches)}>
-        {gitApi.core.revParse.getCurrentBranch()}
+        {currentBranch}
       </CurrentBranch>
 
       <ui.Input />

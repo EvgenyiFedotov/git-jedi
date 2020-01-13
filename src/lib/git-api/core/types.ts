@@ -2,6 +2,7 @@ export interface Branch {
   name: string;
   head: boolean;
   remote: boolean;
+  current: boolean;
 }
 
 export interface Tag {
@@ -14,10 +15,9 @@ export type Refs = Map<string, Ref>;
 
 export interface Commit {
   hash: string;
-  parentHash: string;
+  parentHash: string[];
   dateTime: string;
   author: string;
-  refs: Refs;
   note: string;
 }
 

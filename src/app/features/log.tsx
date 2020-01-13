@@ -14,10 +14,10 @@ export const Log: React.FC = () => {
         <Commit key={log.hash}>
           <ui.Row>
             <div>
-              {log.hash} {log.parentHash}
+              {log.hash} {log.parentHash[1] || log.parentHash[0]}
             </div>
 
-            <Refs refs={log.refs} />
+            {/* <Refs refs={log.refs} /> */}
           </ui.Row>
 
           <div>{log.note}</div>
