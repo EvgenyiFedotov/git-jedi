@@ -18,6 +18,7 @@ export const Refs: React.FC = () => {
 
 const RefsContainer = styled.div`
   box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  border-top: 1px solid var(--panel-boder-color);
   max-height: 10rem;
   overflow-y: auto;
 `;

@@ -74,4 +74,5 @@ export const Exec: React.FC = () => {
 
 const ExecContainer = styled(ui.Panel)`
   box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  border-top: 1px solid var(--panel-boder-color);
 `;

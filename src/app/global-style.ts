@@ -3,17 +3,19 @@ import { createGlobalStyle } from "styled-components";
 export const GlobalStyle = createGlobalStyle`
   :root {
     --bg-color: #f7f7f7;
-    --main-color: #30303b;
+    --main-color: #363645;
     --main-1-color: #959087;
     --main-2-color: #d1cdc9;
-    --main-3-color: #eae9e7;
+    --main-3-color: #cad0f1;
+    --panel-boder-color: #f1f1ff;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg-color: #30303b;
+      --bg-color: #363645;
       --main-color: #f7f7f7;
-      --main-3-color: #795548;
+      --main-3-color: #485079;
+      --panel-boder-color: #3d3d4e;
     }
   }
 

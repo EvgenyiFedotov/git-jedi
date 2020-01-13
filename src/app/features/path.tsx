@@ -39,6 +39,7 @@ export const Path: React.FC = () => {
 
 const PathContainer = styled(ui.Panel)`
   box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  border-bottom: 1px solid var(--panel-boder-color);
 `;
 
 const PathValue = styled.div`
