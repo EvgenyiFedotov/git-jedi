@@ -28,14 +28,14 @@ export const App = () => {
         </TopContent>
 
         <Bottom>
-          <features.Refs />
+          {/* <features.Refs /> */}
 
           <managers.Branch if={showedBranches}>
             <features.Branches />
           </managers.Branch>
 
           <features.InputMessage />
-          <features.Exec />
+          {/* <features.Exec /> */}
         </Bottom>
       </Container>
     </>
@@ -46,6 +46,10 @@ const Container = styled(ui.Column)`
   height: 100%;
   position: relative;
   justify-content: space-between;
+
+  & > *:not(:last-child) {
+    margin-bottom: 0;
+  }
 `;
 
 const GridBlock = styled.div`
@@ -60,10 +64,24 @@ const Top = styled(GridBlock)`
 
 const Content = styled.div`
   /* width: 100vh; */
+  /* overflow-y: auto; */
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  flex: 1 1 0%;
 `;
 
-const TopContent = styled.div`
+const TopContent = styled(ui.Column)`
   position: relative;
+  flex: 1 0;
+  height: 100%;
+  overflow: hidden;
+
+  & > *:not(:last-child) {
+    margin-bottom: 0;
+  }
 `;
 
 const Bottom = styled(GridBlock)`

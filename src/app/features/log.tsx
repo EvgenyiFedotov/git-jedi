@@ -14,8 +14,6 @@ const hashSlice: HashSlice = hash => {
 export const Log: React.FC = () => {
   const log = useStore($log);
 
-  console.log($refs.getState());
-
   return (
     <LogContainer>
       {Array.from(log.values()).map(log => (
@@ -36,8 +34,9 @@ export const Log: React.FC = () => {
   );
 };
 
-const LogContainer = styled.div`
+const LogContainer = styled(ui.Column)`
   width: 100%;
+  flex-direction: column-reverse;
 `;
 
 const Commit = styled(ui.Row)`
@@ -61,9 +60,29 @@ const Refs: React.FC<RefsProps> = props => {
 
   const refList = refs
     ? Array.from(refs.values()).map(ref => {
-        return <div key={ref.name}>{ref.shortName}</div>;
+        return <Ref key={ref.name} value={ref} />;
       })
     : [];
 
   return <ui.Row>{refList}</ui.Row>;
 };
+
+interface RefProps {
+  value: gitApi.core.showRef.Ref;
+}
+
+const Ref: React.FC<RefProps> = ({ value }) => {
+  return <RefContainer>{value.shortName}</RefContainer>;
+};
+
+const RefContainer = styled.div`
+  border: 1px solid var(--bg-color);
+  background-color: var(--main-3-color);
+  border-radius: 3px;
+  padding: 0 0.5rem;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  }
+`;
