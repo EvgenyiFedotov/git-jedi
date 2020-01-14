@@ -43,15 +43,9 @@ const LogContainer = styled(ui.Column)`
   flex-direction: column-reverse;
 `;
 
-const Commit = styled(ui.Row)`
-  padding: 0.5rem;
-  cursor: pointer;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-
+const Commit = styled(ui.ListRow)`
   &:hover {
     box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
-    background-color: var(--main-3-color);
   }
 `;
 

@@ -1,7 +1,5 @@
 import * as React from "react";
-import styled from "styled-components";
 import { useStore } from "effector-react";
-import * as gitApi from "../../lib/git-api";
 import * as ui from "../ui";
 import { $path, changePath } from "../model";
 import * as electron from "electron";
@@ -29,15 +27,10 @@ export const Path: React.FC = () => {
   const path = useStore($path);
 
   return (
-    <PathContainer>
+    <ui.Row>
       <div>Path:</div>
 
       <ui.ButtonLink onClick={selectPath}>{path}</ui.ButtonLink>
-    </PathContainer>
+    </ui.Row>
   );
 };
-
-const PathContainer = styled(ui.Panel)`
-  box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
-  border-bottom: 1px solid var(--panel-boder-color);
-`;

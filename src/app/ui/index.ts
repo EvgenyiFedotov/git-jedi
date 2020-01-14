@@ -26,6 +26,18 @@ export const Row = styled.div`
   }
 `;
 
+export const ListRow = styled(Row)`
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  min-height: 2.5rem;
+
+  &:hover {
+    background-color: var(--list-row-hover);
+  }
+`;
+
 export const Column = styled.div`
   display: flex;
   flex: none;
@@ -63,8 +75,18 @@ export const Button = styled.button`
 export const Panel = styled(Row)`
   width: 100%;
   flex-wrap: nowrap;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   background-color: var(--bg-color);
+`;
+
+export const PanelTop = styled(Panel)`
+  box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  border-bottom: 1px solid var(--panel-boder-color);
+`;
+
+export const PanelBottom = styled(Panel)`
+  box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  border-top: 1px solid var(--panel-boder-color);
 `;
 
 export const ButtonLink = styled.button`

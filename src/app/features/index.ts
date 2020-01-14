@@ -4,3 +4,5 @@ export { Exec } from "./exec";
 export { InputMessage } from "./input-message";
 export { Path } from "./path";
 export { Refs } from "./refs";
+export { Status } from "./status";
+export { StatusPaths } from "./status-paths";

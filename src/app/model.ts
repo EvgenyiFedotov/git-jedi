@@ -18,14 +18,25 @@ export const $currentBranch = createStore<string>(
   core.revParse.getCurrentBranch()
 );
 export const $refs = createStore<core.showRef.GetResult>(core.showRef.get());
+export const $isChanged = createStore<boolean>(core.status.isChanged());
+export const $statusPaths = createStore<core.status.StatusPath[]>(
+  core.status.get()
+);
+export const $isShowStatusPaths = createStore<boolean>(false);
 
 export const changePath = createEvent<string>();
 export const showBranches = createEvent<boolean>();
 export const checkoutToBranch = createEvent<string>();
+export const showStatusPaths = createEvent<boolean>();
 
 forward({
   from: showBranches,
   to: $showedBranches
+});
+
+forward({
+  from: showStatusPaths,
+  to: $isShowStatusPaths
 });
 
 $path.on(changePath, (_, path) => {
@@ -50,3 +61,11 @@ $currentBranch
   });
 
 $refs.on($path, () => core.showRef.get());
+
+$isChanged
+  .on($path, () => core.status.isChanged())
+  .on($currentBranch, () => core.status.isChanged());
+
+$statusPaths
+  .on($path, () => core.status.get())
+  .on($currentBranch, () => core.status.get());

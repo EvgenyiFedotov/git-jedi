@@ -11,6 +11,12 @@ export const GlobalStyle = createGlobalStyle`
     --ref-color: #bbc6ff;
     --ref-border-color: #f7f7f7;
     --ref-branch-color: #9eafff;
+
+    --status-path-untracked: #00796b;
+    --status-path-deleted: #c62828;
+    --status-path-default: #3f51b5;
+    
+    --list-row-hover: #cad0f1;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -23,6 +29,12 @@ export const GlobalStyle = createGlobalStyle`
       --ref-border-color: #40405f;
       --ref-branch-color: #5a68ab;
       --ref-branch-border-color: #494965;
+
+      --status-path-untracked: #80cbc4;
+      --status-path-deleted: #ef9a9a;
+      --status-path-default: #9fa8da;
+
+      --list-row-hover: #393d52;
     }
   }
 

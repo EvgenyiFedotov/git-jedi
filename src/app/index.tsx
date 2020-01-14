@@ -6,6 +6,7 @@ import { GlobalStyle } from "./global-style";
 import * as ui from "./ui";
 import * as managers from "./managers";
 import * as features from "./features";
+import * as tempates from "./templates";
 
 import { $showedBranches } from "./model";
 
@@ -19,7 +20,11 @@ export const App = () => {
       <Container>
         <TopContent>
           <Top>
-            <features.Path />
+            <managers.ReversChildren>
+              <tempates.TopToolbar />
+
+              <features.StatusPaths />
+            </managers.ReversChildren>
           </Top>
 
           <Content>
@@ -52,14 +57,19 @@ const Container = styled(ui.Column)`
   }
 `;
 
-const GridBlock = styled.div`
+const GridBlock = styled(ui.Column)`
   width: 100%;
   background-color: var(--bg-color);
   position: sticky;
+
+  & > *:not(:last-child) {
+    margin: 0;
+  }
 `;
 
 const Top = styled(GridBlock)`
   top: 0;
+  flex-direction: column-reverse;
 `;
 
 const Content = styled.div`

@@ -30,13 +30,4 @@ const BranchesContainer = styled.div`
   overflow-y: auto;
 `;
 
-const Branch = styled(ui.Row)`
-  padding: 0.5rem;
-  cursor: pointer;
-  min-height: 2.5rem;
-  align-items: center;
-
-  &:hover {
-    background-color: var(--main-3-color);
-  }
-`;
+const Branch = styled(ui.ListRow)``;
