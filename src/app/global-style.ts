@@ -8,6 +8,8 @@ export const GlobalStyle = createGlobalStyle`
     --main-2-color: #d1cdc9;
     --main-3-color: #cad0f1;
     --panel-boder-color: #f1f1ff;
+    --ref-color: #bbc6ff;
+    --ref-branch-color: #9eafff;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -16,6 +18,8 @@ export const GlobalStyle = createGlobalStyle`
       --main-color: #f7f7f7;
       --main-3-color: #485079;
       --panel-boder-color: #3d3d4e;
+      --ref-color: #485079;
+      --ref-branch-color: #5a68ab;
     }
   }
 

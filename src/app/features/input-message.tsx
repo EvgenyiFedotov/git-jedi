@@ -10,9 +10,9 @@ export const InputMessage: React.FC = () => {
 
   return (
     <InputMessageContainer>
-      <CurrentBranch onClick={() => showBranches(!showedBranches)}>
+      <ui.ButtonLink onClick={() => showBranches(!showedBranches)}>
         {currentBranch}
-      </CurrentBranch>
+      </ui.ButtonLink>
 
       <ui.Input />
 
@@ -24,12 +24,4 @@ export const InputMessage: React.FC = () => {
 const InputMessageContainer = styled(ui.Panel)`
   box-shadow: 0px -2px 6px 0 hsla(0, 0%, 0%, 0.2);
   border-top: 1px solid var(--panel-boder-color);
-`;
-
-const CurrentBranch = styled.div`
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;

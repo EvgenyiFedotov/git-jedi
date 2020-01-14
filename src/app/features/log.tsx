@@ -19,10 +19,14 @@ export const Log: React.FC = () => {
       {Array.from(log.values()).map(log => (
         <Commit key={log.hash}>
           <ui.Row>
-            <div>
+            <ui.ButtonLink
+              onClick={() =>
+                window.navigator.clipboard.writeText(hashSlice(log.hash))
+              }
+            >
               {hashSlice(log.hash)}{" "}
-              {hashSlice(log.parentHash[1]) || hashSlice(log.parentHash[0])}
-            </div>
+              {/* {hashSlice(log.parentHash[1]) || hashSlice(log.parentHash[0])} */}
+            </ui.ButtonLink>
 
             <Refs hash={log.hash} />
           </ui.Row>
@@ -72,12 +76,23 @@ interface RefProps {
 }
 
 const Ref: React.FC<RefProps> = ({ value }) => {
-  return <RefContainer>{value.shortName}</RefContainer>;
+  return <RefContainer type={value.type}>{value.shortName}</RefContainer>;
 };
 
-const RefContainer = styled.div`
+interface RefContainerProps {
+  type: gitApi.core.showRef.Ref["type"];
+}
+
+const RefContainer = styled.div<RefContainerProps>`
   border: 1px solid var(--bg-color);
-  background-color: var(--main-3-color);
+  background-color: ${({ type }) => {
+    switch (type) {
+      case "heads":
+        return "var(--ref-branch-color)";
+      default:
+        return "var(--ref-color)";
+    }
+  }};
   border-radius: 3px;
   padding: 0 0.5rem;
   cursor: pointer;

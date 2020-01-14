@@ -50,7 +50,7 @@ export const Input = styled.input`
 
 export const Button = styled.button`
   border: 1px solid var(--main-color);
-  background-color: var(--bg-color);
+  background-color: transparent;
   padding: 0.1rem 0.5rem;
   line-height: 1.5rem;
   font-size: 0.9rem;
@@ -65,4 +65,19 @@ export const Panel = styled(Row)`
   flex-wrap: nowrap;
   padding: 0.5rem;
   background-color: var(--bg-color);
+`;
+
+export const ButtonLink = styled.button`
+  background-color: transparent;
+  padding: 0.1rem 0.5rem;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 300;
+  cursor: pointer;
+  color: var(--main-color);
+  border: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

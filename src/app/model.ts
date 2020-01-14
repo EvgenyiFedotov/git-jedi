@@ -13,7 +13,7 @@ export const $branches = createStore<core.showRef.Refs>(
   layout.showRef.getBranches()
 );
 export const $log = createStore<core.types.Log>(core.log.get());
-export const $showedBranches = createStore<boolean>(true);
+export const $showedBranches = createStore<boolean>(false);
 export const $currentBranch = createStore<string>(
   core.revParse.getCurrentBranch()
 );
