@@ -1,4 +1,4 @@
-import { createStore, createEvent, forward, createEffect } from "effector";
+import { createStore, createEvent, forward } from "effector";
 import { core, layout } from "../lib/git-api";
 import { setPreCommand } from "../lib/git-api/core/exec";
 
@@ -21,40 +21,32 @@ export const $refs = createStore<core.showRef.GetResult>(core.showRef.get());
 
 export const changePath = createEvent<string>();
 export const showBranches = createEvent<boolean>();
-
-const changePreCommand = createEffect<string, void>({
-  handler: async path => {
-    setPreCommand(`cd ${path}`);
-    localStorage.setItem(PATH, path);
-  }
-});
-
-forward({
-  from: changePath,
-  to: [$path, changePreCommand]
-});
-
-forward({
-  from: changePreCommand.done.map(() => layout.showRef.getBranches()),
-  to: $branches
-});
-
-forward({
-  from: changePreCommand.done.map(() => core.log.get()),
-  to: $log
-});
-
-forward({
-  from: changePreCommand.done.map(() => core.revParse.getCurrentBranch()),
-  to: $currentBranch
-});
-
-forward({
-  from: changePreCommand.done.map(() => core.showRef.get()),
-  to: $refs
-});
+export const checkoutToBranch = createEvent<string>();
 
 forward({
   from: showBranches,
   to: $showedBranches
 });
+
+$path.on(changePath, (_, path) => {
+  setPreCommand(`cd ${path}`);
+  localStorage.setItem(PATH, path);
+
+  return path;
+});
+
+$branches.on($path, () => layout.showRef.getBranches());
+
+$log.on($path, () => core.log.get()).on($currentBranch, () => core.log.get());
+
+$currentBranch
+  .on($path, () => core.revParse.getCurrentBranch())
+  .on(checkoutToBranch, (_, nameBranch) => {
+    if (core.status.isChanged() === false) {
+      core.checkout.run(nameBranch);
+    }
+
+    return nameBranch;
+  });
+
+$refs.on($path, () => core.showRef.get());

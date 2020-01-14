@@ -2,15 +2,20 @@ import * as React from "react";
 import styled from "styled-components";
 import { useStore } from "effector-react";
 import * as ui from "../ui";
-import { $branches, showBranches } from "../model";
+import { $branches, showBranches, checkoutToBranch } from "../model";
 
 export const Branches: React.FC = () => {
   const branches = useStore($branches);
 
+  const click = (nameBranch: string) => () => {
+    checkoutToBranch(nameBranch);
+    showBranches(false);
+  };
+
   return (
     <BranchesContainer>
       {Array.from(branches.values()).map(branch => (
-        <Branch key={branch.name} onClick={() => showBranches(false)}>
+        <Branch key={branch.name} onClick={click(branch.shortName)}>
           {branch.shortName}
         </Branch>
       ))}

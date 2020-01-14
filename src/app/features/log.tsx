@@ -100,4 +100,15 @@ const RefContainer = styled.div<RefContainerProps>`
   &:hover {
     box-shadow: 0px 2px 6px 0 hsla(0, 0%, 0%, 0.2);
   }
+
+  ${Commit}:hover & {
+    border-color: ${({ type }) => {
+      switch (type) {
+        case "heads":
+          return "var(--ref-branch-border-color)";
+        default:
+          return "var(--ref-border-color)";
+      }
+    }};
+  }
 `;

@@ -9,3 +9,9 @@ export { types };
 
 import * as showRef from "./show-ref";
 export { showRef };
+
+import * as checkout from "./chechout";
+export { checkout };
+
+import * as status from "./status";
+export { status };

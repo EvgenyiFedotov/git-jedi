@@ -9,6 +9,7 @@ export const GlobalStyle = createGlobalStyle`
     --main-3-color: #cad0f1;
     --panel-boder-color: #f1f1ff;
     --ref-color: #bbc6ff;
+    --ref-border-color: #f7f7f7;
     --ref-branch-color: #9eafff;
   }
 
@@ -19,7 +20,9 @@ export const GlobalStyle = createGlobalStyle`
       --main-3-color: #485079;
       --panel-boder-color: #3d3d4e;
       --ref-color: #485079;
+      --ref-border-color: #40405f;
       --ref-branch-color: #5a68ab;
+      --ref-branch-border-color: #494965;
     }
   }
 
