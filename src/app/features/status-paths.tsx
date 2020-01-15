@@ -5,14 +5,24 @@ import * as ui from "../ui";
 import * as model from "../model";
 import { core } from "../../lib/git-api";
 import * as managers from "../managers";
+import { minus } from "react-icons-kit/feather/minus";
 
 export const StatusPaths: React.FC = () => {
   const isShowStatusPaths = useStore(model.$isShowStatusPaths);
 
   const rows = useList(model.$statusPaths, statusPath => (
     <ui.ListRow>
-      <Status value={statusPath.status}>{statusPath.status}</Status>
-      <div>{statusPath.path}</div>
+      <ui.Row>
+        <Status value={statusPath.status}>{statusPath.status}</Status>
+        <div>{statusPath.path}</div>
+      </ui.Row>
+
+      <div>
+        <ui.ButtonIcon
+          icon={minus}
+          onClick={() => model.stashPush(statusPath.path)}
+        />
+      </div>
     </ui.ListRow>
   ));
 
@@ -33,7 +43,7 @@ const StatusPathsContainer = styled.div`
 `;
 
 const List = styled(ui.Column)`
-  & > ${ui.ListRow} {
+  & > div > ${ui.ListRow} {
     justify-content: flex-start;
   }
 `;

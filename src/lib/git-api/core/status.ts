@@ -27,8 +27,6 @@ type Get = () => StatusPath[];
 export const get: Get = () => {
   const lines = execSplit("git status -s");
 
-  console.log(lines);
-
   return lines.reduce<StatusPath[]>((memo, line) => {
     const statusPath = parseStatusLine(line);
 

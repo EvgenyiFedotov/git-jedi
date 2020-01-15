@@ -15,3 +15,6 @@ export { checkout };
 
 import * as status from "./status";
 export { status };
+
+import * as stash from "./stash";
+export { stash };

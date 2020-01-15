@@ -21,6 +21,7 @@
   "dependencies": {
     "effector": "^20.9.1",
     "effector-react": "^20.6.0",
+    "react-icons-kit": "^1.3.1",
     "styled-components": "^4.4.1",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.5",

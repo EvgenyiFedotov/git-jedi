@@ -28,6 +28,7 @@ export const changePath = createEvent<string>();
 export const showBranches = createEvent<boolean>();
 export const checkoutToBranch = createEvent<string>();
 export const showStatusPaths = createEvent<boolean>();
+export const stashPush = createEvent<string | null>();
 
 forward({
   from: showBranches,
@@ -69,3 +70,7 @@ $isChanged
 $statusPaths
   .on($path, () => core.status.get())
   .on($currentBranch, () => core.status.get());
+
+stashPush.watch(path => {
+  console.log(path);
+});

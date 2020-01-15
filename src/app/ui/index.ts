@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Icon } from "react-icons-kit";
 
 export const Label = styled.div`
   cursor: pointer;
@@ -101,5 +102,15 @@ export const ButtonLink = styled.button`
 
   &:hover {
     text-decoration: underline;
+  }
+`;
+
+export const ButtonIcon = styled(Icon)`
+  line-height: 1rem;
+  padding: 0.1rem 0.2rem;
+  border-radius: 2px;
+
+  &:hover {
+    background-color: var(--button-icon-hover-color);
   }
 `;

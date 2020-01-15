@@ -1,13 +1,17 @@
 import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
+
   :root {
+  /* --owner-[action]-nameParameter: value */
     --bg-color: #f7f7f7;
     --main-color: #363645;
     --main-1-color: #959087;
     --main-2-color: #d1cdc9;
     --main-3-color: #cad0f1;
+    
     --panel-boder-color: #f1f1ff;
+
     --ref-color: #bbc6ff;
     --ref-border-color: #f7f7f7;
     --ref-branch-color: #9eafff;
@@ -17,14 +21,19 @@ export const GlobalStyle = createGlobalStyle`
     --status-path-default: #3f51b5;
     
     --list-row-hover: #cad0f1;
+
+    --button-icon-hover-color: #444969;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
+      /* --owner-[action]-nameParameter: value */
       --bg-color: #363645;
       --main-color: #f7f7f7;
       --main-3-color: #485079;
+
       --panel-boder-color: #3d3d4e;
+
       --ref-color: #485079;
       --ref-border-color: #40405f;
       --ref-branch-color: #5a68ab;
@@ -35,6 +44,8 @@ export const GlobalStyle = createGlobalStyle`
       --status-path-default: #9fa8da;
 
       --list-row-hover: #393d52;
+
+      --button-icon-hover-color: #444969;
     }
   }
 
