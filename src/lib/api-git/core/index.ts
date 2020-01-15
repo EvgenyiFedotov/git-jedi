@@ -1,3 +1,3 @@
-export { exec, execSync } from "./exec";
+export { exec, execSync, BaseOptions } from "./exec";
 export { log, Log, Commit, logSync } from "./log";
 export { showRef, showRefSync, ShowRef } from "./show-ref";

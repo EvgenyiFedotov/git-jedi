@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useStore } from "effector-react";
 import * as ui from "../ui";
-import { $path, changePath } from "../model";
+import { $path, changePath } from "../model-v2";
 import * as electron from "electron";
 
 const { dialog } = electron.remote;
