@@ -14,24 +14,24 @@ export const $log = createStore(defaultLog);
 const defaultRefs = core.showRefSync(defaultOptions);
 export const $refs = createStore(defaultRefs);
 
+const defaultCurrentBranch = core.revParseSync(defaultOptions);
+export const $currentBranch = createStore(defaultCurrentBranch);
+
 export const changePath = createEvent<string>();
 
-const buildOptions = createEffect<string, core.BaseOptions>({
-  handler: async cwd => ({ execOptions: { cwd } })
-});
-const buildedOptions = buildOptions.done.map(({ result }) => result);
-
-const updateLog = createEffect<core.BaseOptions, core.Log>({
-  handler: options => core.log(options)
+const updateLog = createEffect<string, core.Log>({
+  handler: cwd => core.log({ execOptions: { cwd } })
 });
 
-const updateRefs = createEffect<core.BaseOptions, core.ShowRef>({
-  handler: options => core.showRef(options)
+const updateRefs = createEffect<string, core.ShowRef>({
+  handler: cwd => core.showRef({ execOptions: { cwd } })
 });
 
-forward({ from: $path, to: buildOptions });
+const updateCurrentBranch = createEffect<string, string>({
+  handler: cwd => core.revParse({ execOptions: { cwd } })
+});
 
-forward({ from: buildedOptions, to: [updateLog, updateRefs] });
+forward({ from: $path, to: [updateLog, updateRefs, updateCurrentBranch] });
 
 $path
   .on(changePath, (_, path) => path)
@@ -40,3 +40,5 @@ $path
 $log.on(updateLog.done, (_, { result }) => result);
 
 $refs.on(updateRefs.done, (_, { result }) => result);
+
+$currentBranch.on(updateCurrentBranch.done, (_, { result }) => result);

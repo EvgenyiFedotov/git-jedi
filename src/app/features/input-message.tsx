@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useStore } from "effector-react";
 import * as ui from "../ui";
-import { $showedBranches, showBranches, $currentBranch } from "../model";
+import { $showedBranches, showBranches } from "../model";
+import { $currentBranch } from "../model-v2";
 
 export const InputMessage: React.FC = () => {
   const showedBranches = useStore($showedBranches);
