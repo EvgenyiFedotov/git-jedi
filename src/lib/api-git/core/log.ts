@@ -1,4 +1,4 @@
-import { exec, BaseOptions } from "./exec";
+import { exec, execSync, BaseOptions } from "./exec";
 
 export interface Commit {
   hash: string;
@@ -21,7 +21,6 @@ const stdoutToCommitLines = (stdout: string): string[] => {
 };
 
 const lineToCommit = (line: string): Commit => {
-  console.log(line);
   const [hash, parentHash, dateTime, author, ...note] = line.split("\n");
 
   return {
@@ -46,12 +45,15 @@ const createCommand = () => {
   return `git log ${pretty} --`;
 };
 
-const parseLog = async (execResult: Promise<string>): Promise<Log> => {
+export const log = async (options: BaseOptions = {}): Promise<Log> => {
+  const command = createCommand();
+  const execResult = exec(command, options.execOptions);
   return execResult.then(stdoutToCommitLines).then(commitLinesToLog);
 };
 
-export const log = async (options: BaseOptions = {}) => {
+export const logSync = (options: BaseOptions = {}): Log => {
   const command = createCommand();
-  const execResult = exec(command, options.execOptions);
-  return parseLog(execResult);
+  const execResult = execSync(command, options.execOptions);
+  const lines = stdoutToCommitLines(execResult);
+  return commitLinesToLog(lines);
 };

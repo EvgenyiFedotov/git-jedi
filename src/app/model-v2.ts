@@ -1,18 +1,14 @@
-import { createStore, createEvent, createEffect, forward } from "effector";
+import { createStore, createEvent } from "effector";
 import { core } from "../lib/api-git";
 
 const PATH = "PATH";
 
 const defaultPath = localStorage.getItem(PATH) || "./";
 
-export const $log = createStore<core.Log>(new Map());
+const defaultLog = core.logSync({ execOptions: { cwd: defaultPath } });
+export const $log = createStore(defaultLog);
+
+const defaultRefs = core.showRefSync({ execOptions: { cwd: defaultPath } });
+export const $refs = createStore(defaultRefs);
 
 export const pageMount = createEvent();
-
-const loadLog = createEffect({
-  handler: () => core.log({ execOptions: { cwd: defaultPath } })
-});
-
-forward({ from: pageMount, to: loadLog });
-
-$log.on(loadLog.done, (_, { result }) => result);
