@@ -9,9 +9,12 @@ import * as features from "./features";
 import * as tempates from "./templates";
 
 import { $showedBranches } from "./model";
+import { pageMount } from "./model-v2";
 
 export const App = () => {
   const showedBranches = useStore($showedBranches);
+
+  React.useEffect(() => pageMount(), []);
 
   return (
     <>
