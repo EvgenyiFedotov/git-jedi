@@ -17,6 +17,10 @@ export const $refs = createStore(defaultRefs);
 const defaultCurrentBranch = core.revParseSync(defaultOptions);
 export const $currentBranch = createStore(defaultCurrentBranch);
 
+const defaultStatus = core.statusSync(defaultOptions);
+export const $status = createStore(defaultStatus);
+export const $isChanged = createStore<boolean>(!!defaultStatus.length);
+
 export const changePath = createEvent<string>();
 
 const updateLog = createEffect<string, core.Log>({
@@ -42,3 +46,5 @@ $log.on(updateLog.done, (_, { result }) => result);
 $refs.on(updateRefs.done, (_, { result }) => result);
 
 $currentBranch.on(updateCurrentBranch.done, (_, { result }) => result);
+
+$isChanged.on($status, (_, status) => !!status.length);

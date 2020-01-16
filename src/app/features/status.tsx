@@ -2,13 +2,12 @@ import * as React from "react";
 import styled from "styled-components";
 import { useStore } from "effector-react";
 import * as model from "../model";
+import * as modelv2 from "../model-v2";
 import * as managers from "../managers";
 import * as ui from "../ui";
 
-import { core } from "../../lib/git-api";
-
 export const Status: React.FC = () => {
-  const isChanged = useStore(model.$isChanged);
+  const isChanged = useStore(modelv2.$isChanged);
   const isShowStatusPaths = useStore(model.$isShowStatusPaths);
 
   return (

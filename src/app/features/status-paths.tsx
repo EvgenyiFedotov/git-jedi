@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useList, useStore } from "effector-react";
 import * as ui from "../ui";
 import * as model from "../model";
+import * as modelv2 from "../model-v2";
 import { core } from "../../lib/git-api";
 import * as managers from "../managers";
 import { minus } from "react-icons-kit/feather/minus";
@@ -10,7 +11,7 @@ import { minus } from "react-icons-kit/feather/minus";
 export const StatusPaths: React.FC = () => {
   const isShowStatusPaths = useStore(model.$isShowStatusPaths);
 
-  const rows = useList(model.$statusPaths, statusPath => (
+  const rows = useList(modelv2.$status, statusPath => (
     <ui.ListRow>
       <ui.Row>
         <Status value={statusPath.status}>{statusPath.status}</Status>
@@ -45,6 +46,10 @@ const StatusPathsContainer = styled.div`
 const List = styled(ui.Column)`
   & > div > ${ui.ListRow} {
     justify-content: flex-start;
+  }
+
+  *:not(:last-child) {
+    margin-bottom: 0;
   }
 `;
 
