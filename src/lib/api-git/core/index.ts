@@ -4,3 +4,4 @@ export { showRef, showRefSync, ShowRef } from "./show-ref";
 export { revParse, revParseSync, RefParseOptions } from "./rev-parse";
 export { status, statusSync, StatusPath } from "./status";
 export { stash, stashSync, StashOptions } from "./stash";
+export { checkout, checkoutSync, CheckoutOptions } from "./checkout";
