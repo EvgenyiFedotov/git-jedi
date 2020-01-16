@@ -12,13 +12,13 @@ const createCommand = (options: StashOptions = {}): string => {
   )}`;
 };
 
-export const stash = (options: StashOptions = {}) => {
+export const stash = (options: StashOptions = {}): Promise<string> => {
   const command = createCommand(options);
 
   return exec(command, options.execOptions);
 };
 
-export const stashSync = (options: StashOptions = {}) => {
+export const stashSync = (options: StashOptions = {}): string => {
   const command = createCommand(options);
 
   return execSync(command, options.execOptions);
