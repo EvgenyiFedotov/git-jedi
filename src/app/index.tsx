@@ -8,10 +8,10 @@ import * as managers from "./managers";
 import * as features from "./features";
 import * as tempates from "./templates";
 
-import { $showedBranches } from "./model";
+import { $isShowBranches } from "./state";
 
 export const App = () => {
-  const showedBranches = useStore($showedBranches);
+  const isShowBranches = useStore($isShowBranches);
 
   return (
     <>
@@ -33,14 +33,11 @@ export const App = () => {
         </TopContent>
 
         <Bottom>
-          {/* <features.Refs /> */}
-
-          <managers.Branch if={showedBranches}>
+          <managers.Branch if={isShowBranches}>
             <features.Branches />
           </managers.Branch>
 
           <features.InputMessage />
-          {/* <features.Exec /> */}
         </Bottom>
       </Container>
     </>

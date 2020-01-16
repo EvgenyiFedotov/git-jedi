@@ -1,8 +1,11 @@
 import { exec, execSync, BaseOptions } from "./exec";
 import { stdoutToLines } from "./common";
 
+export type StatusFile = "modified" | "untracked" | "deleted" | "added" | null;
+
 export interface StatusPath {
-  status: "modified" | "untracked" | "deleted";
+  stagedStatus: StatusFile;
+  status: StatusFile;
   path: string;
 }
 
@@ -10,19 +13,30 @@ const createCommand = () => {
   return "git status -s";
 };
 
-const toStatusPath = (line: string): StatusPath | null => {
-  const [status, path] = line.split(" ");
-
-  switch (status) {
+const toStatusFile = (value: string): StatusFile => {
+  switch (value) {
     case "D":
-      return { status: "deleted", path };
+      return "deleted";
     case "M":
-      return { status: "modified", path };
-    case "??":
-      return { status: "untracked", path };
+      return "modified";
+    case "A":
+      return "added";
+    case "?":
+      return "untracked";
   }
 
   return null;
+};
+
+const toStatusPath = (line: string): StatusPath | null => {
+  const [stagedStatus, status, _, ...pathLetters] = line;
+  const path = pathLetters.join("");
+
+  return {
+    stagedStatus: toStatusFile(stagedStatus),
+    status: toStatusFile(status),
+    path
+  };
 };
 
 const toStatus = (lines: string[]): StatusPath[] => {
@@ -37,13 +51,17 @@ const toStatus = (lines: string[]): StatusPath[] => {
   }, []);
 };
 
+const toLines = (stdout: string): string[] => {
+  return stdout.split("\n");
+};
+
 export const status = async (
   options: BaseOptions = {}
 ): Promise<StatusPath[]> => {
   const command = createCommand();
 
   return exec(command, options.execOptions)
-    .then(stdoutToLines)
+    .then(toLines)
     .then(toStatus);
 };
 

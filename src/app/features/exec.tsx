@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import * as ui from "../ui";
-import { exec } from "../../lib/git-api/core/exec";
+// import { exec } from "../../lib/git-api/core/exec";
 
 export const Exec: React.FC = () => {
   const [value, setValue] = React.useState<string>("");
@@ -35,7 +35,7 @@ export const Exec: React.FC = () => {
       return next;
     });
 
-    console.log(exec(value).toString());
+    // console.log(exec(value).toString());
   };
 
   React.useEffect(() => {

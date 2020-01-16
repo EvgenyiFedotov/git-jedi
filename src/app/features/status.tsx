@@ -1,21 +1,19 @@
 import * as React from "react";
 import styled from "styled-components";
 import { useStore } from "effector-react";
-import * as model from "../model";
 import * as modelv2 from "../model-v2";
 import * as managers from "../managers";
 import * as ui from "../ui";
+import { $isShowStatus, showStatus } from "../state";
 
 export const Status: React.FC = () => {
   const isChanged = useStore(modelv2.$isChanged);
-  const isShowStatusPaths = useStore(model.$isShowStatusPaths);
+  const isShowStatus = useStore($isShowStatus);
 
   return (
     <StatusContainer>
       <managers.Branch if={isChanged}>
-        <ui.ButtonLink
-          onClick={() => model.showStatusPaths(!isShowStatusPaths)}
-        >
+        <ui.ButtonLink onClick={() => showStatus(!isShowStatus)}>
           Changed
         </ui.ButtonLink>
         <>Not changed</>

@@ -2,13 +2,14 @@ import * as React from "react";
 import styled from "styled-components";
 import { useStore } from "effector-react";
 import * as ui from "../ui";
-import { $branches, showBranches, checkoutToBranch } from "../model";
+import { $branches, changeBranch } from "../model-v2";
+import { showBranches } from "../state";
 
 export const Branches: React.FC = () => {
   const branches = useStore($branches);
 
   const click = (nameBranch: string) => () => {
-    checkoutToBranch(nameBranch);
+    changeBranch(nameBranch);
     showBranches(false);
   };
 

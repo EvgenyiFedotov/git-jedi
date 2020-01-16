@@ -2,14 +2,14 @@ import * as React from "react";
 import styled from "styled-components";
 import { useList, useStore } from "effector-react";
 import * as ui from "../ui";
-import * as model from "../model";
 import * as modelv2 from "../model-v2";
-import { core } from "../../lib/git-api";
+import { core } from "../../lib/api-git";
 import * as managers from "../managers";
 import { minus } from "react-icons-kit/feather/minus";
+import { $isShowStatus } from "../state";
 
 export const StatusPaths: React.FC = () => {
-  const isShowStatusPaths = useStore(model.$isShowStatusPaths);
+  const isShowStatus = useStore($isShowStatus);
 
   const rows = useList(modelv2.$status, statusPath => (
     <ui.ListRow>
@@ -21,14 +21,14 @@ export const StatusPaths: React.FC = () => {
       <div>
         <ui.ButtonIcon
           icon={minus}
-          onClick={() => model.stashPush(statusPath.path)}
+          onClick={() => modelv2.discardChanges(statusPath.path)}
         />
       </div>
     </ui.ListRow>
   ));
 
   return (
-    <managers.Branch if={isShowStatusPaths}>
+    <managers.Branch if={isShowStatus}>
       <StatusPathsContainer>
         <List>{rows}</List>
       </StatusPathsContainer>
@@ -54,7 +54,7 @@ const List = styled(ui.Column)`
 `;
 
 interface StatusProps {
-  value: core.status.StatusPath["status"];
+  value: core.StatusPath["status"];
 }
 
 const Status = styled.div<StatusProps>`
