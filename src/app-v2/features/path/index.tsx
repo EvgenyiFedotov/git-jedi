@@ -3,7 +3,7 @@ import { Button, Typography } from "antd";
 import { useStore } from "effector-react";
 import * as electron from "electron";
 
-import { $path, changePath } from "../../model";
+import { changePath, $cwd } from "../../../lib/effector-git";
 
 const { Text } = Typography;
 const { dialog } = electron.remote;
@@ -12,7 +12,7 @@ const selectPath = () =>
   dialog
     .showOpenDialog({
       properties: ["openDirectory"],
-      defaultPath: $path.getState()
+      defaultPath: $cwd.getState()
     })
     .then(result => {
       const {
@@ -26,12 +26,12 @@ const selectPath = () =>
     });
 
 export const Path: React.FC = () => {
-  const path = useStore($path);
+  const cwd = useStore($cwd);
   return (
     <div>
       <Text>Path:</Text>
       <Button type="link" size="small" onClick={selectPath}>
-        {path}
+        {cwd}
       </Button>
     </div>
   );

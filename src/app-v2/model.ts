@@ -5,7 +5,7 @@ import {
   forward,
   guard
 } from "effector";
-import { core } from "../lib/api-git";
+import * as core from "../lib/api-git";
 
 const PATH = "PATH";
 

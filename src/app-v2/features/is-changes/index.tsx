@@ -5,6 +5,9 @@ import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
 
 import { Branch } from "../../managers/branch";
+import { StatusFile, StatusPath } from "../../../lib/api-git";
+import { Row } from "../../ui";
+import { $isShowStatus, showStatus } from "../../state";
 import {
   $isChanged,
   $status,
@@ -12,10 +15,7 @@ import {
   $changes,
   $discarding,
   discardChanges
-} from "../../model";
-import { StatusFile, StatusPath } from "../../../lib/api-git/core";
-import { Row } from "../../ui";
-import { $isShowStatus, showStatus } from "../../state";
+} from "../../../lib/effector-git";
 
 const { Text } = Typography;
 
