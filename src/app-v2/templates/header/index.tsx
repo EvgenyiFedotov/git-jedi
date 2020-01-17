@@ -1,8 +1,16 @@
 import * as React from "react";
 import styled from "styled-components";
-import { appFixBlock } from "../../ui/css";
 
-export const Header: React.FC = () => <Container>Header</Container>;
+import { appFixBlock } from "../../ui/css";
+import { Path } from "../../features/path";
+
+export const Header: React.FC = () => {
+  return (
+    <Container>
+      <Path />
+    </Container>
+  );
+};
 
 const Container = styled.div`
   ${appFixBlock}

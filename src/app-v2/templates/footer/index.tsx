@@ -2,7 +2,13 @@ import * as React from "react";
 import styled from "styled-components";
 import { appFixBlock } from "../../ui/css";
 
-export const Footer: React.FC = () => <Container>Footer</Container>;
+import { Input } from "antd";
+
+export const Footer: React.FC = () => (
+  <Container>
+    <Input />
+  </Container>
+);
 
 const Container = styled.div`
   ${appFixBlock}
