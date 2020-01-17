@@ -28,11 +28,11 @@ const selectPath = () =>
 export const Path: React.FC = () => {
   const path = useStore($path);
   return (
-    <>
+    <div>
       <Text>Path:</Text>
       <Button type="link" size="small" onClick={selectPath}>
         {path}
       </Button>
-    </>
+    </div>
   );
 };

@@ -1,4 +1,10 @@
-import { createStore, createEvent, createEffect, forward } from "effector";
+import {
+  createStore,
+  createEvent,
+  createEffect,
+  forward,
+  guard
+} from "effector";
 import { core } from "../lib/api-git";
 
 const PATH = "PATH";
@@ -35,6 +41,21 @@ export const $currentBranch = createStore(defaultCurrentBranch);
 const defaultStatus = core.statusSync(defaultOptions);
 export const $status = createStore(defaultStatus);
 export const $isChanged = createStore<boolean>(!!defaultStatus.length);
+export const $discarding = createStore<Set<string>>(new Set());
+
+const getStageChanges = (): core.StatusPath[] => {
+  return $status.getState().filter(status => {
+    return !!status.stagedStatus && status.stagedStatus !== "untracked";
+  });
+};
+export const $stageChanges = createStore<core.StatusPath[]>(getStageChanges());
+
+const getChanges = (): core.StatusPath[] => {
+  return $status.getState().filter(status => {
+    return !!status.status;
+  });
+};
+export const $changes = createStore<core.StatusPath[]>(getChanges());
 
 export const changePath = createEvent<string>();
 export const changeBranch = createEvent<string>();
@@ -68,18 +89,27 @@ const checkoutBranch = createEffect<string, string>({
   }
 });
 
-const stashPush = createEffect<string | null, string>({
+const stashPush = createEffect<string | null, string | null>({
   handler: async path => {
     const cwd = $path.getState();
-    return core.stash({ paths: path ? [path] : [], execOptions: { cwd } });
+    return core
+      .stash({ paths: path ? [path] : [], execOptions: { cwd } })
+      .then(() => path);
   }
 });
 
-const stashDrop = createEffect<void, string>({
-  handler: async () => {
+const stashDrop = createEffect<string | null, string | null>({
+  handler: async path => {
     const cwd = $path.getState();
-    return core.stash({ action: "drop", execOptions: { cwd } });
+    return core
+      .stash({ action: "drop", execOptions: { cwd } })
+      .then(() => path);
   }
+});
+
+const guardDiscardChanges = guard({
+  source: discardChanges,
+  filter: path => !!path && !$discarding.getState().has(path)
 });
 
 forward({
@@ -94,9 +124,9 @@ forward({
   to: [updateLog, updateRefs, updateCurrentBranch, updateStatus]
 });
 
-forward({ from: discardChanges, to: stashPush });
+forward({ from: guardDiscardChanges, to: stashPush });
 
-forward({ from: stashPush, to: stashDrop });
+forward({ from: stashPush.done.map(({ result }) => result), to: stashDrop });
 
 forward({ from: stashDrop.done.map(() => $path.getState()), to: updateStatus });
 
@@ -115,3 +145,22 @@ $status.on(updateStatus.done, (_, { result }) => result);
 $isChanged.on($status, (_, status) => !!status.length);
 
 $branches.on($refs, (_, showRef) => getBranches(showRef));
+
+$stageChanges.on($status, () => getStageChanges());
+
+$changes.on($status, () => getChanges());
+
+stashDrop.done.watch(() => console.log("stashDrop done"));
+stashDrop.fail.watch(e => console.log("stashDrop fail", e));
+
+$discarding
+  .on(guardDiscardChanges, (store, path) => {
+    return path ? new Set([...store, path]) : store;
+  })
+  .on(stashDrop.done, (store, { result }) => {
+    if (result && store.has(result)) {
+      store.delete(result);
+      return new Set([...store]);
+    }
+    return store;
+  });

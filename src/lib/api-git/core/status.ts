@@ -1,5 +1,4 @@
 import { exec, execSync, BaseOptions } from "./exec";
-import { stdoutToLines } from "./common";
 
 export type StatusFile = "modified" | "untracked" | "deleted" | "added" | null;
 
@@ -52,7 +51,7 @@ const toStatus = (lines: string[]): StatusPath[] => {
 };
 
 const toLines = (stdout: string): string[] => {
-  return stdout.split("\n");
+  return stdout.split("\n").filter(Boolean);
 };
 
 export const status = async (
@@ -68,7 +67,7 @@ export const status = async (
 export const statusSync = (options: BaseOptions = {}): StatusPath[] => {
   const command = createCommand();
   const execResult = execSync(command, options.execOptions);
-  const lines = stdoutToLines(execResult);
+  const lines = toLines(execResult);
 
   return toStatus(lines);
 };

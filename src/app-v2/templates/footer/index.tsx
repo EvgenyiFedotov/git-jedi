@@ -6,7 +6,7 @@ import { Input } from "antd";
 
 export const Footer: React.FC = () => (
   <Container>
-    <Input />
+    <Input size="small" />
   </Container>
 );
 

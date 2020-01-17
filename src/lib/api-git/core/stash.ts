@@ -8,7 +8,13 @@ export interface StashOptions extends BaseOptions {
 const createCommand = (options: StashOptions = {}): string => {
   const { action = "push", paths = [] } = options;
 
-  return `git stash ${action} --keep-index --include-untracked -- ${paths.join(
+  if (action === "drop") {
+    return "git stash drop";
+  } else if (action === "pop") {
+    return "git stash pop";
+  }
+
+  return `git stash push --keep-index --include-untracked -- ${paths.join(
     " "
   )}`;
 };
