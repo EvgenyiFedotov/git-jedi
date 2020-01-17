@@ -50,7 +50,6 @@ const StateRepo: React.FC = () => {
   const isShowStatus = useStore($isShowStatus);
   return (
     <Drawer
-      title="State repo"
       placement="right"
       closable={false}
       onClose={() => showStatus(false)}

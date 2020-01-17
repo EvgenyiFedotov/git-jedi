@@ -12,3 +12,4 @@ export { revParse, revParseSync, RefParseOptions } from "./rev-parse";
 export { status, statusSync, StatusPath, StatusFile } from "./status";
 export { stash, stashSync, StashOptions } from "./stash";
 export { checkout, checkoutSync, CheckoutOptions } from "./checkout";
+export { add, addSync, AddOptions } from "./add";
