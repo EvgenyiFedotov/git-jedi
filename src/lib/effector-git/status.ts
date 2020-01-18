@@ -5,7 +5,7 @@ import {
   guard,
   forward
 } from "effector";
-import { status, statusSync, stash, StatusPath, add } from "../api-git";
+import { status, statusSync, stash, StatusPath, add, reset } from "../api-git";
 import { $baseOptions } from "./config";
 
 const defaultStatus = statusSync($baseOptions.getState());
@@ -30,6 +30,7 @@ export const $changes = createStore<StatusPath[]>(getChanges());
 
 export const discardChanges = createEvent<string>();
 export const stageChanges = createEvent<string>();
+export const unstageChanges = createEvent<string>();
 
 const updateStatus = createEffect<void, StatusPath[]>({
   handler: () => {
@@ -55,17 +56,28 @@ const addPath = createEffect<string, string>({
   }
 });
 
+const resetByPath = createEffect<string, string>({
+  handler: async path => {
+    return reset({ paths: [path], ...$baseOptions.getState() });
+  }
+});
+
 const guardDiscardChanges = guard({
   source: discardChanges,
   filter: path => !!path && !$discarding.getState().has(path)
 });
 
+forward({ from: $baseOptions, to: updateStatus });
+
 forward({ from: guardDiscardChanges, to: stashPush });
 forward({ from: stashPush.done, to: stashDrop });
 forward({ from: stashDrop, to: updateStatus });
-forward({ from: $baseOptions, to: updateStatus });
+
 forward({ from: stageChanges, to: addPath });
-forward({ from: addPath, to: updateStatus });
+forward({ from: addPath.done, to: updateStatus });
+
+forward({ from: unstageChanges, to: resetByPath });
+forward({ from: resetByPath.done, to: updateStatus });
 
 $status.on(updateStatus.done, (_, { result }) => result);
 

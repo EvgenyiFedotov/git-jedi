@@ -14,7 +14,9 @@ import {
   $stageChanges,
   $changes,
   $discarding,
-  discardChanges
+  discardChanges,
+  stageChanges,
+  unstageChanges
 } from "../../../lib/effector-git";
 
 const { Text } = Typography;
@@ -57,20 +59,21 @@ const StateRepo: React.FC = () => {
       width="60%"
     >
       <Branch if={!!stageChanges.length}>
-        <ListChanges status={stageChanges} />
+        <ListChanges mode="stageChanges" status={stageChanges} />
       </Branch>
 
-      <ListChanges status={changes} />
+      <ListChanges mode="changes" status={changes} />
     </Drawer>
   );
 };
 
 interface ListChangesProps {
   status: StatusPath[];
+  mode: "stageChanges" | "changes";
 }
 
 const ListChanges: React.FC<ListChangesProps> = props => {
-  const { status } = props;
+  const { status, mode } = props;
   return (
     <>
       <ListChangesDivider orientation="left">Changes</ListChangesDivider>
@@ -78,7 +81,7 @@ const ListChanges: React.FC<ListChangesProps> = props => {
         className="demo-loadmore-list"
         itemLayout="horizontal"
         dataSource={status}
-        renderItem={item => <Item item={item} />}
+        renderItem={item => <Item mode={mode} item={item} />}
       />
     </>
   );
@@ -92,29 +95,46 @@ const ListChangesDivider = styled(Divider)`
 
 interface ItemProps {
   item: StatusPath;
+  mode: "stageChanges" | "changes";
 }
 
 const Item: React.FC<ItemProps> = props => {
-  const { item } = props;
+  const { item, mode } = props;
   const discarding = useStore($discarding);
+  const status = mode === "stageChanges" ? item.stagedStatus : item.status;
+  const actions =
+    mode === "stageChanges"
+      ? [
+          <Button
+            key="discard"
+            type="link"
+            onClick={() => unstageChanges(item.path)}
+          >
+            unstage
+          </Button>
+        ]
+      : [
+          <Button
+            key="discard"
+            type="link"
+            onClick={() => discardChanges(item.path)}
+            loading={discarding.has(item.path)}
+          >
+            discard
+          </Button>,
+          <Button
+            key="stage"
+            type="link"
+            disabled={discarding.has(item.path)}
+            onClick={() => stageChanges(item.path)}
+          >
+            stage
+          </Button>
+        ];
   return (
-    <ItemContainer
-      actions={[
-        <Button
-          key="discard"
-          type="link"
-          onClick={() => discardChanges(item.path)}
-          loading={discarding.has(item.path)}
-        >
-          discard
-        </Button>,
-        <Button key="stage" type="link" disabled={discarding.has(item.path)}>
-          stage
-        </Button>
-      ]}
-    >
+    <ItemContainer actions={actions}>
       <Row>
-        <Status value={item.status}>{item.status}</Status>
+        <Status value={status}>{status}</Status>
         <div>{item.path}</div>
       </Row>
     </ItemContainer>
