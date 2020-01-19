@@ -31,6 +31,8 @@ export const $changes = createStore<StatusPath[]>(getChanges());
 export const discardChanges = createEvent<string>();
 export const stageChanges = createEvent<string>();
 export const unstageChanges = createEvent<string>();
+export const stageChangesAll = createEvent();
+export const unstageChangesAll = createEvent();
 
 const updateStatus = createEffect<void, StatusPath[]>({
   handler: () => {
@@ -62,6 +64,18 @@ const resetByPath = createEffect<string, string>({
   }
 });
 
+const addAll = createEffect<void, string>({
+  handler: async () => {
+    return add({ ...$baseOptions.getState() });
+  }
+});
+
+const resetAll = createEffect<void, string>({
+  handler: async path => {
+    return reset({ ...$baseOptions.getState() });
+  }
+});
+
 const guardDiscardChanges = guard({
   source: discardChanges,
   filter: path => !!path && !$discarding.getState().has(path)
@@ -78,6 +92,12 @@ forward({ from: addPath.done, to: updateStatus });
 
 forward({ from: unstageChanges, to: resetByPath });
 forward({ from: resetByPath.done, to: updateStatus });
+
+forward({ from: stageChangesAll, to: addAll });
+forward({ from: addAll.done, to: updateStatus });
+
+forward({ from: unstageChangesAll, to: resetAll });
+forward({ from: resetAll.done, to: updateStatus });
 
 $status.on(updateStatus.done, (_, { result }) => result);
 
