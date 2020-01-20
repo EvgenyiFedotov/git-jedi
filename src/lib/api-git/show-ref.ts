@@ -10,13 +10,6 @@ export interface Ref {
 
 export type Refs = Map<string, Ref>;
 
-export type RefsByCommits = Map<string, Refs>;
-
-export interface ShowRef {
-  refs: Refs;
-  refsByCommits: RefsByCommits;
-}
-
 const createCommand = (): string => {
   return "git show-ref --head --dereference";
 };
@@ -55,49 +48,25 @@ const toRef = (line: string): Ref | null => {
   return null;
 };
 
-const setRefToMemo = (memo: ShowRef, ref: Ref): void => {
-  const { refs, refsByCommits } = memo;
+const toShowRef = (lines: string[]): Refs => {
+  return lines.reduce((memo, line) => {
+    const ref = toRef(line);
 
-  // Filter not dereference tags
-  if (ref.type === "tags") {
-    if (ref.name.match(matchTagsDereference)) {
-      ref.shortName = ref.shortName.replace(matchTagsDereference, "");
-    } else {
-      return;
+    if (ref) {
+      memo.set(ref.name, ref);
     }
-  }
 
-  refs.set(ref.name, ref);
-
-  if (!refsByCommits.has(ref.hash)) {
-    refsByCommits.set(ref.hash, new Map());
-  }
-
-  refsByCommits.get(ref.hash)?.set(ref.name, ref);
+    return memo;
+  }, new Map());
 };
 
-const toShowRef = (lines: string[]): ShowRef => {
-  return lines.reduce(
-    (memo, line) => {
-      const ref = toRef(line);
-
-      if (ref) {
-        setRefToMemo(memo, ref);
-      }
-
-      return memo;
-    },
-    { refs: new Map(), refsByCommits: new Map() }
-  );
-};
-
-export const showRef = async (options: BaseOptions = {}): Promise<ShowRef> => {
+export const showRef = async (options: BaseOptions = {}): Promise<Refs> => {
   const command = createCommand();
   const execResult = exec(command, options.execOptions);
   return execResult.then(toLines).then(toShowRef);
 };
 
-export const showRefSync = (options: BaseOptions = {}): ShowRef => {
+export const showRefSync = (options: BaseOptions = {}): Refs => {
   const command = createCommand();
   const execResult = execSync(command, options.execOptions);
   const lines = toLines(execResult);

@@ -20,20 +20,20 @@ export const $log = createStore(defaultLog);
 const defaultRefs = core.showRefSync(defaultOptions);
 export const $refs = createStore(defaultRefs);
 
-const getBranches = (showRef: core.ShowRef): core.Refs => {
-  const { refs } = showRef;
-  const values = Array.from(refs.values());
+// const getBranches = (showRef: core.ShowRef): core.Refs => {
+//   const { refs } = showRef;
+//   const values = Array.from(refs.values());
 
-  return values.reduce((memo, ref) => {
-    if (ref.type === "heads") {
-      memo.set(ref.name, ref);
-    }
+//   return values.reduce((memo, ref) => {
+//     if (ref.type === "heads") {
+//       memo.set(ref.name, ref);
+//     }
 
-    return memo;
-  }, new Map());
-};
-const defaultBranches = getBranches($refs.getState());
-export const $branches = createStore(defaultBranches);
+//     return memo;
+//   }, new Map());
+// };
+// const defaultBranches = getBranches($refs.getState());
+// export const $branches = createStore(defaultBranches);
 
 const defaultCurrentBranch = core.revParseSync(defaultOptions);
 export const $currentBranch = createStore(defaultCurrentBranch);
@@ -65,9 +65,9 @@ const updateLog = createEffect<string, core.Log>({
   handler: cwd => core.log({ execOptions: { cwd } })
 });
 
-const updateRefs = createEffect<string, core.ShowRef>({
-  handler: cwd => core.showRef({ execOptions: { cwd } })
-});
+// const updateRefs = createEffect<string, core.ShowRef>({
+//   handler: cwd => core.showRef({ execOptions: { cwd } })
+// });
 
 const updateCurrentBranch = createEffect<string, string>({
   handler: cwd => core.revParse({ execOptions: { cwd } })
@@ -112,17 +112,17 @@ const guardDiscardChanges = guard({
   filter: path => !!path && !$discarding.getState().has(path)
 });
 
-forward({
-  from: $path,
-  to: [updateLog, updateRefs, updateCurrentBranch, updateStatus]
-});
+// forward({
+//   from: $path,
+//   to: [updateLog, updateRefs, updateCurrentBranch, updateStatus]
+// });
 
-forward({ from: changeBranch, to: checkoutBranch });
+// forward({ from: changeBranch, to: checkoutBranch });
 
-forward({
-  from: checkoutBranch.done.map(() => $path.getState()),
-  to: [updateLog, updateRefs, updateCurrentBranch, updateStatus]
-});
+// forward({
+//   from: checkoutBranch.done.map(() => $path.getState()),
+//   to: [updateLog, updateRefs, updateCurrentBranch, updateStatus]
+// });
 
 forward({ from: guardDiscardChanges, to: stashPush });
 
@@ -136,7 +136,7 @@ $path
 
 $log.on(updateLog.done, (_, { result }) => result);
 
-$refs.on(updateRefs.done, (_, { result }) => result);
+// $refs.on(updateRefs.done, (_, { result }) => result);
 
 $currentBranch.on(updateCurrentBranch.done, (_, { result }) => result);
 
@@ -144,7 +144,7 @@ $status.on(updateStatus.done, (_, { result }) => result);
 
 $isChanged.on($status, (_, status) => !!status.length);
 
-$branches.on($refs, (_, showRef) => getBranches(showRef));
+// $branches.on($refs, (_, showRef) => getBranches(showRef));
 
 $stageChanges.on($status, () => getStageChanges());
 
