@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
   return (
     <Container>
       <Path />
-      <IsChanges />
+      {/* <IsChanges /> */}
     </Container>
   );
 };

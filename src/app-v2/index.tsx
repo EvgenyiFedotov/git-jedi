@@ -14,7 +14,7 @@ export const App = () => {
       <Container>
         <Header />
         <Content />
-        <Footer />
+        {/* <Footer /> */}
       </Container>
     </>
   );

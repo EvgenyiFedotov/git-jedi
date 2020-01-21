@@ -10,7 +10,7 @@ import {
 import { $baseOptions } from "./config";
 import { $refs, byCommitHash } from "./refs";
 
-interface Commit extends GitCommit {
+export interface Commit extends GitCommit {
   key: string;
   refs: Ref[];
 }
