@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Timeline, Tag, message, Divider, Icon } from "antd";
+import { Timeline, Tag, message, Divider, Icon, Tooltip, Input } from "antd";
 import { useStore } from "effector-react";
 import { blue } from "@ant-design/colors";
 import styled from "styled-components";
@@ -9,9 +9,18 @@ import {
   Commit,
   $status,
   $stageChanges,
-  $changes
+  $changes,
+  $discarding,
+  unstageChangesAll,
+  stageChangesAll,
+  stageChanges,
+  unstageChanges,
+  discardChanges
 } from "../../../lib/effector-git";
 import { Branch } from "../../managers/branch";
+import { StatusPath } from "../../../lib/api-git";
+
+const { TextArea } = Input;
 
 export const Log: React.FC = () => {
   const log = useStore($log);
@@ -44,13 +53,19 @@ const Changes: React.FC = () => {
 
   return (
     <div>
-      <div>
+      <div style={{ marginBottom: "8px" }}>
         <b>
           Changes
           <Divider type="vertical" />
           <span style={{ color: blue.primary }}>{status.length}</span>
         </b>
       </div>
+
+      <TextArea
+        placeholder="Commit message"
+        autoSize={{ maxRows: 4 }}
+        style={{ marginBottom: "8px", maxWidth: `${16 * 24}px` }}
+      />
 
       <UnstageChanges />
       <StageChanges />
@@ -60,19 +75,27 @@ const Changes: React.FC = () => {
 
 const UnstageChanges: React.FC = () => {
   const changes = useStore($changes);
+  const discarding = useStore($discarding);
 
   const list = changes.map(status => {
     return (
       <div key={status.path}>
-        <span
-          style={{
-            fontFamily: "monospace",
-            textTransform: "uppercase",
-            color: blue.primary
-          }}
-        >
-          {(status.status || "").substr(0, 1)}
-        </span>
+        <Branch if={discarding.has(status.path)}>
+          <Icon type="loading" />
+          <Status status={status.status} />
+        </Branch>
+        <Divider type="vertical" />
+        <Icon
+          type="rollback"
+          title="Discard changes"
+          style={{ marginRight: "4px" }}
+          onClick={() => discardChanges(status.path)}
+        />
+        <Icon
+          type="plus"
+          title="Stage changes"
+          onClick={() => stageChanges(status.path)}
+        />
         <Divider type="vertical" />
         {status.path}
       </div>
@@ -82,11 +105,22 @@ const UnstageChanges: React.FC = () => {
   return (
     <Branch if={!!changes.length}>
       <div>
-        <i>
-          Unstaged
-          <Divider type="vertical" />
-          <a>Stage all</a>
-        </i>
+        <div style={{ marginBottom: "8px" }}>
+          <i>
+            Unstaged
+            <Divider type="vertical" />
+            <Icon
+              type="rollback"
+              title="Discard all changes"
+              style={{ marginRight: "4px" }}
+            />
+            <Icon
+              type="plus"
+              onClick={() => stageChangesAll()}
+              title="Stage all changes"
+            />
+          </i>
+        </div>
 
         <div>{list}</div>
       </div>
@@ -97,18 +131,58 @@ const UnstageChanges: React.FC = () => {
 const StageChanges: React.FC = () => {
   const stageChanges = useStore($stageChanges);
 
+  const list = stageChanges.map(status => {
+    return (
+      <div key={status.path}>
+        <Status status={status.stagedStatus} />
+        <Divider type="vertical" />
+        <Icon
+          type="minus"
+          title="Unstage changes"
+          onClick={() => unstageChanges(status.path)}
+        />
+        <Divider type="vertical" />
+        {status.path}
+      </div>
+    );
+  });
+
   return (
     <Branch if={!!stageChanges.length}>
       <div>
-        <i>
-          Staged
-          <Divider type="vertical" />
-          <a>Unstage all</a>
-        </i>
+        <div style={{ marginBottom: "8px" }}>
+          <i>
+            Staged
+            <Divider type="vertical" />
+            <Icon
+              type="minus"
+              title="Unstage all changes"
+              onClick={() => unstageChangesAll()}
+            />
+          </i>
+        </div>
+
+        <div>{list}</div>
       </div>
     </Branch>
   );
 };
+
+const Status: React.FC<{
+  status: StatusPath["status"] | StatusPath["stagedStatus"];
+}> = ({ status }) => {
+  return (
+    <Tooltip title={status}>
+      <StatusCotainer>{(status || "").substr(0, 1)}</StatusCotainer>
+    </Tooltip>
+  );
+};
+
+const StatusCotainer = styled.span`
+  font-family: "Andale Mono", monospace;
+  text-transform: uppercase;
+  color: ${blue.primary};
+`;
 
 const hashCopied = () => message.success("Commit hash copied", 1);
 
