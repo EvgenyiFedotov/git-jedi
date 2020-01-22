@@ -3,13 +3,13 @@ import styled from "styled-components";
 
 import { appFixBlock } from "../../ui/css";
 import { Path } from "../../features/path";
-import { IsChanges } from "../../features/is-changes";
+import { CurrentBrunch } from "../../features/current-branch";
 
 export const Header: React.FC = () => {
   return (
     <Container>
       <Path />
-      {/* <IsChanges /> */}
+      <CurrentBrunch />
     </Container>
   );
 };

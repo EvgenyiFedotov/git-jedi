@@ -21,7 +21,7 @@ const toLines = (result: string): string[] => {
 const matchHeads = /refs\/heads\//;
 const matchRemotes = /refs\/remotes\//;
 const matchTags = /refs\/tags\//;
-const matchTagsDereference = /\^\{\}$/;
+// const matchTagsDereference = /\^\{\}$/;
 
 const toRef = (line: string): Ref | null => {
   const [hash, name] = line.split(" ");

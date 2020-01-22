@@ -15,14 +15,19 @@ const createCommand = (options: RefParseOptions = {}): string => {
   }
 };
 
+const toResult = (stdout: string): string => {
+  return stdout.replace("\n", "").trim();
+};
+
 export const revParse = (options: RefParseOptions = {}): Promise<string> => {
   const command = createCommand(options);
 
-  return exec(command, options.execOptions);
+  return exec(command, options.execOptions).then(toResult);
 };
 
 export const revParseSync = (options: RefParseOptions = {}): string => {
   const command = createCommand(options);
+  const stdout = execSync(command, options.execOptions);
 
-  return execSync(command, options.execOptions);
+  return toResult(stdout);
 };
