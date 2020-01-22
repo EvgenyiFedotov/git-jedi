@@ -1,5 +1,14 @@
 import * as React from "react";
-import { Timeline, Tag, message, Divider, Icon, Tooltip, Input } from "antd";
+import {
+  Timeline,
+  Tag,
+  message,
+  Divider,
+  Icon,
+  Tooltip,
+  Input,
+  Select
+} from "antd";
 import { useStore } from "effector-react";
 import { blue } from "@ant-design/colors";
 import styled from "styled-components";
@@ -19,8 +28,10 @@ import {
 } from "../../../lib/effector-git";
 import { Branch } from "../../managers/branch";
 import { StatusPath } from "../../../lib/api-git";
+import { $isShowChanges, toggleIsShowChanges } from "./state";
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 export const Log: React.FC = () => {
   const log = useStore($log);
@@ -28,7 +39,7 @@ export const Log: React.FC = () => {
 
   const changes = React.useMemo(() => {
     return status.length ? (
-      <Timeline.Item dot={<Icon type="bars" />}>
+      <Timeline.Item dot={<Icon type="bars" onClick={toggleIsShowChanges} />}>
         <Changes />
       </Timeline.Item>
     ) : (
@@ -50,6 +61,7 @@ export const Log: React.FC = () => {
 
 const Changes: React.FC = () => {
   const status = useStore($status);
+  const isShowChanges = useStore($isShowChanges);
 
   return (
     <div>
@@ -61,14 +73,37 @@ const Changes: React.FC = () => {
         </b>
       </div>
 
-      <TextArea
-        placeholder="Commit message"
-        autoSize={{ maxRows: 4 }}
-        style={{ marginBottom: "8px", maxWidth: `${16 * 24}px` }}
-      />
+      <Branch if={isShowChanges}>
+        <>
+          <div
+            style={{
+              marginBottom: "8px",
+              display: "flex",
+              alignItems: "flex-start"
+            }}
+          >
+            <Select
+              defaultValue="feat"
+              style={{ width: 90, marginRight: "8px" }}
+            >
+              <Option value="feat">feat</Option>
+              <Option value="fix">fix</Option>
+              <Option value="refactor">refactor</Option>
+              <Option value="setup">setup</Option>
+              <Option value="test">test</Option>
+            </Select>
 
-      <UnstageChanges />
-      <StageChanges />
+            <TextArea
+              placeholder="Commit message"
+              autoSize={{ maxRows: 4 }}
+              style={{ maxWidth: `${16 * 24}px` }}
+            />
+          </div>
+
+          <UnstageChanges />
+          <StageChanges />
+        </>
+      </Branch>
     </div>
   );
 };
