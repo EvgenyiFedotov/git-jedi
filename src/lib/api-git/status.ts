@@ -59,14 +59,14 @@ export const status = async (
 ): Promise<StatusPath[]> => {
   const command = createCommand();
 
-  return exec(command, options.execOptions)
+  return exec(command, options)
     .then(toLines)
     .then(toStatus);
 };
 
 export const statusSync = (options: BaseOptions = {}): StatusPath[] => {
   const command = createCommand();
-  const execResult = execSync(command, options.execOptions);
+  const execResult = execSync(command, options);
   const lines = toLines(execResult);
 
   return toStatus(lines);

@@ -13,11 +13,11 @@ const createCommand = (options: CheckoutOptions = {}) => {
 export const checkout = (options: CheckoutOptions = {}): Promise<string> => {
   const command = createCommand(options);
 
-  return exec(command, options.execOptions);
+  return exec(command, options);
 };
 
 export const checkoutSync = (options: CheckoutOptions = {}): string => {
   const command = createCommand(options);
 
-  return execSync(command, options.execOptions);
+  return execSync(command, options);
 };

@@ -22,11 +22,11 @@ const createCommand = (options: StashOptions = {}): string => {
 export const stash = (options: StashOptions = {}): Promise<string> => {
   const command = createCommand(options);
 
-  return exec(command, options.execOptions);
+  return exec(command, options);
 };
 
 export const stashSync = (options: StashOptions = {}): string => {
   const command = createCommand(options);
 
-  return execSync(command, options.execOptions);
+  return execSync(command, options);
 };

@@ -2,19 +2,36 @@ import childProcess from "child_process";
 
 export interface BaseOptions {
   execOptions?: childProcess.ExecOptions;
+  onExec?: (command: string) => void;
+  onResolve?: (stdout: string) => void;
+  onReject?: (_: {
+    error: childProcess.ExecException;
+    stderr?: string;
+  }) => void;
 }
 
 export const exec = (
   command: string,
-  execOptions: childProcess.ExecOptions = {}
+  options: BaseOptions = {}
 ): Promise<string> => {
-  console.log(command);
+  const {
+    execOptions = {},
+    onExec = () => {},
+    onResolve = () => {},
+    onReject = () => {}
+  } = options;
+
+  onExec(command);
+
   return new Promise((resolve, reject) => {
-    childProcess.exec(command, execOptions, (error, stdout, stderror) => {
+    childProcess.exec(command, execOptions, (error, stdout, stderr) => {
       if (error) {
-        reject({ error, stdError: stderror });
+        onReject({ error, stderr });
+        reject({ error, stderr });
+        return;
       }
 
+      onResolve(stdout);
       resolve(stdout);
     });
   });
@@ -22,8 +39,23 @@ export const exec = (
 
 export const execSync = (
   command: string,
-  execOptions: childProcess.ExecOptions = {}
+  options: BaseOptions = {}
 ): string => {
-  console.log(command);
-  return childProcess.execSync(command, execOptions).toString();
+  const {
+    execOptions = {},
+    onExec = () => {},
+    onResolve = () => {},
+    onReject = () => {}
+  } = options;
+
+  onExec(command);
+
+  try {
+    const result = childProcess.execSync(command, execOptions).toString();
+    onResolve(result);
+    return result;
+  } catch (error) {
+    onReject({ error });
+    throw new Error(error);
+  }
 };

@@ -47,13 +47,13 @@ const createCommand = () => {
 
 export const log = async (options: BaseOptions = {}): Promise<Log> => {
   const command = createCommand();
-  const execResult = exec(command, options.execOptions);
+  const execResult = exec(command, options);
   return execResult.then(stdoutToCommitLines).then(commitLinesToLog);
 };
 
 export const logSync = (options: BaseOptions = {}): Log => {
   const command = createCommand();
-  const execResult = execSync(command, options.execOptions);
+  const execResult = execSync(command, options);
   const lines = stdoutToCommitLines(execResult);
   return commitLinesToLog(lines);
 };

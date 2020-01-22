@@ -12,10 +12,10 @@ const createCommand = (options: ResetOptions = {}): string => {
 
 export const reset = (options: ResetOptions = {}): Promise<string> => {
   const command = createCommand(options);
-  return exec(command, options.execOptions);
+  return exec(command, options);
 };
 
 export const resetSync = (options: ResetOptions = {}): string => {
   const command = createCommand(options);
-  return execSync(command, options.execOptions);
+  return execSync(command, options);
 };

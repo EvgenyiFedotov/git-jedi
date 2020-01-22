@@ -22,12 +22,12 @@ const toResult = (stdout: string): string => {
 export const revParse = (options: RefParseOptions = {}): Promise<string> => {
   const command = createCommand(options);
 
-  return exec(command, options.execOptions).then(toResult);
+  return exec(command, options).then(toResult);
 };
 
 export const revParseSync = (options: RefParseOptions = {}): string => {
   const command = createCommand(options);
-  const stdout = execSync(command, options.execOptions);
+  const stdout = execSync(command, options);
 
   return toResult(stdout);
 };

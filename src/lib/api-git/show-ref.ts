@@ -62,13 +62,13 @@ const toShowRef = (lines: string[]): Refs => {
 
 export const showRef = async (options: BaseOptions = {}): Promise<Refs> => {
   const command = createCommand();
-  const execResult = exec(command, options.execOptions);
+  const execResult = exec(command, options);
   return execResult.then(toLines).then(toShowRef);
 };
 
 export const showRefSync = (options: BaseOptions = {}): Refs => {
   const command = createCommand();
-  const execResult = execSync(command, options.execOptions);
+  const execResult = execSync(command, options);
   const lines = toLines(execResult);
   return toShowRef(lines);
 };
