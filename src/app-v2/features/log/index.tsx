@@ -12,6 +12,8 @@ import {
 import { useStore } from "effector-react";
 import { blue } from "@ant-design/colors";
 import styled from "styled-components";
+import mousetrap from "mousetrap";
+import { findDOMNode } from "react-dom";
 
 import {
   $log,
@@ -29,6 +31,7 @@ import {
 import { Branch } from "../../managers/branch";
 import { StatusPath } from "../../../lib/api-git";
 import { $isShowChanges, toggleIsShowChanges } from "./state";
+import { $commitMessage, changeCommiteMessage, formatMessage } from "./model";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -62,6 +65,21 @@ export const Log: React.FC = () => {
 const Changes: React.FC = () => {
   const status = useStore($status);
   const isShowChanges = useStore($isShowChanges);
+  const commitMessage = useStore($commitMessage);
+
+  // TODO Error with type HTMLTextAreaElement
+  const messageRef = React.useRef<any>(null);
+
+  React.useEffect(() => {
+    const { current } = messageRef;
+
+    if (current) {
+      const messageNode = findDOMNode(current) as Element;
+      mousetrap(messageNode).bind("command+enter", () => {
+        console.log("commit");
+      });
+    }
+  }, [messageRef]);
 
   return (
     <div>
@@ -94,9 +112,13 @@ const Changes: React.FC = () => {
             </Select>
 
             <TextArea
-              placeholder="Commit message"
+              placeholder="Message (⌘Enter to commit)"
+              ref={messageRef}
               autoSize={{ maxRows: 4 }}
               style={{ maxWidth: `${16 * 24}px` }}
+              value={commitMessage}
+              onChange={changeCommiteMessage}
+              onBlur={formatMessage}
             />
           </div>
 

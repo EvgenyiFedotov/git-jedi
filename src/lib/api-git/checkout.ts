@@ -2,12 +2,15 @@ import { exec, execSync, BaseOptions } from "./exec";
 
 export interface CheckoutOptions extends BaseOptions {
   branch?: string;
+  createBranch?: boolean;
 }
 
 const createCommand = (options: CheckoutOptions = {}) => {
-  const { branch } = options;
+  const { branch, createBranch } = options;
 
-  return `git checkout ${branch}`;
+  return ["git checkout", createBranch && "-b", branch]
+    .filter(Boolean)
+    .join(" ");
 };
 
 export const checkout = (options: CheckoutOptions = {}): Promise<string> => {

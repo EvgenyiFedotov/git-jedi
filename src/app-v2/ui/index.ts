@@ -1,5 +1,8 @@
 import styled from "styled-components";
 
+import * as css from "./css";
+export { css };
+
 export const Row = styled.div`
   display: flex;
   flex: none;
