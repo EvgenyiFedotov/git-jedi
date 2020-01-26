@@ -12,12 +12,10 @@ import {
 import { useStore } from "effector-react";
 import { blue } from "@ant-design/colors";
 import styled from "styled-components";
-import mousetrap from "mousetrap";
-import { findDOMNode } from "react-dom";
 
 import {
   $log,
-  Commit,
+  Commit as GitCommit,
   $status,
   $stageChanges,
   $changes,
@@ -30,8 +28,18 @@ import {
 } from "../../../lib/effector-git";
 import { Branch } from "../../managers/branch";
 import { StatusPath } from "../../../lib/api-git";
+import { useMousetrap } from "lib/use-mousetrap";
+
+import {
+  $message,
+  changeCommiteMessage,
+  formatMessage,
+  createCommit,
+  $types,
+  $type,
+  changeType
+} from "./model";
 import { $isShowChanges, toggleIsShowChanges } from "./state";
-import { $commitMessage, changeCommiteMessage, formatMessage } from "./model";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -50,9 +58,15 @@ export const Log: React.FC = () => {
     );
   }, [status.length]);
 
+  console.log(log);
+
   const listLog = Array.from(log.values()).map(commit => (
-    <Commit key={commit.hash} commit={commit} />
+    <Timeline.Item key={commit.hash}>
+      <Commit commit={commit} />
+    </Timeline.Item>
   ));
+
+  console.log(listLog);
 
   return (
     <Timeline>
@@ -65,21 +79,11 @@ export const Log: React.FC = () => {
 const Changes: React.FC = () => {
   const status = useStore($status);
   const isShowChanges = useStore($isShowChanges);
-  const commitMessage = useStore($commitMessage);
+  const message = useStore($message);
+  const type = useStore($type);
+  const types = useStore($types);
 
-  // TODO Error with type HTMLTextAreaElement
-  const messageRef = React.useRef<any>(null);
-
-  React.useEffect(() => {
-    const { current } = messageRef;
-
-    if (current) {
-      const messageNode = findDOMNode(current) as Element;
-      mousetrap(messageNode).bind("command+enter", () => {
-        console.log("commit");
-      });
-    }
-  }, [messageRef]);
+  const { ref: messageRef } = useMousetrap("command+enter", createCommit);
 
   return (
     <div>
@@ -101,14 +105,15 @@ const Changes: React.FC = () => {
             }}
           >
             <Select
-              defaultValue="feat"
+              defaultValue={type}
               style={{ width: 90, marginRight: "8px" }}
+              onChange={changeType}
             >
-              <Option value="feat">feat</Option>
-              <Option value="fix">fix</Option>
-              <Option value="refactor">refactor</Option>
-              <Option value="setup">setup</Option>
-              <Option value="test">test</Option>
+              {types.map(typeValue => (
+                <Option key={typeValue} value={typeValue}>
+                  {typeValue}
+                </Option>
+              ))}
             </Select>
 
             <TextArea
@@ -116,7 +121,7 @@ const Changes: React.FC = () => {
               ref={messageRef}
               autoSize={{ maxRows: 4 }}
               style={{ maxWidth: `${16 * 24}px` }}
-              value={commitMessage}
+              value={message}
               onChange={changeCommiteMessage}
               onBlur={formatMessage}
             />
@@ -243,7 +248,7 @@ const StatusCotainer = styled.span`
 
 const hashCopied = () => message.success("Commit hash copied", 1);
 
-const Commit: React.FC<{ commit: Commit }> = ({ commit }) => {
+const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
   const { refs, hash, note } = commit;
 
   const refList = refs.map(ref => (
@@ -258,24 +263,15 @@ const Commit: React.FC<{ commit: Commit }> = ({ commit }) => {
   }, [hash]);
 
   return (
-    <Timeline.Item>
+    <div>
       <div>
-        <Hash onClick={clickHash}>{hash.substr(0, 6)}</Hash>
+        <a onClick={clickHash}>{hash.substr(0, 6)}</a>
         <Branch if={!!refList.length}>
           <Divider type="vertical" />
         </Branch>
         {refList}
       </div>
       <div>{note}</div>
-    </Timeline.Item>
+    </div>
   );
 };
-
-const Hash = styled.span`
-  cursor: pointer;
-  color: ${blue.primary};
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;

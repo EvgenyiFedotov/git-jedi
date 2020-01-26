@@ -3,7 +3,7 @@ const path = require("path");
 
 const main = {
   mode: "development",
-  entry: "./src/electron.ts",
+  entry: "./src/main.ts",
   target: "electron-main",
   devtool: "source-map",
   module: {
@@ -23,7 +23,7 @@ const main = {
 
 const renderer = {
   mode: "development",
-  entry: "./src/index.tsx",
+  entry: "./src/renderer.tsx",
   target: "electron-renderer",
   devtool: "source-map",
   module: {

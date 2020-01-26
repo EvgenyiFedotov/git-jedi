@@ -7,6 +7,7 @@ import {
 } from "effector";
 import { status, statusSync, stash, StatusPath, add, reset } from "../api-git";
 import { $baseOptions } from "./config";
+import { committing } from "../../app-v2/features/log/model";
 
 const defaultStatus = statusSync($baseOptions.getState());
 
@@ -99,19 +100,20 @@ forward({ from: addAll.done, to: updateStatus });
 forward({ from: unstageChangesAll, to: resetAll });
 forward({ from: resetAll.done, to: updateStatus });
 
+forward({ from: committing.done, to: updateStatus });
+
 $status.on(updateStatus.done, (_, { result }) => result);
 
-$discarding
-  .on(guardDiscardChanges, (store, path) => {
-    return path ? new Set([...store, path]) : store;
-  })
-  .on(stashDrop.done, (store, { result }) => {
-    if (result && store.has(result)) {
-      store.delete(result);
-      return new Set([...store]);
-    }
-    return store;
-  });
+$discarding.on(guardDiscardChanges, (store, path) => {
+  return path ? new Set([...store, path]) : store;
+});
+$discarding.on(stashDrop.done, (store, { result }) => {
+  if (result && store.has(result)) {
+    store.delete(result);
+    return new Set([...store]);
+  }
+  return store;
+});
 
 $isChanged.on($status, (_, status) => !!status.length);
 

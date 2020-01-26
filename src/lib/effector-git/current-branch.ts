@@ -3,7 +3,15 @@ import { createStore, createEffect, forward, createEvent } from "effector";
 import { revParse, revParseSync, checkout } from "../api-git";
 import { $baseOptions } from "./config";
 
-const defaultCurrentBranch = revParseSync($baseOptions.getState());
+let defaultCurrentBranch;
+try {
+  defaultCurrentBranch = revParseSync({
+    ...$baseOptions.getState(),
+    onReject: () => {}
+  });
+} catch (error) {
+  defaultCurrentBranch = "master";
+}
 
 export const $currentBranch = createStore<string>(defaultCurrentBranch);
 

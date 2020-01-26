@@ -1,7 +1,8 @@
+import React from "react";
 import { createStore, createEvent } from "effector";
 import { notification } from "antd";
 
-import { BaseOptions, execSync } from "../api-git";
+import { BaseOptions } from "../api-git";
 
 const CWD = "CWD";
 
@@ -11,13 +12,23 @@ export const $cwd = createStore<string>(defaultPath);
 export const $baseOptions = createStore<BaseOptions>({
   execOptions: { cwd: $cwd.getState() },
   onExec: command => console.log(command),
-  onReject: ({ error }) =>
+  onReject: ({ error }, { command, options }) => {
     notification.error({
       message: "Application error",
-      description: error.message,
+      description: (
+        <div>
+          <div>
+            <b>{options && options.key}</b>
+          </div>
+          <div>{command}</div>
+          <div>{options && JSON.stringify(options.execOptions, null, 2)}</div>
+          <div>{error.message}</div>
+        </div>
+      ),
       duration: 0,
       placement: "bottomRight"
-    })
+    });
+  }
 });
 
 export const changePath = createEvent<string>();

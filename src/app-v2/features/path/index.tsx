@@ -1,9 +1,11 @@
 import * as React from "react";
-import { Button, Typography } from "antd";
+import { Typography } from "antd";
 import { useStore } from "effector-react";
 import * as electron from "electron";
+import styled from "styled-components";
 
 import { changePath, $cwd } from "../../../lib/effector-git";
+import { Row } from "../../ui";
 
 const { Text } = Typography;
 const { dialog } = electron.remote;
@@ -27,12 +29,15 @@ const selectPath = () =>
 
 export const Path: React.FC = () => {
   const cwd = useStore($cwd);
+
   return (
-    <div>
+    <Container>
       <Text>Path:</Text>
-      <Button type="link" size="small" onClick={selectPath}>
+      <a type="link" onClick={selectPath}>
         {cwd}
-      </Button>
-    </div>
+      </a>
+    </Container>
   );
 };
+
+const Container = styled(Row)``;

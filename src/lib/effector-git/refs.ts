@@ -1,4 +1,5 @@
 import { createStore, createEffect, forward } from "effector";
+import { notification } from "antd";
 
 import { showRef, showRefSync, Refs, Ref } from "../api-git";
 import { $baseOptions } from "./config";
@@ -23,9 +24,35 @@ const byCommitHash = (refs: Refs): Map<string, Ref[]> => {
   }, new Map());
 };
 
-const defaultRefs = showRefSync($baseOptions.getState());
-const defaultRefsOnlyBranches = onlyBranches(defaultRefs);
-const defaultRefsByCommitHash = byCommitHash(defaultRefs);
+let defaultRefs;
+try {
+  defaultRefs = showRefSync({
+    ...$baseOptions.getState(),
+    onReject: () => {
+      notification.info({
+        message: "Create initial commit into 'master' branch",
+        placement: "bottomRight",
+        duration: 0
+      });
+    }
+  });
+} catch (error) {
+  defaultRefs = new Map();
+}
+
+let defaultRefsOnlyBranches: Ref[];
+try {
+  defaultRefsOnlyBranches = onlyBranches(defaultRefs);
+} catch (error) {
+  defaultRefsOnlyBranches = [];
+}
+
+let defaultRefsByCommitHash;
+try {
+  defaultRefsByCommitHash = byCommitHash(defaultRefs);
+} catch (error) {
+  defaultRefsByCommitHash = new Map();
+}
 
 export const $refs = createStore<Refs>(defaultRefs);
 export const $refsOnlyBranches = createStore<Ref[]>(defaultRefsOnlyBranches);
@@ -40,6 +67,7 @@ const updateRefs = createEffect<void, Refs>({
 forward({ from: $baseOptions, to: updateRefs });
 
 $refs.on(updateRefs.done, (_, { result }) => result);
+$refs.on(updateRefs.fail, () => new Map());
 
 $refsOnlyBranches.on($refs, (_, refs) => onlyBranches(refs));
 
