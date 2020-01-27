@@ -7,6 +7,7 @@ import {
   $currentBranch,
   changeBranch
 } from "../../../lib/effector-git";
+import { Row } from "app-v2/ui";
 
 const { Option } = Select;
 
@@ -21,13 +22,15 @@ export const CurrentBrunch: React.FC = () => {
   ));
 
   return (
-    <Select
-      size="small"
-      style={{ width: "140px" }}
-      defaultValue={currentBrunch}
-      onChange={changeBranch}
-    >
-      {options}
-    </Select>
+    <Row>
+      <Select
+        size="small"
+        style={{ width: "140px" }}
+        value={currentBrunch}
+        onChange={changeBranch}
+      >
+        {options}
+      </Select>
+    </Row>
   );
 };

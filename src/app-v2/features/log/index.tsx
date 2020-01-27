@@ -58,15 +58,11 @@ export const Log: React.FC = () => {
     );
   }, [status.length]);
 
-  console.log(log);
-
   const listLog = Array.from(log.values()).map(commit => (
     <Timeline.Item key={commit.hash}>
       <Commit commit={commit} />
     </Timeline.Item>
   ));
-
-  console.log(listLog);
 
   return (
     <Timeline>

@@ -3,6 +3,7 @@ import { notification } from "antd";
 
 import { showRef, showRefSync, Refs, Ref } from "../api-git";
 import { $baseOptions } from "./config";
+import { creatingBranch } from "../../app-v2/features/create-branch/model";
 
 const toArr = (refs: Refs): Ref[] => {
   return Array.from(refs.values());
@@ -65,6 +66,8 @@ const updateRefs = createEffect<void, Refs>({
 });
 
 forward({ from: $baseOptions, to: updateRefs });
+
+forward({ from: creatingBranch.done, to: updateRefs });
 
 $refs.on(updateRefs.done, (_, { result }) => result);
 $refs.on(updateRefs.fail, () => new Map());

@@ -1,5 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
+import { Icon } from "antd";
 
 import { Path } from "../../features/path";
 import { CurrentBrunch } from "../../features/current-branch";
@@ -13,6 +14,8 @@ export const Header: React.FC = () => {
       <Row>
         <CreateBranch />
         <CurrentBrunch />
+
+        <Icon type="bars" />
       </Row>
     </Container>
   );
