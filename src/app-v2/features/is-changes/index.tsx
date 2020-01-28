@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 import { Branch } from "../../managers/branch";
 import { StatusFile, StatusPath } from "../../../lib/api-git";
-import { Row } from "../../ui";
+import { Row } from "ui";
 import { $isShowStatus, showStatus } from "../../state";
 import {
   $isChanged,

@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { appFixBlock } from "../../ui/css";
+import { appFixBlock } from "ui/css";
 
 import { Input } from "antd";
 

@@ -5,7 +5,7 @@ import * as electron from "electron";
 import styled from "styled-components";
 
 import { changePath, $cwd } from "../../../lib/effector-git";
-import { Row } from "../../ui";
+import { Row } from "ui";
 
 const { Text } = Typography;
 const { dialog } = electron.remote;

@@ -7,7 +7,7 @@ import {
   $currentBranch,
   changeBranch
 } from "../../../lib/effector-git";
-import { Row } from "app-v2/ui";
+import { Row } from "ui";
 
 const { Option } = Select;
 
