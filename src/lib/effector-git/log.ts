@@ -81,7 +81,8 @@ try {
   defaultLog = toLog(
     logSync({
       ...$baseOptions.getState(),
-      onReject: () => {}
+      onReject: () => {},
+      all: true
     })
   );
 } catch (error) {
@@ -91,7 +92,11 @@ try {
 export const $log = createStore<Log>(defaultLog);
 
 const updateLog = createEffect<void, Log>({
-  handler: () => log($baseOptions.getState()).then(toLog)
+  handler: () =>
+    log({
+      ...$baseOptions.getState(),
+      all: true
+    }).then(toLog)
 });
 
 forward({ from: $baseOptions, to: updateLog });

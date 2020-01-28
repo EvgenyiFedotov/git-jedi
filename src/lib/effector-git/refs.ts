@@ -5,6 +5,7 @@ import { showRef, showRefSync, Refs, Ref } from "../api-git";
 import { $baseOptions } from "./config";
 import { creatingBranch } from "../../app-v2/features/create-branch/model";
 import { committing } from "../../app-v2/features/log/model";
+import { $currentBranch } from "./current-branch";
 
 const toArr = (refs: Refs): Ref[] => {
   return Array.from(refs.values());
@@ -71,6 +72,8 @@ forward({ from: $baseOptions, to: updateRefs });
 forward({ from: creatingBranch.done, to: updateRefs });
 
 forward({ from: committing.done, to: updateRefs });
+
+forward({ from: $currentBranch, to: updateRefs });
 
 $refs.on(updateRefs.done, (_, { result }) => result);
 $refs.on(updateRefs.fail, () => new Map());

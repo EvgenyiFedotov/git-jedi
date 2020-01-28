@@ -10,6 +10,10 @@ export interface Commit {
 
 export type Log = Map<string, Commit>;
 
+export interface LogOptions extends BaseOptions {
+  all?: boolean;
+}
+
 const flagCommitBegin = "COMMIT::BEGIN";
 const commitFormat = ["%H", "%P", "%ct", "%an", "%B"].join("%n");
 
@@ -42,20 +46,24 @@ const commitLinesToLog = (lines: string[]): Log => {
   }, new Map());
 };
 
-const createCommand = () => {
+const createCommand = (options: LogOptions = {}) => {
+  const { all = false } = options;
   const pretty = `--pretty=format:"${flagCommitBegin}%n${commitFormat}"`;
-  return `git log ${pretty} --`;
+
+  return `git log ${all ? "--all" : ""} ${pretty} --`;
 };
 
-export const log = async (options: BaseOptions = {}): Promise<Log> => {
-  const command = createCommand();
+export const log = async (options: LogOptions = {}): Promise<Log> => {
+  const command = createCommand(options);
   const execResult = exec(command, options);
+
   return execResult.then(stdoutToCommitLines).then(commitLinesToLog);
 };
 
-export const logSync = (options: BaseOptions = {}): Log => {
-  const command = createCommand();
+export const logSync = (options: LogOptions = {}): Log => {
+  const command = createCommand(options);
   const execResult = execSync(command, options);
   const lines = stdoutToCommitLines(execResult);
+
   return commitLinesToLog(lines);
 };
