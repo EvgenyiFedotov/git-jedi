@@ -10,7 +10,7 @@ import {
   Select
 } from "antd";
 import { useStore } from "effector-react";
-import { blue } from "@ant-design/colors";
+import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
 
 import {
@@ -29,7 +29,6 @@ import {
 import { Branch } from "../../managers/branch";
 import { StatusPath } from "../../../lib/api-git";
 import { useMousetrap } from "lib/use-mousetrap";
-import { Row } from "app-v2/ui";
 
 import {
   $message,
@@ -45,6 +44,14 @@ import { $isShowChanges, toggleIsShowChanges } from "./state";
 const { TextArea } = Input;
 const { Option } = Select;
 
+const getColorStringCommit = (commit: GitCommit): string | undefined => {
+  return commit.isMerged ? "cyan" : "blue";
+};
+
+const getColorCommit = (commit: GitCommit): string | undefined => {
+  return commit.isMerged ? cyan.primary : blue.primary;
+};
+
 export const Log: React.FC = () => {
   const log = useStore($log);
   const status = useStore($status);
@@ -59,11 +66,15 @@ export const Log: React.FC = () => {
     );
   }, [status.length]);
 
-  const listLog = Array.from(log.values()).map(commit => (
-    <Timeline.Item key={commit.hash}>
-      <Commit commit={commit} />
-    </Timeline.Item>
-  ));
+  const listLog = Array.from(log.values()).map(commit => {
+    const color = getColorCommit(commit);
+
+    return (
+      <Timeline.Item key={commit.hash} color={color}>
+        <Commit commit={commit} />
+      </Timeline.Item>
+    );
+  });
 
   return (
     <Timeline>
@@ -247,10 +258,11 @@ const hashCopied = () => message.success("Commit hash copied", 1);
 
 const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
   const { refs, hash, note, type, scope } = commit;
+  const color = getColorCommit(commit);
 
   const refList = refs.map(ref => {
     const { type, shortName, name } = ref;
-    const color = type === "tags" ? "purple" : "blue";
+    const color = type === "tags" ? "purple" : getColorStringCommit(commit);
     const text = type === "tags" ? shortName.replace("^{}", "") : shortName;
 
     return (
@@ -268,11 +280,13 @@ const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
   return (
     <div>
       <CommitBlock>
-        <a onClick={clickHash}>{hash.substr(0, 6)}</a>
+        <a style={{ color }} onClick={clickHash}>
+          {hash.substr(0, 8)}
+        </a>
         <Branch if={!!type}>
           <>
             <CommitDevider type="vertical" />
-            <CommitTag color={blue.primary}>
+            <CommitTag color={color}>
               {type}
               <Branch if={!!scope}>
                 <>

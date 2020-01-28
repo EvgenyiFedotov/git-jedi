@@ -17,6 +17,7 @@ export interface Commit extends GitCommit {
   type: string;
   scope: string;
   refs: Ref[];
+  isMerged: boolean;
 }
 
 type Log = Map<string, Commit>;
@@ -48,6 +49,10 @@ const getTypeCommit = (
   return { type: "", scope: "", note: message };
 };
 
+const getIsMerged = (commit: GitCommit): boolean => {
+  return commit.parentHash.length > 1;
+};
+
 const toLog = (gitLog: GitLog): Log => {
   const refsByCommitHash = $refsByCommitHash.getState();
 
@@ -55,6 +60,7 @@ const toLog = (gitLog: GitLog): Log => {
     const { hash, note } = commit;
     const refs = refsByCommitHash.get(hash) || [];
     const typeCommit = getTypeCommit(note);
+    const isMerged = getIsMerged(commit);
 
     memo.set(hash, {
       ...commit,
@@ -62,7 +68,8 @@ const toLog = (gitLog: GitLog): Log => {
       refs,
       type: typeCommit.type,
       scope: typeCommit.scope,
-      note: typeCommit.note
+      note: typeCommit.note,
+      isMerged
     });
 
     return memo;
