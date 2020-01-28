@@ -26,7 +26,7 @@ import {
   unstageChanges,
   discardChanges
 } from "../../../lib/effector-git";
-import { Branch } from "../../managers/branch";
+import { Branch } from "lib/branch";
 import { StatusPath } from "../../../lib/api-git";
 import { useMousetrap } from "lib/use-mousetrap";
 

@@ -3,7 +3,7 @@ import { Button, Input, Form } from "antd";
 import { useStore } from "effector-react";
 import styled from "styled-components";
 
-import { Branch } from "app-v2/managers/branch";
+import { Branch } from "lib/branch";
 import { useMousetrap } from "lib/use-mousetrap";
 
 import { $nameBranch, changeNameBranch, createBranch } from "./model";
