@@ -1,11 +1,11 @@
 import * as React from "react";
 import { GlobalStyle } from "./global-style";
 import styled from "styled-components";
-import { Row, Tag } from "antd";
+import { Row } from "antd";
 
-import { Header } from "./templates/header";
-import { Content } from "./templates/content";
-import { Footer } from "./templates/footer";
+import { Header } from "templates/header";
+import { Content } from "templates/content";
+import { Footer } from "templates/footer";
 
 export const App = () => {
   return (
