@@ -1,20 +1,29 @@
 import childProcess from "child_process";
 
+export type BaseOptionsOnExec = (
+  command: string,
+  options?: BaseOptions
+) => void;
+
+export type BaseOptionsOnResolve = (
+  stdout: string,
+  _: { command: string; options?: BaseOptions }
+) => void;
+
+export type BaseOptionsOnReject = (
+  _: {
+    error: childProcess.ExecException;
+    stderr?: string;
+  },
+  __: { command: string; options?: BaseOptions }
+) => void;
+
 export interface BaseOptions {
   execOptions?: childProcess.ExecOptions;
   key?: string;
-  onExec?: (command: string, options?: BaseOptions) => void;
-  onResolve?: (
-    stdout: string,
-    _: { command: string; options?: BaseOptions }
-  ) => void;
-  onReject?: (
-    _: {
-      error: childProcess.ExecException;
-      stderr?: string;
-    },
-    __: { command: string; options?: BaseOptions }
-  ) => void;
+  onExec?: BaseOptionsOnExec;
+  onResolve?: BaseOptionsOnResolve;
+  onReject?: BaseOptionsOnReject;
 }
 
 export const exec = (

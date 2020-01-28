@@ -10,6 +10,8 @@ export interface Ref {
 
 export type Refs = Map<string, Ref>;
 
+export interface ShowRefOptions extends BaseOptions {}
+
 const createCommand = (): string => {
   return "git show-ref --head --dereference";
 };
@@ -60,15 +62,17 @@ const toShowRef = (lines: string[]): Refs => {
   }, new Map());
 };
 
-export const showRef = async (options: BaseOptions = {}): Promise<Refs> => {
+export const showRef = async (options: ShowRefOptions = {}): Promise<Refs> => {
   const command = createCommand();
   const execResult = exec(command, options);
+
   return execResult.then(toLines).then(toShowRef);
 };
 
-export const showRefSync = (options: BaseOptions = {}): Refs => {
+export const showRefSync = (options: ShowRefOptions = {}): Refs => {
   const command = createCommand();
   const execResult = execSync(command, options);
   const lines = toLines(execResult);
+
   return toShowRef(lines);
 };

@@ -5,6 +5,7 @@ export interface Commit {
   parentHash: string[];
   dateTime: string;
   author: string;
+  // TODO change name
   note: string;
 }
 
@@ -20,7 +21,7 @@ const commitFormat = ["%H", "%P", "%ct", "%an", "%B"].join("%n");
 const stdoutToCommitLines = (stdout: string): string[] => {
   return stdout
     .split(flagCommitBegin)
-    .map(value => value.replace(/^\n/, ""))
+    .map((value) => value.replace(/^\n/, ""))
     .filter(Boolean);
 };
 
@@ -34,7 +35,7 @@ const lineToCommit = (line: string): Commit => {
     parentHash: parentHash.split(" "),
     dateTime,
     author,
-    note: note.join("\n")
+    note: note.join("\n"),
   };
 };
 

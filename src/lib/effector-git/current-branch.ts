@@ -8,7 +8,7 @@ let defaultCurrentBranch;
 try {
   defaultCurrentBranch = revParseSync({
     ...$baseOptions.getState(),
-    onReject: () => {}
+    onReject: () => {},
   });
 } catch (error) {
   defaultCurrentBranch = "master";
@@ -19,11 +19,11 @@ export const $currentBranch = createStore<string>(defaultCurrentBranch);
 export const changeBranch = createEvent<string>();
 
 const updateCurrentBranch = createEffect<void, string>({
-  handler: () => revParse($baseOptions.getState())
+  handler: () => revParse($baseOptions.getState()),
 });
 
 const checkoutToBranch = createEffect<string, string>({
-  handler: branch => checkout({ branch, ...$baseOptions.getState() })
+  handler: (target) => checkout({ target, ...$baseOptions.getState() }),
 });
 
 forward({ from: $baseOptions, to: updateCurrentBranch });

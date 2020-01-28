@@ -3,33 +3,33 @@ import {
   createEvent,
   createEffect,
   combine,
-  sample
+  sample,
 } from "effector";
 import { checkout, BaseOptions } from "lib/api-git";
 
 import { $baseOptions } from "lib/effector-git/config";
 
 export interface CreatingBranchParams {
-  branch: string;
+  target: string;
   options: BaseOptions;
 }
 
 export const $nameBranch = createStore<string>("");
 const $creatingBranchParams = combine(
   {
-    branch: $nameBranch,
-    options: $baseOptions
+    target: $nameBranch,
+    options: $baseOptions,
   },
-  stores => stores
+  (stores) => stores,
 );
 
 export const creatingBranch = createEffect<CreatingBranchParams, string>({
-  handler: ({ branch, options }) =>
+  handler: ({ target, options }) =>
     checkout({
       createBranch: true,
-      branch,
-      ...options
-    })
+      target,
+      ...options,
+    }),
 });
 
 export const changeNameBranch = createEvent<
@@ -44,7 +44,7 @@ createBranch.watch(() => {
 sample({
   source: $creatingBranchParams,
   clock: createBranch,
-  target: creatingBranch
+  target: creatingBranch,
 });
 
 $nameBranch.on(changeNameBranch, (_, event) => event.currentTarget.value);

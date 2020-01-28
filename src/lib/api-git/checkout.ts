@@ -1,25 +1,29 @@
 import { exec, execSync, BaseOptions } from "./exec";
 
 export interface CheckoutOptions extends BaseOptions {
-  branch?: string;
+  target: string;
   createBranch?: boolean;
 }
 
-const createCommand = (options: CheckoutOptions = {}) => {
-  const { branch, createBranch } = options;
+const createCommand = (options: CheckoutOptions) => {
+  const { target, createBranch } = options;
 
-  return ["git checkout", createBranch && "-b", branch]
+  if (!target) {
+    throw new Error("Error! Insert target for checkout!");
+  }
+
+  return ["git checkout", createBranch && "-b", target]
     .filter(Boolean)
     .join(" ");
 };
 
-export const checkout = (options: CheckoutOptions = {}): Promise<string> => {
+export const checkout = (options: CheckoutOptions): Promise<string> => {
   const command = createCommand(options);
 
   return exec(command, options);
 };
 
-export const checkoutSync = (options: CheckoutOptions = {}): string => {
+export const checkoutSync = (options: CheckoutOptions): string => {
   const command = createCommand(options);
 
   return execSync(command, options);

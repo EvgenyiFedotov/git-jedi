@@ -2,11 +2,14 @@ import { exec, execSync, BaseOptions } from "./exec";
 
 export type StatusFile = "modified" | "untracked" | "deleted" | "added" | null;
 
+// TODO change name
 export interface StatusPath {
   stagedStatus: StatusFile;
   status: StatusFile;
   path: string;
 }
+
+export interface StatusOptions extends BaseOptions {}
 
 const createCommand = () => {
   return "git status -s";
@@ -34,7 +37,7 @@ const toStatusPath = (line: string): StatusPath | null => {
   return {
     stagedStatus: toStatusFile(stagedStatus),
     status: toStatusFile(status),
-    path
+    path,
   };
 };
 
@@ -55,7 +58,7 @@ const toLines = (stdout: string): string[] => {
 };
 
 export const status = async (
-  options: BaseOptions = {}
+  options: StatusOptions = {},
 ): Promise<StatusPath[]> => {
   const command = createCommand();
 
@@ -64,7 +67,7 @@ export const status = async (
     .then(toStatus);
 };
 
-export const statusSync = (options: BaseOptions = {}): StatusPath[] => {
+export const statusSync = (options: StatusOptions = {}): StatusPath[] => {
   const command = createCommand();
   const execResult = execSync(command, options);
   const lines = toLines(execResult);
