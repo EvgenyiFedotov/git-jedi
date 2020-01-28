@@ -29,6 +29,7 @@ import {
 import { Branch } from "../../managers/branch";
 import { StatusPath } from "../../../lib/api-git";
 import { useMousetrap } from "lib/use-mousetrap";
+import { Row } from "app-v2/ui";
 
 import {
   $message,
@@ -245,12 +246,12 @@ const StatusCotainer = styled.span`
 const hashCopied = () => message.success("Commit hash copied", 1);
 
 const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
-  const { refs, hash, note } = commit;
+  const { refs, hash, note, type } = commit;
 
   const refList = refs.map(ref => (
-    <Tag color="blue" key={ref.name}>
+    <CommitTag color="blue" key={ref.name}>
       {ref.shortName}
-    </Tag>
+    </CommitTag>
   ));
 
   const clickHash = React.useCallback(() => {
@@ -260,14 +261,37 @@ const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
 
   return (
     <div>
-      <div>
+      <CommitBlock>
         <a onClick={clickHash}>{hash.substr(0, 6)}</a>
-        <Branch if={!!refList.length}>
-          <Divider type="vertical" />
+        <Branch if={!!refList.length || !!type}>
+          <CommitDevider type="vertical" />
         </Branch>
-        {refList}
-      </div>
-      <div>{note}</div>
+        <Branch if={!!type}>
+          <CommitTag color={blue.primary}>{type}</CommitTag>
+        </Branch>
+      </CommitBlock>
+      <CommitBlock>{refList}</CommitBlock>
+      <CommitNote>{note}</CommitNote>
     </div>
   );
 };
+
+const CommitDevider = styled(Divider)``;
+
+const CommitTag = styled(Tag)``;
+
+const CommitBlock = styled.div`
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: center;
+
+  & > ${CommitDevider}, ${CommitTag}, a {
+    margin-bottom: 8px;
+  }
+`;
+
+const CommitNote = styled.div`
+  white-space: pre;
+`;

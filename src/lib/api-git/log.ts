@@ -23,6 +23,8 @@ const stdoutToCommitLines = (stdout: string): string[] => {
 const lineToCommit = (line: string): Commit => {
   const [hash, parentHash, dateTime, author, ...note] = line.split("\n");
 
+  note.pop();
+
   return {
     hash,
     parentHash: parentHash.split(" "),

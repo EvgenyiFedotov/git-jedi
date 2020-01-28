@@ -15,17 +15,34 @@ import { committing } from "../../app-v2/features/log/model";
 
 export interface Commit extends GitCommit {
   key: string;
+  type: string;
   refs: Ref[];
 }
 
 type Log = Map<string, Commit>;
 
+const getTypeCommit = (note: string): [string, string] => {
+  const [type, ...otherNote] = note.split(":");
+
+  return [type, otherNote.join(":").trim()];
+};
+
 const toLog = (gitLog: GitLog): Log => {
   const refsByCommitHash = $refsByCommitHash.getState();
 
   return Array.from(gitLog.values()).reduce<Log>((memo, commit) => {
-    const refs = refsByCommitHash.get(commit.hash) || [];
-    memo.set(commit.hash, { ...commit, key: commit.hash, refs });
+    const { hash, note } = commit;
+    const refs = refsByCommitHash.get(hash) || [];
+    const [type, noteWithoutType] = getTypeCommit(note);
+
+    memo.set(hash, {
+      ...commit,
+      key: hash,
+      note: noteWithoutType,
+      refs,
+      type
+    });
+
     return memo;
   }, new Map());
 };

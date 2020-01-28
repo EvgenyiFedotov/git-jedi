@@ -8,10 +8,10 @@ export const Row = styled.div`
   flex: none;
   align-items: center;
   flex-wrap: wrap;
-  min-height: 1.5rem;
+  min-height: 24px;
 
   & > *:not(:last-child) {
-    margin-right: 0.5rem;
+    margin-right: 8px;
   }
 `;
 
@@ -21,6 +21,6 @@ export const Column = styled.div`
   flex-direction: column;
 
   & > *:not(:last-child) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
   }
 `;
