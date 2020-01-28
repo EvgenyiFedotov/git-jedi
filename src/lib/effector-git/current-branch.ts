@@ -2,7 +2,7 @@ import { createStore, createEffect, forward, createEvent } from "effector";
 
 import { revParse, revParseSync, checkout } from "../api-git";
 import { $baseOptions } from "./config";
-import { creatingBranch } from "../../app-v2/features/create-branch/model";
+import { creatingBranch } from "features/create-branch/model";
 
 let defaultCurrentBranch;
 try {

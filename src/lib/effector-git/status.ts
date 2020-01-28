@@ -7,7 +7,7 @@ import {
 } from "effector";
 import { status, statusSync, stash, StatusPath, add, reset } from "../api-git";
 import { $baseOptions } from "./config";
-import { committing } from "../../app-v2/features/log/model";
+import { committing } from "features/log/model";
 
 const defaultStatus = statusSync($baseOptions.getState());
 

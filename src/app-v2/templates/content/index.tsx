@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 
 import { heightLine, padding } from "ui/css";
-import { Log } from "../../features/log";
+import { Log } from "features/log";
 
 export const Content: React.FC = () => (
   <Container>

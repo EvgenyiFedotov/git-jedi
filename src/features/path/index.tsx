@@ -4,7 +4,7 @@ import { useStore } from "effector-react";
 import * as electron from "electron";
 import styled from "styled-components";
 
-import { changePath, $cwd } from "../../../lib/effector-git";
+import { changePath, $cwd } from "lib/effector-git";
 import { Row } from "ui";
 
 const { Text } = Typography;

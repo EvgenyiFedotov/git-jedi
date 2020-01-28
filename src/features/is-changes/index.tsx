@@ -5,9 +5,8 @@ import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
 
 import { Branch } from "lib/branch";
-import { StatusFile, StatusPath } from "../../../lib/api-git";
+import { StatusFile, StatusPath } from "lib/api-git";
 import { Row } from "ui";
-import { $isShowStatus, showStatus } from "../../state";
 import {
   $isChanged,
   $status,
@@ -19,7 +18,9 @@ import {
   unstageChanges,
   stageChangesAll,
   unstageChangesAll
-} from "../../../lib/effector-git";
+} from "lib/effector-git";
+
+import { $isShowStatus, showStatus } from "./state";
 
 const { Text } = Typography;
 

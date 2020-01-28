@@ -6,7 +6,7 @@ import {
   $refsOnlyBranches,
   $currentBranch,
   changeBranch
-} from "../../../lib/effector-git";
+} from "lib/effector-git";
 import { Row } from "ui";
 
 const { Option } = Select;

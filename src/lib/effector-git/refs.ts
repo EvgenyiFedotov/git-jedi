@@ -3,8 +3,8 @@ import { notification } from "antd";
 
 import { showRef, showRefSync, Refs, Ref } from "../api-git";
 import { $baseOptions } from "./config";
-import { creatingBranch } from "../../app-v2/features/create-branch/model";
-import { committing } from "../../app-v2/features/log/model";
+import { creatingBranch } from "features/create-branch/model";
+import { committing } from "features/log/model";
 import { $currentBranch } from "./current-branch";
 
 const toArr = (refs: Refs): Ref[] => {

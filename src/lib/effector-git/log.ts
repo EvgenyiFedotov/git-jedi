@@ -10,7 +10,7 @@ import { $baseOptions } from "./config";
 import { $refsByCommitHash } from "./refs";
 import { $currentBranch } from "./current-branch";
 
-import { committing } from "../../app-v2/features/log/model";
+import { committing } from "features/log/model";
 
 export interface Commit extends GitCommit {
   key: string;
