@@ -246,13 +246,19 @@ const StatusCotainer = styled.span`
 const hashCopied = () => message.success("Commit hash copied", 1);
 
 const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
-  const { refs, hash, note, type } = commit;
+  const { refs, hash, note, type, scope } = commit;
 
-  const refList = refs.map(ref => (
-    <CommitTag color="blue" key={ref.name}>
-      {ref.shortName}
-    </CommitTag>
-  ));
+  const refList = refs.map(ref => {
+    const { type, shortName, name } = ref;
+    const color = type === "tags" ? "purple" : "blue";
+    const text = type === "tags" ? shortName.replace("^{}", "") : shortName;
+
+    return (
+      <CommitTag color={color} key={name}>
+        {text}
+      </CommitTag>
+    );
+  });
 
   const clickHash = React.useCallback(() => {
     window.navigator.clipboard.writeText(hash);
@@ -263,11 +269,19 @@ const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
     <div>
       <CommitBlock>
         <a onClick={clickHash}>{hash.substr(0, 6)}</a>
-        <Branch if={!!refList.length || !!type}>
-          <CommitDevider type="vertical" />
-        </Branch>
         <Branch if={!!type}>
-          <CommitTag color={blue.primary}>{type}</CommitTag>
+          <>
+            <CommitDevider type="vertical" />
+            <CommitTag color={blue.primary}>
+              {type}
+              <Branch if={!!scope}>
+                <>
+                  <CommitDevider type="vertical" />
+                  <>{scope}</>
+                </>
+              </Branch>
+            </CommitTag>
+          </>
         </Branch>
       </CommitBlock>
       <CommitBlock>{refList}</CommitBlock>

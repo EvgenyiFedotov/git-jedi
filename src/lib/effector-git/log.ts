@@ -4,7 +4,6 @@ import {
   logSync,
   Log as GitLog,
   Commit as GitCommit,
-  BaseOptions,
   Ref
 } from "../api-git";
 import { $baseOptions } from "./config";
@@ -16,15 +15,37 @@ import { committing } from "../../app-v2/features/log/model";
 export interface Commit extends GitCommit {
   key: string;
   type: string;
+  scope: string;
   refs: Ref[];
 }
 
 type Log = Map<string, Commit>;
 
-const getTypeCommit = (note: string): [string, string] => {
-  const [type, ...otherNote] = note.split(":");
+const getTypeCommit = (
+  message: string
+): { type: string; note: string; scope: string } => {
+  const regOnlyType = /^([\w_]*):/;
+  let matchResult = message.match(regOnlyType);
 
-  return [type, otherNote.join(":").trim()];
+  if (matchResult) {
+    const type = matchResult[1];
+    const note = message.replace(regOnlyType, "").trim();
+
+    return { type, note, scope: "" };
+  }
+
+  const regWithScope = /^([\w_]*)\(([\w_/-]*)\):/;
+  matchResult = message.match(regWithScope);
+
+  if (matchResult) {
+    const type = matchResult[1];
+    const scope = matchResult[2].trim();
+    const note = message.replace(regWithScope, "").trim();
+
+    return { type, note, scope };
+  }
+
+  return { type: "", scope: "", note: message };
 };
 
 const toLog = (gitLog: GitLog): Log => {
@@ -33,14 +54,15 @@ const toLog = (gitLog: GitLog): Log => {
   return Array.from(gitLog.values()).reduce<Log>((memo, commit) => {
     const { hash, note } = commit;
     const refs = refsByCommitHash.get(hash) || [];
-    const [type, noteWithoutType] = getTypeCommit(note);
+    const typeCommit = getTypeCommit(note);
 
     memo.set(hash, {
       ...commit,
       key: hash,
-      note: noteWithoutType,
       refs,
-      type
+      type: typeCommit.type,
+      scope: typeCommit.scope,
+      note: typeCommit.note
     });
 
     return memo;
