@@ -7,8 +7,7 @@ import styled from "styled-components";
 import { $formatterdLog, FormattedCommit, $status } from "features/state-git";
 import { Branch } from "lib/branch";
 import { Changes } from "features/changes";
-
-import { toggleIsShowChanges } from "./model";
+import { toggleIsShowChanges } from "features/changes/model";
 
 const getColorStringCommit = (commit: FormattedCommit): string | undefined => {
   return commit.isMerged ? "cyan" : "blue";

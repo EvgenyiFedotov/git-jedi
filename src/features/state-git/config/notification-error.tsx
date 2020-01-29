@@ -1,11 +1,24 @@
 import * as React from "react";
-import { notification } from "antd";
+import { notification, Icon, message } from "antd";
 import { BaseOptionsOnReject } from "lib/api-git";
 
+const hashCopied = () => message.success("Commit hash copied", 1);
+
 export const onReject: BaseOptionsOnReject = (
-  { error },
-  { command, options }
-) =>
+  { error, stdout },
+  { options },
+) => {
+  const copy = () => {
+    window.navigator.clipboard.writeText(
+      JSON.stringify({
+        errorMessage: error.message,
+        options,
+        stdout,
+      }),
+    );
+    hashCopied();
+  };
+
   notification.error({
     message: "Application error",
     description: (
@@ -13,11 +26,13 @@ export const onReject: BaseOptionsOnReject = (
         <div>
           <b>{options && options.key}</b>
         </div>
-        <div>{command}</div>
-        <div>{options && JSON.stringify(options.execOptions, null, 2)}</div>
-        <div>{error.message}</div>
+        <div style={{ display: "flex", flexWrap: "nowrap" }}>
+          <div>{stdout}</div>
+          <Icon type="copy" onClick={copy} />
+        </div>
       </div>
     ),
     duration: 0,
-    placement: "bottomRight"
+    placement: "bottomRight",
   });
+};

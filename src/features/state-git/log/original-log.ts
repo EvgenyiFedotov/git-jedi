@@ -4,6 +4,7 @@ import { defaultRun } from "lib/default-run";
 
 import { $baseOptions } from "../config";
 import { $currentBranch } from "../current-branch";
+import { committing } from "./create-commit";
 
 const baseOptions = $baseOptions.getState();
 const defLog = defaultRun(
@@ -23,11 +24,9 @@ export const updateLog = createEffect<LogOptions, Log>({
 
 sample({
   source: $baseOptions,
-  clock: merge([$updateLogParams, $currentBranch]),
+  clock: merge([$updateLogParams, $currentBranch, committing.done]),
   target: updateLog,
 });
-
-// TODO Add update after commit
 
 $originalLog.on(updateLog.done, (_, { result }) => result);
 $originalLog.on(updateLog.fail, () => new Map());

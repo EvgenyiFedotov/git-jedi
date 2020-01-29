@@ -3,19 +3,19 @@ import { Select } from "antd";
 import { useStore } from "effector-react";
 
 import {
-  $refsOnlyBranches,
+  $onlyBranchRefs,
   $currentBranch,
-  changeBranch
-} from "lib/effector-git";
+  checkoutTo,
+} from "features/state-git";
 import { Row } from "ui";
 
 const { Option } = Select;
 
 export const CurrentBrunch: React.FC = () => {
   const currentBrunch = useStore($currentBranch);
-  const refsOnlyBranches = useStore($refsOnlyBranches);
+  const onlyBranchRefs = useStore($onlyBranchRefs);
 
-  const options = refsOnlyBranches.map((ref, index) => (
+  const options = onlyBranchRefs.map((ref, index) => (
     <Option key={index} value={ref.shortName}>
       {ref.shortName}
     </Option>
@@ -27,7 +27,7 @@ export const CurrentBrunch: React.FC = () => {
         size="small"
         style={{ width: "140px" }}
         value={currentBrunch}
-        onChange={changeBranch}
+        onChange={checkoutTo}
       >
         {options}
       </Select>

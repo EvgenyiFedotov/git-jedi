@@ -1,23 +1,11 @@
+import { createStore, createEvent, sample } from "effector";
 import {
-  createStore,
-  createEvent,
-  createEffect,
-  combine,
-  sample,
-} from "effector";
-import { checkout, CheckoutOptions } from "lib/api-git";
-import { $baseOptions } from "lib/effector-git/config";
+  creatingBranch,
+  createBranch as createBranchGit,
+} from "features/state-git";
 
 export const $nameBranch = createStore<string>("");
 export const $isShowButton = createStore<boolean>(true);
-const $createBranchParams = combine(
-  $nameBranch,
-  $baseOptions,
-  (target, options) => ({
-    ...options,
-    target,
-  }),
-);
 
 export const changeNameBranch = createEvent<
   React.ChangeEvent<HTMLInputElement>
@@ -26,14 +14,10 @@ export const createBranch = createEvent<any>();
 export const showButton = createEvent<any>();
 export const hideButton = createEvent<any>();
 
-export const creatingBranch = createEffect<CheckoutOptions, string>({
-  handler: (options) => checkout({ createBranch: true, ...options }),
-});
-
 sample({
-  source: $createBranchParams,
+  source: $nameBranch,
   clock: createBranch,
-  target: creatingBranch,
+  target: createBranchGit,
 });
 
 $nameBranch.on(changeNameBranch, (_, event) => event.currentTarget.value);

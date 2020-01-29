@@ -7,6 +7,7 @@ import { discarding } from "./discarding";
 import { staging, stagingAll } from "./staged/effects";
 import { unstaging, unstagingAll } from "./unstaged/effects";
 import { $currentBranch } from "../current-branch";
+import { committing } from "../log";
 
 const baseOptions = $baseOptions.getState();
 const defStatus = defaultRun(() => statusSync(baseOptions), []);
@@ -27,7 +28,7 @@ sample({
     unstaging.finally,
     unstagingAll.finally,
     $currentBranch,
-    // TODO After created commit
+    committing.done,
   ]),
   target: updateStatus,
 });

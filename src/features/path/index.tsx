@@ -4,7 +4,7 @@ import { useStore } from "effector-react";
 import * as electron from "electron";
 import styled from "styled-components";
 
-import { changePath, $cwd } from "lib/effector-git";
+import { changeCwd, $cwd } from "features/state-git";
 import { Row } from "ui";
 
 const { Text } = Typography;
@@ -14,16 +14,16 @@ const selectPath = () =>
   dialog
     .showOpenDialog({
       properties: ["openDirectory"],
-      defaultPath: $cwd.getState()
+      defaultPath: $cwd.getState(),
     })
-    .then(result => {
+    .then((result) => {
       const {
         canceled,
-        filePaths: [nextPath]
+        filePaths: [nextPath],
       } = result;
 
       if (canceled === false) {
-        changePath(nextPath);
+        changeCwd(nextPath);
       }
     });
 

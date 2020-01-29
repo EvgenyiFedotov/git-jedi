@@ -2,20 +2,21 @@ import childProcess from "child_process";
 
 export type BaseOptionsOnExec = (
   command: string,
-  options?: BaseOptions
+  options?: BaseOptions,
 ) => void;
 
 export type BaseOptionsOnResolve = (
   stdout: string,
-  _: { command: string; options?: BaseOptions }
+  _: { command: string; options?: BaseOptions },
 ) => void;
 
 export type BaseOptionsOnReject = (
   _: {
     error: childProcess.ExecException;
+    stdout: string;
     stderr?: string;
   },
-  __: { command: string; options?: BaseOptions }
+  __: { command: string; options?: BaseOptions },
 ) => void;
 
 export interface BaseOptions {
@@ -28,13 +29,13 @@ export interface BaseOptions {
 
 export const exec = (
   command: string,
-  options: BaseOptions = {}
+  options: BaseOptions = {},
 ): Promise<string> => {
   const {
     execOptions = {},
     onExec = () => {},
     onResolve = () => {},
-    onReject = () => {}
+    onReject = () => {},
   } = options;
 
   onExec(command, options);
@@ -42,8 +43,8 @@ export const exec = (
   return new Promise((resolve, reject) => {
     childProcess.exec(command, execOptions, (error, stdout, stderr) => {
       if (error) {
-        onReject({ error, stderr }, { command, options });
-        reject({ error, stderr });
+        onReject({ error, stdout, stderr }, { command, options });
+        reject({ error, stdout, stderr });
         return;
       }
 
@@ -55,13 +56,13 @@ export const exec = (
 
 export const execSync = (
   command: string,
-  options: BaseOptions = {}
+  options: BaseOptions = {},
 ): string => {
   const {
     execOptions = {},
     onExec = () => {},
     onResolve = () => {},
-    onReject = () => {}
+    onReject = () => {},
   } = options;
 
   onExec(command);
@@ -71,7 +72,7 @@ export const execSync = (
     onResolve(result, { command, options });
     return result;
   } catch (error) {
-    onReject({ error }, { command, options });
+    onReject({ error, stdout: "" }, { command, options });
     throw new Error(error);
   }
 };

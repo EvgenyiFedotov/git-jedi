@@ -1,2 +1,2 @@
-export { changeCwd } from "./cwd";
+export { changeCwd, $cwd } from "./cwd";
 export { $baseOptions } from "./base-options";
