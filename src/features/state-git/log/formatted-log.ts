@@ -2,8 +2,9 @@ import { combine, Store } from "effector";
 import { Log, Commit as CommitGit, Ref } from "lib/api-git";
 
 import { $originalLog } from "./original-log";
+import { $byCommitHashRefs } from "../refs";
 
-export interface Commit extends CommitGit {
+export interface FormattedCommit extends CommitGit {
   key: string;
   type: string;
   scope: string;
@@ -14,32 +15,45 @@ export interface Commit extends CommitGit {
 
 interface CombineStores {
   originalLog: Store<Log>;
+  byCommitHashRefs: Store<Map<string, Ref[]>>;
 }
 
-type FormattedLog = Map<string, Commit>;
+type FormattedLog = Map<string, FormattedCommit>;
 
 export const $formatterdLog = combine<CombineStores, FormattedLog>(
-  { originalLog: $originalLog },
-  ({ originalLog }) => formatLog(originalLog),
+  { originalLog: $originalLog, byCommitHashRefs: $byCommitHashRefs },
+  (stores) => formatLog(stores),
 );
 
-function formatLog(log: Log): FormattedLog {
-  const commits = Array.from(log.values());
+interface FormatLogParams {
+  originalLog: Log;
+  byCommitHashRefs: Map<string, Ref[]>;
+}
+
+function formatLog({
+  originalLog,
+  byCommitHashRefs,
+}: FormatLogParams): FormattedLog {
+  const commits = Array.from(originalLog.values());
 
   return commits.reduce((memo, commit) => {
-    memo.set(commit.hash, formatCommit(commit));
+    memo.set(commit.hash, formatCommit(commit, byCommitHashRefs));
     return memo;
   }, new Map());
 }
 
-function formatCommit(commit: CommitGit): Commit {
+function formatCommit(
+  commit: CommitGit,
+  byCommitHashRefs: Map<string, Ref[]>,
+): FormattedCommit {
+  const { hash } = commit;
   const { type, scope, note } = getTypeCommit(commit);
   const isMerged = getIsMerged(commit);
 
   return {
     ...commit,
-    key: commit.hash,
-    refs: [],
+    key: hash,
+    refs: byCommitHashRefs.get(hash) || [],
     type,
     scope,
     note,
