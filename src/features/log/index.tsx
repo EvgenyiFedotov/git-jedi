@@ -10,7 +10,7 @@ import {
   Select,
 } from "antd";
 import { useStore } from "effector-react";
-import { blue, cyan } from "@ant-design/colors";
+import { blue, cyan, red, green } from "@ant-design/colors";
 import styled from "styled-components";
 
 import {
@@ -38,8 +38,9 @@ import {
   $types,
   $type,
   changeType,
+  $isShowChanges,
+  toggleIsShowChanges,
 } from "./model";
-import { $isShowChanges, toggleIsShowChanges } from "./state";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -243,15 +244,32 @@ const Status: React.FC<{
 }> = ({ status }) => {
   return (
     <Tooltip title={status}>
-      <StatusCotainer>{(status || "").substr(0, 1)}</StatusCotainer>
+      <StatusCotainer status={status}>
+        {(status || "").substr(0, 1)}
+      </StatusCotainer>
     </Tooltip>
   );
 };
 
-const StatusCotainer = styled.span`
+interface StatusCotainerProps {
+  status: StatusPath["status"] | StatusPath["stagedStatus"];
+}
+
+const StatusCotainer = styled.span<StatusCotainerProps>`
   font-family: "Andale Mono", monospace;
   text-transform: uppercase;
-  color: ${blue.primary};
+  color: ${({ status }) => {
+    switch (status) {
+      case "added":
+        return green.primary;
+      case "deleted":
+        return red.primary;
+      case "untracked":
+        return cyan.primary;
+      default:
+        return blue.primary;
+    }
+  }};
 `;
 
 const hashCopied = () => message.success("Commit hash copied", 1);

@@ -17,10 +17,10 @@ import {
   stageChanges,
   unstageChanges,
   stageChangesAll,
-  unstageChangesAll
+  unstageChangesAll,
 } from "lib/effector-git";
 
-import { $isShowStatus, showStatus } from "./state";
+import { $isShowStatus, showStatus } from "./model";
 
 const { Text } = Typography;
 
@@ -75,7 +75,7 @@ interface ListChangesProps {
   mode: "stageChanges" | "changes";
 }
 
-const ListChanges: React.FC<ListChangesProps> = props => {
+const ListChanges: React.FC<ListChangesProps> = (props) => {
   const { status, mode } = props;
   return (
     <>
@@ -94,7 +94,7 @@ const ListChanges: React.FC<ListChangesProps> = props => {
         className="demo-loadmore-list"
         itemLayout="horizontal"
         dataSource={status}
-        renderItem={item => <Item mode={mode} item={item} />}
+        renderItem={(item) => <Item mode={mode} item={item} />}
       />
     </>
   );
@@ -115,7 +115,7 @@ interface ItemProps {
   mode: "stageChanges" | "changes";
 }
 
-const Item: React.FC<ItemProps> = props => {
+const Item: React.FC<ItemProps> = (props) => {
   const { item, mode } = props;
   const status = mode === "stageChanges" ? item.stagedStatus : item.status;
 
@@ -147,7 +147,7 @@ const getItemActions = (props: ItemActionsProps): React.ReactElement[] => {
           onClick={() => unstageChanges(item.path)}
         >
           unstage
-        </Button>
+        </Button>,
       ];
     case "changes":
       return [
@@ -166,7 +166,7 @@ const getItemActions = (props: ItemActionsProps): React.ReactElement[] => {
           onClick={() => stageChanges(item.path)}
         >
           stage
-        </Button>
+        </Button>,
       ];
   }
 

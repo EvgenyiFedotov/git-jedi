@@ -3,7 +3,7 @@ import {
   createEvent,
   createEffect,
   sample,
-  combine
+  combine,
 } from "effector";
 import * as React from "react";
 
@@ -19,7 +19,7 @@ export const $types = createStore<string[]>([
   "docs",
   "style",
   "refactor",
-  "test"
+  "test",
 ]);
 export const $type = createStore<string>("feat");
 export const $message = createStore<string>("");
@@ -27,15 +27,16 @@ export const $committingParams = combine(
   {
     type: $type,
     message: $message,
-    baseOptions: $baseOptions
+    baseOptions: $baseOptions,
   },
   ({ type, message, baseOptions }) => {
     return {
       message: `${type}: ${message}`,
-      baseOptions
+      baseOptions,
     };
-  }
+  },
 );
+export const $isShowChanges = createStore<boolean>(true);
 
 export const committing = createEffect<
   { message: string; baseOptions: BaseOptions },
@@ -44,9 +45,9 @@ export const committing = createEffect<
   handler: async ({ message, baseOptions }) => {
     return commit({
       message,
-      ...baseOptions
+      ...baseOptions,
     });
-  }
+  },
 });
 
 export const changeCommiteMessage = createEvent<
@@ -55,15 +56,16 @@ export const changeCommiteMessage = createEvent<
 export const formatMessage = createEvent<any>();
 export const createCommit = createEvent<any>();
 export const changeType = createEvent<string>();
+export const toggleIsShowChanges = createEvent<any>();
 
 sample({
   source: $committingParams,
   clock: createCommit,
-  target: committing
+  target: committing,
 });
 
 $message.on(changeCommiteMessage, (_, { currentTarget: { value } }) => value);
-$message.on(formatMessage, message => {
+$message.on(formatMessage, (message) => {
   const [firstLine, secondLine, ...otherLines] = message.split("\n");
 
   if (secondLine === undefined || secondLine === "") {
@@ -74,3 +76,5 @@ $message.on(formatMessage, message => {
 });
 
 $type.on(changeType, (_, type) => type);
+
+$isShowChanges.on(toggleIsShowChanges, (prev) => !prev);
