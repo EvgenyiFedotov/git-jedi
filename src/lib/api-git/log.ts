@@ -5,8 +5,7 @@ export interface Commit {
   parentHash: string[];
   dateTime: string;
   author: string;
-  // TODO change name
-  note: string;
+  message: string;
 }
 
 export type Log = Map<string, Commit>;
@@ -35,7 +34,7 @@ const lineToCommit = (line: string): Commit => {
     parentHash: parentHash.split(" "),
     dateTime,
     author,
-    note: note.join("\n"),
+    message: note.join("\n"),
   };
 };
 

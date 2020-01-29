@@ -4,7 +4,7 @@ import {
   logSync,
   Log as GitLog,
   Commit as GitCommit,
-  Ref
+  Ref,
 } from "../api-git";
 import { $baseOptions } from "./config";
 import { $refsByCommitHash } from "./refs";
@@ -16,6 +16,7 @@ export interface Commit extends GitCommit {
   key: string;
   type: string;
   scope: string;
+  note: string;
   refs: Ref[];
   isMerged: boolean;
 }
@@ -23,7 +24,7 @@ export interface Commit extends GitCommit {
 type Log = Map<string, Commit>;
 
 const getTypeCommit = (
-  message: string
+  message: string,
 ): { type: string; note: string; scope: string } => {
   const regOnlyType = /^([\w_]*):/;
   let matchResult = message.match(regOnlyType);
@@ -57,9 +58,9 @@ const toLog = (gitLog: GitLog): Log => {
   const refsByCommitHash = $refsByCommitHash.getState();
 
   return Array.from(gitLog.values()).reduce<Log>((memo, commit) => {
-    const { hash, note } = commit;
+    const { hash, message } = commit;
     const refs = refsByCommitHash.get(hash) || [];
-    const typeCommit = getTypeCommit(note);
+    const typeCommit = getTypeCommit(message);
     const isMerged = getIsMerged(commit);
 
     memo.set(hash, {
@@ -69,7 +70,7 @@ const toLog = (gitLog: GitLog): Log => {
       type: typeCommit.type,
       scope: typeCommit.scope,
       note: typeCommit.note,
-      isMerged
+      isMerged,
     });
 
     return memo;
@@ -81,8 +82,8 @@ try {
   defaultLog = toLog(
     logSync({
       ...$baseOptions.getState(),
-      onReject: () => {}
-    })
+      onReject: () => {},
+    }),
   );
 } catch (error) {
   defaultLog = new Map();
@@ -93,8 +94,8 @@ export const $log = createStore<Log>(defaultLog);
 const updateLog = createEffect<void, Log>({
   handler: () =>
     log({
-      ...$baseOptions.getState()
-    }).then(toLog)
+      ...$baseOptions.getState(),
+    }).then(toLog),
 });
 
 forward({ from: $baseOptions, to: updateLog });

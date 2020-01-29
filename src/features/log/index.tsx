@@ -7,7 +7,7 @@ import {
   Icon,
   Tooltip,
   Input,
-  Select
+  Select,
 } from "antd";
 import { useStore } from "effector-react";
 import { blue, cyan } from "@ant-design/colors";
@@ -24,7 +24,7 @@ import {
   stageChangesAll,
   stageChanges,
   unstageChanges,
-  discardChanges
+  discardChanges,
 } from "lib/effector-git";
 import { Branch } from "lib/branch";
 import { StatusPath } from "lib/api-git";
@@ -37,7 +37,7 @@ import {
   createCommit,
   $types,
   $type,
-  changeType
+  changeType,
 } from "./model";
 import { $isShowChanges, toggleIsShowChanges } from "./state";
 
@@ -66,7 +66,7 @@ export const Log: React.FC = () => {
     );
   }, [status.length]);
 
-  const listLog = Array.from(log.values()).map(commit => {
+  const listLog = Array.from(log.values()).map((commit) => {
     const color = getColorCommit(commit);
 
     return (
@@ -109,7 +109,7 @@ const Changes: React.FC = () => {
             style={{
               marginBottom: "8px",
               display: "flex",
-              alignItems: "flex-start"
+              alignItems: "flex-start",
             }}
           >
             <Select
@@ -117,7 +117,7 @@ const Changes: React.FC = () => {
               style={{ width: 90, marginRight: "8px" }}
               onChange={changeType}
             >
-              {types.map(typeValue => (
+              {types.map((typeValue) => (
                 <Option key={typeValue} value={typeValue}>
                   {typeValue}
                 </Option>
@@ -147,7 +147,7 @@ const UnstageChanges: React.FC = () => {
   const changes = useStore($changes);
   const discarding = useStore($discarding);
 
-  const list = changes.map(status => {
+  const list = changes.map((status) => {
     return (
       <div key={status.path}>
         <Branch if={discarding.has(status.path)}>
@@ -201,7 +201,7 @@ const UnstageChanges: React.FC = () => {
 const StageChanges: React.FC = () => {
   const stageChanges = useStore($stageChanges);
 
-  const list = stageChanges.map(status => {
+  const list = stageChanges.map((status) => {
     return (
       <div key={status.path}>
         <Status status={status.stagedStatus} />
@@ -260,7 +260,7 @@ const Commit: React.FC<{ commit: GitCommit }> = ({ commit }) => {
   const { refs, hash, note, type, scope } = commit;
   const color = getColorCommit(commit);
 
-  const refList = refs.map(ref => {
+  const refList = refs.map((ref) => {
     const { type, shortName, name } = ref;
     const color = type === "tags" ? "purple" : getColorStringCommit(commit);
     const text = type === "tags" ? shortName.replace("^{}", "") : shortName;

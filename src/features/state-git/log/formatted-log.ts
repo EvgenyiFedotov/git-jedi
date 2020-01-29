@@ -7,6 +7,7 @@ export interface Commit extends CommitGit {
   key: string;
   type: string;
   scope: string;
+  note: string;
   refs: Ref[];
   isMerged: boolean;
 }
@@ -50,27 +51,27 @@ function getTypeCommit(
   commit: CommitGit,
 ): { type: string; note: string; scope: string } {
   const regOnlyType = /^([\w_]*):/;
-  let matchResult = commit.note.match(regOnlyType);
+  let matchResult = commit.message.match(regOnlyType);
 
   if (matchResult) {
     const type = matchResult[1];
-    const note = commit.note.replace(regOnlyType, "").trim();
+    const note = commit.message.replace(regOnlyType, "").trim();
 
     return { type, note, scope: "" };
   }
 
   const regWithScope = /^([\w_]*)\(([\w_/-]*)\):/;
-  matchResult = commit.note.match(regWithScope);
+  matchResult = commit.message.match(regWithScope);
 
   if (matchResult) {
     const type = matchResult[1];
     const scope = matchResult[2].trim();
-    const note = commit.note.replace(regWithScope, "").trim();
+    const note = commit.message.replace(regWithScope, "").trim();
 
     return { type, note, scope };
   }
 
-  return { type: "", scope: "", note: commit.note };
+  return { type: "", scope: "", note: commit.message };
 }
 
 function getIsMerged(commit: CommitGit): boolean {
