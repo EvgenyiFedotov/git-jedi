@@ -1,4 +1,4 @@
-import { createStore, createEffect, sample, combine } from "effector";
+import { createStore, createEffect, sample, combine, merge } from "effector";
 import { log, logSync, Log, LogOptions } from "lib/api-git";
 import { defaultRun } from "lib/default-run";
 
@@ -22,14 +22,8 @@ export const updateLog = createEffect<LogOptions, Log>({
 });
 
 sample({
-  source: $updateLogParams,
-  clock: $updateLogParams,
-  target: updateLog,
-});
-
-sample({
-  source: $updateLogParams,
-  clock: $currentBranch,
+  source: $baseOptions,
+  clock: merge([$updateLogParams, $currentBranch]),
   target: updateLog,
 });
 

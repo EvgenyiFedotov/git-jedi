@@ -1,2 +1,3 @@
-export { checkoutToBranch } from "./checkout-to-branch";
+export { checkoutTo } from "./checkout-to";
 export { $currentBranch } from "./current-branch";
+export { createBranch } from "./create-branch";

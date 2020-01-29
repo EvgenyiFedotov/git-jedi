@@ -1,13 +1,18 @@
 import * as React from "react";
-import { Button, Input, Form } from "antd";
+import { Button, Input } from "antd";
 import { useStore } from "effector-react";
-import styled from "styled-components";
 
 import { Branch } from "lib/branch";
 import { useMousetrap } from "lib/use-mousetrap";
 
-import { $nameBranch, changeNameBranch, createBranch } from "./model";
-import { $isShowButton, showButton, hideButton } from "./state";
+import {
+  $nameBranch,
+  changeNameBranch,
+  createBranch,
+  $isShowButton,
+  showButton,
+  hideButton,
+} from "./model";
 
 export const CreateBranch: React.FC = () => {
   const isShowButton = useStore($isShowButton);

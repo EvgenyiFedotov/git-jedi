@@ -9,7 +9,8 @@ import { defaultRun } from "lib/default-run";
 import { revParse, revParseSync, RefParseOptions } from "lib/api-git";
 
 import { $baseOptions } from "../config";
-import { checkout } from "./checkout-to-branch";
+import { checkoutingTo } from "./checkout-to";
+import { creatingBranch } from "./create-branch";
 
 const baseOptions = $baseOptions.getState();
 const defValue = defaultRun(
@@ -21,16 +22,22 @@ export const $currentBranch = createStore<string>(defValue);
 
 export const changeCurrentBranch = createEvent<string>();
 
-export const updateCurrentBranch = createEffect<RefParseOptions, string>({
+export const updatingCurrentBranch = createEffect<RefParseOptions, string>({
   handler: (options) => revParse(options),
 });
 
-forward({ from: $baseOptions, to: updateCurrentBranch });
+forward({ from: $baseOptions, to: updatingCurrentBranch });
 
 sample({
   source: $baseOptions,
-  clock: checkout.done,
-  target: updateCurrentBranch,
+  clock: checkoutingTo.finally,
+  target: updatingCurrentBranch,
 });
 
-$currentBranch.on(updateCurrentBranch.done, (_, { result }) => result);
+sample({
+  source: $baseOptions,
+  clock: creatingBranch.finally,
+  target: updatingCurrentBranch,
+});
+
+$currentBranch.on(updatingCurrentBranch.done, (_, { result }) => result);
