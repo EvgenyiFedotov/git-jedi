@@ -42,6 +42,8 @@ import {
   toggleIsShowChanges,
 } from "./model";
 
+import { Changes as ChangesFeatures } from "features/changes";
+
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -60,7 +62,7 @@ export const Log: React.FC = () => {
   const changes = React.useMemo(() => {
     return status.length ? (
       <Timeline.Item dot={<Icon type="bars" onClick={toggleIsShowChanges} />}>
-        <Changes />
+        <ChangesFeatures />
       </Timeline.Item>
     ) : (
       undefined

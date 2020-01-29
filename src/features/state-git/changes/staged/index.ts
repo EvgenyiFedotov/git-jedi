@@ -1,15 +1,9 @@
-import {
-  combine,
-  createEvent,
-  createEffect,
-  createStore,
-  guard,
-  sample,
-} from "effector";
-import { add, AddOptions } from "lib/api-git";
+import { combine, createEvent, createStore, guard, sample } from "effector";
+import { AddOptions } from "lib/api-git";
 
-import { $status } from "./status";
-import { $baseOptions } from "../config";
+import { $status } from "../status";
+import { $baseOptions } from "../../config";
+import { staging, stagingAll } from "./effects";
 
 const baseOptions = $baseOptions.getState();
 
@@ -25,13 +19,6 @@ const $stageParams = createStore<AddOptions>({
 
 export const stage = createEvent<string>();
 export const stageAll = createEvent<void>();
-
-export const staging = createEffect<AddOptions, string>({
-  handler: (options) => add(options),
-});
-export const stagingAll = createEffect<AddOptions, string>({
-  handler: (options) => add(options),
-});
 
 guard({
   source: $stageParams,

@@ -1,15 +1,9 @@
-import {
-  combine,
-  createEvent,
-  createEffect,
-  createStore,
-  sample,
-  guard,
-} from "effector";
-import { reset, ResetOptions } from "lib/api-git";
+import { combine, createEvent, createStore, sample, guard } from "effector";
+import { ResetOptions } from "lib/api-git";
 
-import { $status } from "./status";
-import { $baseOptions } from "../config";
+import { $status } from "../status";
+import { $baseOptions } from "../../config";
+import { unstaging, unstagingAll } from "./effects";
 
 const baseOptions = $baseOptions.getState();
 
@@ -23,13 +17,6 @@ const $unstageParams = createStore<ResetOptions>({
 
 export const unstage = createEvent<string>();
 export const unstageAll = createEvent();
-
-export const unstaging = createEffect<ResetOptions, string>({
-  handler: (options) => reset(options),
-});
-export const unstagingAll = createEffect<ResetOptions, string>({
-  handler: (options) => reset(options),
-});
 
 guard({
   source: $unstageParams,

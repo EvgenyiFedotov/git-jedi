@@ -1,11 +1,11 @@
-import { createStore, createEffect, forward, sample, merge } from "effector";
+import { createStore, createEffect, sample, merge } from "effector";
 import { status, statusSync, StatusPath, StatusOptions } from "lib/api-git";
 import { defaultRun } from "lib/default-run";
 
 import { $baseOptions } from "../config";
 import { discarding } from "./discarding";
-import { staging, stagingAll } from "./staged";
-import { unstaging, unstagingAll } from "./unstaged";
+import { staging, stagingAll } from "./staged/effects";
+import { unstaging, unstagingAll } from "./unstaged/effects";
 import { $currentBranch } from "../current-branch";
 
 const baseOptions = $baseOptions.getState();
