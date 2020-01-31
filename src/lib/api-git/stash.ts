@@ -1,4 +1,4 @@
-import { exec, execSync, BaseOptions } from "./exec";
+import { exec, execSync, BaseOptions } from "./process";
 
 export interface StashOptions extends BaseOptions {
   action?: "push" | "pop" | "drop";
@@ -15,7 +15,7 @@ const createCommand = (options: StashOptions = {}): string => {
   }
 
   return `git stash push --keep-index --include-untracked -- ${paths.join(
-    " "
+    " ",
   )}`;
 };
 

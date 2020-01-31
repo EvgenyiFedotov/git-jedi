@@ -1,4 +1,4 @@
-import { exec, execSync, BaseOptions } from "./exec";
+import { exec, execSync, BaseOptions } from "./process";
 
 export interface Commit {
   hash: string;

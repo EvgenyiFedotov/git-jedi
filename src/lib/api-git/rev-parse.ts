@@ -1,4 +1,4 @@
-import { exec, execSync, BaseOptions } from "./exec";
+import { exec, execSync, BaseOptions } from "./process";
 
 export interface RefParseOptions extends BaseOptions {
   mode?: "branch" | "commitHash";

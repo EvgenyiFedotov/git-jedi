@@ -76,3 +76,63 @@ export const execSync = (
     throw new Error(error);
   }
 };
+
+export type PipeResolveCallback = (value: any) => any;
+
+export type PipeRejectCallback = (error: Error) => void;
+
+export interface SpawnResult {
+  then: (callback: PipeResolveCallback) => SpawnResult;
+  catch: (callback: PipeRejectCallback) => SpawnResult;
+}
+
+export const spawn = (
+  command: string,
+  options: BaseOptions = {},
+): SpawnResult => {
+  const {
+    execOptions = {},
+    onExec = () => {},
+    onResolve = () => {},
+    onReject = () => {},
+  } = options;
+
+  const pipeResolveCallbacks: PipeResolveCallback[] = [];
+  const pipeRejectCallback: PipeRejectCallback[] = [];
+  const [firstCommand, ...commandParams] = command.split(" ");
+
+  onExec(command);
+
+  const childProc = childProcess.spawn(
+    firstCommand,
+    commandParams,
+    execOptions,
+  );
+
+  childProc.stdout.on("data", (data) => {
+    const dataString = data.toString();
+
+    onResolve(dataString, { command, options });
+    pipeResolveCallbacks.reduce((memo, callback) => callback(memo), dataString);
+  });
+
+  childProc.on("error", (error) => {
+    onReject({ error, stdout: "" }, { command, options });
+    pipeRejectCallback.forEach((callback) => callback(error));
+  });
+
+  childProc.on("close", () => {});
+
+  const result = {
+    then: (callback: PipeResolveCallback) => {
+      pipeResolveCallbacks.push(callback);
+      return result;
+    },
+    catch: (callback: PipeRejectCallback) => {
+      pipeRejectCallback.push(callback);
+      return result;
+    },
+  };
+
+  return result;
+};

@@ -11,14 +11,14 @@ const main = {
       {
         test: /\.ts$/,
         include: /src/,
-        use: [{ loader: "ts-loader" }]
-      }
-    ]
+        use: [{ loader: "ts-loader" }],
+      },
+    ],
   },
   output: {
     path: __dirname + "/dist",
-    filename: "electron.js"
-  }
+    filename: "electron.js",
+  },
 };
 
 const renderer = {
@@ -30,34 +30,34 @@ const renderer = {
     rules: [
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.ts(x?)$/,
         include: /src/,
         exclude: /node_modules/,
-        use: ["babel-loader", "ts-loader"]
+        use: ["babel-loader", "ts-loader"],
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "babel-loader"
-      }
-    ]
+        loader: "babel-loader",
+      },
+    ],
   },
   resolve: {
     modules: ["node_modules", path.resolve(__dirname, "src")],
-    extensions: [".js", ".ts", ".json", ".tsx"]
+    extensions: [".js", ".ts", ".json", ".tsx"],
   },
   output: {
     path: __dirname + "/dist",
-    filename: "react.js"
+    filename: "react.js",
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./public/index.html"
-    })
-  ]
+      template: "./public/index.html",
+    }),
+  ],
 };
 
 module.exports = [main, renderer];

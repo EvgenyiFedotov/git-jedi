@@ -1,4 +1,4 @@
-import { exec, execSync, BaseOptions } from "./exec";
+import { exec, execSync, BaseOptions } from "./process";
 import { stdoutToLines } from "./common";
 
 export interface Ref {
