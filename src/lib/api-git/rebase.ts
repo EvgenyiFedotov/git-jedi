@@ -1,6 +1,6 @@
-import { spawn, BaseOptions } from "./process";
+import { spawn, SpawnOptions, SpawnResult } from "./process";
 
-export interface RebaseOptions extends BaseOptions {
+export interface RebaseOptions extends SpawnOptions {
   target: string;
   interactive?: boolean;
 }
@@ -11,10 +11,13 @@ const createCommand = (options: RebaseOptions): string => {
   return ["git rebase", interactive && "-i", target].filter(Boolean).join(" ");
 };
 
-export const rebase = (options: RebaseOptions): void => {
+export const rebase = (options: RebaseOptions): SpawnResult => {
   const command = createCommand(options);
   const result = spawn(command, options);
 
-  result.then((data) => console.log("then:", data));
+  result.then((data, { type }) => console.log("then:", type, data));
   result.catch((data) => console.log("catch:", data));
+  result.close((data) => console.log("close:", data));
+
+  return result;
 };

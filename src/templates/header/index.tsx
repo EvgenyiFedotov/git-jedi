@@ -13,8 +13,37 @@ import { rebase, execSync } from "lib/api-git";
 import { $baseOptions } from "features/state-git";
 import { useStore } from "effector-react";
 
-ipcRenderer.on("asynchronous-reply", (event, args: string[]) => {
-  console.log(args);
+const getFileContent = (pathFile: string): string => {
+  return readFileSync(pathFile).toString();
+};
+
+const rebaseTodo = (pathFile: string): void => {
+  writeFileSync(
+    pathFile,
+    `r e052e11
+p 523e712`,
+  );
+};
+
+const commitEditMsg = (pathFile: string): void => {
+  writeFileSync(pathFile, `feat: add CONST_1 [FIX_CHANGE 3]`);
+};
+
+ipcRenderer.on("rebase-query", (event, args: string[]) => {
+  const [, , pathFile] = args;
+  const arrPath = pathFile.split("/");
+  const fileName = arrPath[arrPath.length - 1];
+
+  switch (fileName) {
+    case "git-rebase-todo":
+      rebaseTodo(pathFile);
+      break;
+    case "COMMIT_EDITMSG":
+      commitEditMsg(pathFile);
+      break;
+  }
+
+  event.sender.send("rebase-response", getFileContent(pathFile));
 });
 
 export const Header: React.FC = () => {
@@ -22,21 +51,6 @@ export const Header: React.FC = () => {
 
   const click = () => {
     execSync("rm -fr .git/rebase-merge", baseOptions);
-    ipcRenderer.once("asynchronous-reply", (event, args: string[]) => {
-      const file = readFileSync(args[2]).toString();
-      console.log(file);
-
-      writeFileSync(
-        args[2],
-        `pick e052e11 feat: add CONST_1
-s 523e712 feat: add CONST_4`,
-      );
-
-      const filer = readFileSync(args[2]).toString();
-      console.log(filer);
-
-      event.sender.send("asynchronous-message", "WRITED_FILE");
-    });
     rebase({
       ...baseOptions,
       target: "HEAD~2",

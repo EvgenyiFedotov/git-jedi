@@ -33,14 +33,12 @@ server.use(
 );
 
 server.post("/", (req, res) => {
-  ipcMain.once("asynchronous-message", (event, status) => {
-    res.send(status);
-    // Event emitter for sending asynchronous messages
-    // event.sender.send("asynchronous-reply", "async pong");
-  });
-
   const args: string[] = req.body.args;
-  win.webContents.send("asynchronous-reply", args);
+
+  ipcMain.once("rebase-response", (event, status) => {
+    res.send(status);
+  });
+  win.webContents.send("rebase-query", args);
 });
 
 server.listen(3000, function() {

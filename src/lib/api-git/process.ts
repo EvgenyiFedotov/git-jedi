@@ -7,7 +7,7 @@ export type BaseOptionsOnExec = (
 
 export type BaseOptionsOnResolve = (
   stdout: string,
-  _: { command: string; options?: BaseOptions },
+  _: { command: string; options?: BaseOptions; type?: string },
 ) => void;
 
 export type BaseOptionsOnReject = (
@@ -16,7 +16,7 @@ export type BaseOptionsOnReject = (
     stdout: string;
     stderr?: string;
   },
-  __: { command: string; options?: BaseOptions },
+  __: { command: string; options?: BaseOptions; type?: string },
 ) => void;
 
 export interface BaseOptions {
@@ -77,28 +77,37 @@ export const execSync = (
   }
 };
 
-export type PipeResolveCallback = (value: any) => any;
+export type PipeResolveCallback = (value: any, _: { type: string }) => any;
 
 export type PipeRejectCallback = (error: Error) => void;
+
+export type PipeCloseCallback = (code: number) => void;
 
 export interface SpawnResult {
   then: (callback: PipeResolveCallback) => SpawnResult;
   catch: (callback: PipeRejectCallback) => SpawnResult;
+  close: (callback: PipeCloseCallback) => SpawnResult;
+}
+
+export interface SpawnOptions extends BaseOptions {
+  onClose?: (code: number) => void;
 }
 
 export const spawn = (
   command: string,
-  options: BaseOptions = {},
+  options: SpawnOptions = {},
 ): SpawnResult => {
   const {
     execOptions = {},
     onExec = () => {},
     onResolve = () => {},
     onReject = () => {},
+    onClose = () => {},
   } = options;
 
   const pipeResolveCallbacks: PipeResolveCallback[] = [];
   const pipeRejectCallback: PipeRejectCallback[] = [];
+  const pipeCloseCallback: PipeCloseCallback[] = [];
   const [firstCommand, ...commandParams] = command.split(" ");
 
   onExec(command);
@@ -110,10 +119,25 @@ export const spawn = (
   );
 
   childProc.stdout.on("data", (data) => {
+    const type = "stdout";
     const dataString = data.toString();
 
-    onResolve(dataString, { command, options });
-    pipeResolveCallbacks.reduce((memo, callback) => callback(memo), dataString);
+    onResolve(dataString, { command, options, type });
+    pipeResolveCallbacks.reduce(
+      (memo, callback) => callback(memo, { type }),
+      dataString,
+    );
+  });
+
+  childProc.stderr.on("data", (data) => {
+    const type = "stderr";
+    const dataString = data.toString();
+
+    onResolve(dataString, { command, options, type });
+    pipeResolveCallbacks.reduce(
+      (memo, callback) => callback(memo, { type }),
+      dataString,
+    );
   });
 
   childProc.on("error", (error) => {
@@ -121,7 +145,10 @@ export const spawn = (
     pipeRejectCallback.forEach((callback) => callback(error));
   });
 
-  childProc.on("close", () => {});
+  childProc.on("close", (code) => {
+    onClose(code);
+    pipeCloseCallback.forEach((callback) => callback(code));
+  });
 
   const result = {
     then: (callback: PipeResolveCallback) => {
@@ -130,6 +157,10 @@ export const spawn = (
     },
     catch: (callback: PipeRejectCallback) => {
       pipeRejectCallback.push(callback);
+      return result;
+    },
+    close: (callback: PipeCloseCallback) => {
+      pipeCloseCallback.push(callback);
       return result;
     },
   };
