@@ -4,7 +4,8 @@ import { findDOMNode } from "react-dom";
 
 export const useMousetrap = (
   command: string | string[],
-  callback: (event: KeyboardEvent, combo: string) => any
+  callback: (event: KeyboardEvent, combo: string) => any,
+  action?: string,
 ) => {
   // TODO Error with type HTMLTextAreaElement
   const ref = React.useRef(null);
@@ -17,12 +18,12 @@ export const useMousetrap = (
       const messageNode = findDOMNode(current) as Element;
       nodeMousetrap = mousetrap(messageNode);
 
-      nodeMousetrap.bind(command, callback);
+      nodeMousetrap.bind(command, callback, action);
     }
 
     return () => {
       if (nodeMousetrap) {
-        nodeMousetrap.unbind(command);
+        nodeMousetrap.unbind(command, action);
       }
     };
   }, [ref.current, command, callback]);

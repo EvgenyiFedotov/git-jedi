@@ -20,7 +20,7 @@ interface CombineStores {
 
 type FormattedLog = Map<string, FormattedCommit>;
 
-export const $formatterdLog = combine<CombineStores, FormattedLog>(
+export const $formattedLog = combine<CombineStores, FormattedLog>(
   { originalLog: $originalLog, byCommitHashRefs: $byCommitHashRefs },
   (stores) => formatLog(stores),
 );

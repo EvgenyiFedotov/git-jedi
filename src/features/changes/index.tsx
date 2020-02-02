@@ -2,7 +2,7 @@ import * as React from "react";
 import { useStore } from "effector-react";
 import { blue, cyan, red, green } from "@ant-design/colors";
 import styled from "styled-components";
-import { Divider, Select, Input, Icon, Tooltip } from "antd";
+import { Divider, Icon, Tooltip } from "antd";
 
 import {
   $status,
@@ -15,32 +15,33 @@ import {
   unstage,
   unstageAll,
 } from "features/state-git";
-import { useMousetrap } from "lib/use-mousetrap";
 import { Branch } from "lib/branch";
 import { StatusPath } from "lib/api-git";
+import { CommitForm } from "features/commit-form";
 
 import {
-  createCommit,
-  $type,
-  $types,
-  $message,
   $isShowChanges,
-  changeMessage,
-  changeType,
-  formatMessage,
+  $commitFormValue,
+  changeCommitFormValue,
+  createCommit,
 } from "./model";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
   const unstagedChanges = useStore($unstagedChanges);
   const stagedChanges = useStore($stagedChanges);
+  const commitFormValue = useStore($commitFormValue);
 
   return (
     <div>
       <Header />
       <Branch if={isShowChanges}>
         <>
-          <CommitForm />
+          <CommitForm
+            value={commitFormValue}
+            onChange={changeCommitFormValue}
+            onSave={() => createCommit()}
+          />
           <Branch if={!!unstagedChanges.length}>
             <UnstageChanges />
           </Branch>
@@ -64,46 +65,6 @@ const Header: React.FC = () => {
         <Divider type="vertical" />
         <span style={{ color: blue.primary }}>{status.length}</span>
       </b>
-    </div>
-  );
-};
-
-const CommitForm: React.FC = () => {
-  const type = useStore($type);
-  const types = useStore($types);
-  const message = useStore($message);
-
-  const { ref: messageRef } = useMousetrap("command+enter", createCommit);
-
-  return (
-    <div
-      style={{
-        marginBottom: "8px",
-        display: "flex",
-        alignItems: "flex-start",
-      }}
-    >
-      <Select
-        defaultValue={type}
-        style={{ width: 90, marginRight: "8px" }}
-        onChange={changeType}
-      >
-        {types.map((typeValue) => (
-          <Select.Option key={typeValue} value={typeValue}>
-            {typeValue}
-          </Select.Option>
-        ))}
-      </Select>
-
-      <Input.TextArea
-        placeholder="Message (⌘Enter to commit)"
-        ref={messageRef}
-        autoSize={{ maxRows: 4 }}
-        style={{ maxWidth: `${16 * 24}px` }}
-        value={message}
-        onChange={changeMessage}
-        onBlur={formatMessage}
-      />
     </div>
   );
 };
