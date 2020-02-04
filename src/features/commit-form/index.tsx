@@ -6,18 +6,10 @@ import styled from "styled-components";
 import { useMousetrap } from "lib/use-mousetrap";
 import { FormattedCommitMessage } from "features/state-git";
 
-import {
-  $types,
-  $type,
-  $note,
-  changeType,
-  changeNote,
-  formatNote,
-  mount,
-} from "./model";
+import { $types } from "./model";
 
 export interface CommitFormProps {
-  value?: FormattedCommitMessage;
+  value: FormattedCommitMessage;
   onChange?: (value: FormattedCommitMessage) => void;
   onSave?: () => void;
 }
@@ -26,24 +18,48 @@ export const CommitForm: React.FC<CommitFormProps> = (props) => {
   const { value, onChange = () => {}, onSave = () => {} } = props;
 
   const types = useStore($types);
-  const type = useStore($type);
-  const note = useStore($note);
 
   const { ref: messageRef } = useMousetrap("command+enter", onSave);
 
-  React.useEffect(() => {
-    if (value) {
-      mount(value);
-    }
-  }, []);
+  const changeType = React.useCallback(
+    (type: string) => {
+      onChange({ ...value, type });
+    },
+    [onChange, value],
+  );
 
-  React.useEffect(() => {
-    onChange({ type, note, scope: "" });
-  }, [type, note]);
+  const changeNote = React.useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      onChange({ ...value, note: event.currentTarget.value });
+    },
+    [onChange, value],
+  );
+
+  const formatNote = React.useCallback(() => {
+    const [firstLine, secondLine, ...otherLines] = value.note.split("\n");
+
+    if (!(secondLine === undefined || secondLine === "")) {
+      onChange({
+        ...value,
+        note: [firstLine, "", secondLine, ...otherLines].join("\n"),
+      });
+    }
+  }, [onChange, value]);
+
+  // TODO Use value
+  // React.useEffect(() => {
+  //   if (value) {
+  //     mount(value);
+  //   }
+  // }, []);
+
+  // React.useEffect(() => {
+  //   onChange({ type, note, scope: "" });
+  // }, [type, note]);
 
   return (
     <Container>
-      <antd.Select className="select" value={type} onChange={changeType}>
+      <antd.Select className="select" value={value.type} onChange={changeType}>
         {types.map((typeValue) => (
           <antd.Select.Option key={typeValue} value={typeValue}>
             {typeValue}
@@ -55,7 +71,7 @@ export const CommitForm: React.FC<CommitFormProps> = (props) => {
         placeholder="Message (⌘Enter to commit)"
         ref={messageRef}
         autoSize={{ maxRows: 4 }}
-        value={note}
+        value={value.note}
         onChange={changeNote}
         onBlur={formatNote}
       />

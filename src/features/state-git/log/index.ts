@@ -1,19 +1,26 @@
 export { $originalLog } from "./original-log";
+export { $formattedLog } from "./formatted-log";
 export {
-  $formattedLog,
   FormattedCommit,
   FormattedCommitMessage,
   getFormatCommmitMessage,
   formattedCommitMessageToString,
-} from "./formatted-log";
+} from "./formatted-log/handlers";
 export { createCommit, committing } from "./create-commit";
 export {
   rebaseUp,
   $contentRebaseTodo,
-  RowContentRabaseTodo,
   abortRebase,
   rebaseRowMoveUp,
   rabaseRowMoveDown,
   changeActionRowRebaseTodo,
   writeContentRebaseTodo,
+  $contentCommitEditMessagePrev,
+  $contentCommitMessage,
+  changeContentCommitMessage,
+  writeContentCommitMessage,
 } from "./rebase";
+export {
+  RowContentRabaseTodo,
+  writingContentCommitMesssage,
+} from "./rebase/effects";

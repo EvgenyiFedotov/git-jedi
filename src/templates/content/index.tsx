@@ -7,6 +7,7 @@ import { heightLine, padding } from "ui/css";
 import { Log } from "features/log";
 import { EditRebaseTodo } from "features/edit-rebase-todo";
 import { Column } from "ui";
+import { EditCommitMessage } from "features/edit-commit-message";
 
 import { $tab } from "./model";
 
@@ -20,9 +21,14 @@ export const Content: React.FC = () => {
             <Log />
           </ContainerTab>
         </Tabs.TabPane>
-        <Tabs.TabPane key="rebase">
+        <Tabs.TabPane key="edit-rebase-todo">
           <ContainerTab>
             <EditRebaseTodo />
+          </ContainerTab>
+        </Tabs.TabPane>
+        <Tabs.TabPane key="edit-commit-message">
+          <ContainerTab>
+            <EditCommitMessage />
           </ContainerTab>
         </Tabs.TabPane>
       </Tabs>

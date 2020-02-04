@@ -5,6 +5,7 @@ import { showRef, showRefSync, Refs, ShowRefOptions } from "lib/api-git";
 import { $baseOptions } from "../config";
 import { createInitCommit } from "./notifications";
 import { $currentBranch } from "../current-branch";
+import { writingContentCommitMesssage } from "../log/rebase/effects";
 
 const baseOptions = $baseOptions.getState();
 const defRefs = defaultRun(
@@ -23,7 +24,11 @@ export const updateRefs = createEffect<ShowRefOptions, Refs>({
 
 sample({
   source: $baseOptions,
-  clock: merge([$currentBranch, $baseOptions]),
+  clock: merge([
+    $currentBranch,
+    $baseOptions,
+    writingContentCommitMesssage.done,
+  ]),
   target: updateRefs,
 });
 
