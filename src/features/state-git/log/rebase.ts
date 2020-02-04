@@ -4,7 +4,7 @@ import {
   sample,
   createStore,
   combine,
-  forward,
+  split,
 } from "effector";
 import { ipcRenderer } from "electron";
 import { readFileSync, writeFileSync } from "fs";
@@ -21,6 +21,7 @@ import { $baseOptions } from "../config";
 import {
   FormattedCommitMessage,
   getFormatCommmitMessage,
+  formattedCommitMessageToString,
 } from "./formatted-log";
 
 const getFileContent = (pathFile: string): string => {
@@ -31,26 +32,27 @@ const removeComments = (fileContent: string): string => {
   return fileContent.replace(/^\#.*$\n/gm, "").replace(/^\n+|\n+$/gm, "\n");
 };
 
-ipcRenderer.on("rebase-query", (event, args: string[]) => {
-  const [, , pathFile] = args;
-  const arrPath = pathFile.split("/");
-  const fileName = arrPath[arrPath.length - 1];
-  const content = removeComments(getFileContent(pathFile));
+const getContentFile = (pathFile: string): string => {
+  return removeComments(getFileContent(pathFile));
+};
 
-  switch (fileName) {
-    case "git-rebase-todo":
-      editRebaseTodoPrev(content);
-      break;
-    case "COMMIT_EDITMSG":
-      editCommitEditMsgPrev(content);
-      break;
-  }
-
-  // event.sender.send("rebase-response", readFileSync(pathFile).toString());
+ipcRenderer.on("rebase-query", (event, [, , pathFile]: string[]) => {
+  changePath(pathFile);
 });
 
+export const $pathFile = createStore<string>("");
 export const $contentRebaseTodoPrev = createStore<string>("");
 export const $contentCommitEditMsgPrev = createStore<string>("");
+
+const isNeedFile = (nameFile: string) => (path: string): boolean => {
+  const arrPath = path.split("/");
+  return arrPath[arrPath.length - 1] === nameFile;
+};
+
+const contentByPath = split($pathFile, {
+  todo: isNeedFile("git-rebase-todo"),
+  commitMsg: isNeedFile("COMMIT_EDITMSG"),
+});
 
 export interface RowContentRabaseTodo {
   action: string;
@@ -88,22 +90,58 @@ export const $contentRebaseTodo = combine<
   return { ref: setIsFirstLast(ref) };
 });
 
-const editRebaseTodoPrev = createEvent<string>();
-const editCommitEditMsgPrev = createEvent<string>();
+const $writeContentRebaseTodoParams = combine(
+  $pathFile,
+  $contentRebaseTodo,
+  (pathFile, contentRebaseTodo) => ({
+    pathFile,
+    contentRebaseTodo,
+  }),
+);
+
+const changePath = createEvent<string>();
 export const rebaseUp = createEvent<string>();
 export const abortRebase = createEvent<void>();
 export const rebaseRowMoveUp = createEvent<RowContentRabaseTodo>();
 export const rabaseRowMoveDown = createEvent<RowContentRabaseTodo>();
+export const changeActionRowRebaseTodo = createEvent<{
+  row: RowContentRabaseTodo;
+  value: RowContentRabaseTodo["action"];
+}>();
+export const writeContentRebaseTodo = createEvent<void>();
 
-export const abordingRebase = createEffect<BaseOptions, string>({
-  // TODO Changet on 'rebaseGit' with flag --abort
-  handler: (options) => execSync("rm -fr .git/rebase-merge", options),
+export const abordingRebase = createEffect<BaseOptions, void>({
+  handler: async (options) => {
+    rebaseGit({ abort: true, ...options });
+  },
 });
 
 export const rebasing = createEffect<RebaseOptions, RebaseResult>({
   handler: (options) => {
     abordingRebase($baseOptions.getState());
     return rebaseGit(options);
+  },
+});
+
+export const writingContentRabaseTodo = createEffect<
+  {
+    pathFile: string;
+    contentRebaseTodo: { ref: RowContentRabaseTodo[] };
+  },
+  void
+>({
+  handler: async ({ contentRebaseTodo: { ref }, pathFile }) => {
+    const content = ref
+      .reduce<string[]>((memo, row) => {
+        const message = formattedCommitMessageToString(row.message);
+        memo.push(`${row.action} ${row.shortHash} ${message}`);
+        return memo;
+      }, [])
+      .join("\n");
+
+    writeFileSync(pathFile, content);
+
+    ipcRenderer.send("rebase-response", content);
   },
 });
 
@@ -120,10 +158,25 @@ sample({
   target: abordingRebase,
 });
 
-$contentRebaseTodoPrev.on(editRebaseTodoPrev, (_, content) => content);
+sample({
+  source: $writeContentRebaseTodoParams,
+  clock: writeContentRebaseTodo,
+  target: writingContentRabaseTodo,
+});
+
+$contentCommitEditMsgPrev.watch(console.log);
+
+$pathFile.on(changePath, (_, path) => path);
+$pathFile.on(abortRebase, () => "");
+
+$contentRebaseTodoPrev.on(contentByPath.todo, (_, pathFile) =>
+  getContentFile(pathFile),
+);
 $contentRebaseTodoPrev.on(abortRebase, () => "");
 
-$contentCommitEditMsgPrev.on(editCommitEditMsgPrev, (_, content) => content);
+$contentCommitEditMsgPrev.on(contentByPath.commitMsg, (_, pathFile) =>
+  getContentFile(pathFile),
+);
 $contentCommitEditMsgPrev.on(abortRebase, () => "");
 
 $contentRebaseTodo.on(abortRebase, () => ({ ref: [] }));
@@ -142,6 +195,10 @@ $contentRebaseTodo.on(rabaseRowMoveDown, ({ ref }, row) => {
   ref[nextIndex] = row;
   ref[index] = cacheRow;
   return { ref: setIsFirstLast(ref) };
+});
+$contentRebaseTodo.on(changeActionRowRebaseTodo, ({ ref }, { row, value }) => {
+  row.action = value;
+  return { ref };
 });
 
 // TODO abort rebase

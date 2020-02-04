@@ -17,7 +17,7 @@ export const Log: React.FC = () => {
 
     return (
       <Timeline.Item key={commit.hash} color={color}>
-        <Commit commit={commit} isFirst={index === 0} />
+        <Commit commit={commit} />
       </Timeline.Item>
     );
   });

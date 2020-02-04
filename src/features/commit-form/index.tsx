@@ -4,6 +4,7 @@ import * as antd from "antd";
 import styled from "styled-components";
 
 import { useMousetrap } from "lib/use-mousetrap";
+import { FormattedCommitMessage } from "features/state-git";
 
 import {
   $types,
@@ -12,15 +13,12 @@ import {
   changeType,
   changeNote,
   formatNote,
-  CommitFormValue,
   mount,
 } from "./model";
 
-export { CommitFormValue } from "./model";
-
 export interface CommitFormProps {
-  value?: CommitFormValue;
-  onChange?: (value: CommitFormValue) => void;
+  value?: FormattedCommitMessage;
+  onChange?: (value: FormattedCommitMessage) => void;
   onSave?: () => void;
 }
 
@@ -40,7 +38,7 @@ export const CommitForm: React.FC<CommitFormProps> = (props) => {
   }, []);
 
   React.useEffect(() => {
-    onChange({ type, note });
+    onChange({ type, note, scope: "" });
   }, [type, note]);
 
   return (

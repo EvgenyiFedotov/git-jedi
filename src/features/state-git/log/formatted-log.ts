@@ -11,6 +11,7 @@ export interface FormattedCommit extends CommitGit {
   note: string;
   refs: Ref[];
   isMerged: boolean;
+  isLast: boolean;
 }
 
 interface CombineStores {
@@ -36,16 +37,24 @@ function formatLog({
 }: FormatLogParams): FormattedLog {
   const commits = Array.from(originalLog.values());
 
-  return commits.reduce((memo, commit) => {
-    memo.set(commit.hash, formatCommit(commit, byCommitHashRefs));
+  return commits.reduce((memo, commit, index) => {
+    memo.set(
+      commit.hash,
+      formatCommit({ commit, byCommitHashRefs, index, commits }),
+    );
     return memo;
   }, new Map());
 }
 
-function formatCommit(
-  commit: CommitGit,
-  byCommitHashRefs: Map<string, Ref[]>,
-): FormattedCommit {
+interface FormatCommitParams {
+  commit: CommitGit;
+  byCommitHashRefs: Map<string, Ref[]>;
+  index: number;
+  commits: CommitGit[];
+}
+
+function formatCommit(params: FormatCommitParams): FormattedCommit {
+  const { commit, commits, index, byCommitHashRefs } = params;
   const { hash } = commit;
   const { type, scope, note } = getFormatCommmitMessage(commit.message);
   const isMerged = getIsMerged(commit);
@@ -58,6 +67,7 @@ function formatCommit(
     scope,
     note,
     isMerged,
+    isLast: index === commits.length - 1,
   };
 }
 
@@ -92,6 +102,12 @@ export function getFormatCommmitMessage(
   }
 
   return { type: "", scope: "", note: message };
+}
+
+export function formattedCommitMessageToString(
+  message: FormattedCommitMessage,
+): string {
+  return `${message.type}: ${message.note.trim()}`;
 }
 
 function getIsMerged(commit: CommitGit): boolean {

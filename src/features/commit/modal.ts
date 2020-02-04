@@ -1,20 +1,19 @@
 import { createStore, createEvent, sample } from "effector";
 import mousetrap from "mousetrap";
 
-import { CommitFormValue } from "features/commit-form";
-import { $formattedLog } from "features/state-git";
+import { $formattedLog, FormattedCommitMessage } from "features/state-git";
 
-const defCommitFormValue = { type: "feat", note: "" };
+const defCommitFormValue = { type: "feat", note: "", scope: "" };
 
 export const $editCommitHash = createStore<string | null>(null);
-export const $commitFormValue = createStore<CommitFormValue>(
+export const $commitFormValue = createStore<FormattedCommitMessage>(
   defCommitFormValue,
 );
 
 export const editCommit = createEvent<string>();
 export const backEditCommit = createEvent<void>();
 export const saveEditCommit = createEvent();
-export const changeCommitFormValue = createEvent<CommitFormValue>();
+export const changeCommitFormValue = createEvent<FormattedCommitMessage>();
 
 sample({
   source: $formattedLog,
@@ -27,6 +26,7 @@ sample({
         return {
           type: commit.type,
           note: commit.note,
+          scope: commit.scope,
         };
       }
     }

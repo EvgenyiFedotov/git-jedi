@@ -1,17 +1,27 @@
 import { spawn, SpawnOptions, SpawnResult } from "./process";
 
 export interface RebaseOptions extends SpawnOptions {
-  target: string;
+  target?: string;
   interactive?: boolean;
+  abort?: boolean;
 }
 
-export interface RebaseResult extends SpawnResult {}
-
 const createCommand = (options: RebaseOptions): string => {
-  const { target, interactive = false } = options;
+  const { target, abort } = options;
 
-  return ["git rebase", interactive && "-i", target].filter(Boolean).join(" ");
+  if (target) {
+    const { interactive } = options;
+    return ["git rebase", interactive && "-i", target]
+      .filter(Boolean)
+      .join(" ");
+  } else if (abort) {
+    return "git rebase --abort";
+  }
+
+  throw new Error("Error! Rebase options is not correct");
 };
+
+export interface RebaseResult extends SpawnResult {}
 
 export const rebase = (options: RebaseOptions): RebaseResult => {
   const command = createCommand(options);

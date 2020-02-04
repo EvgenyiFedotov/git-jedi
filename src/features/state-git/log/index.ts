@@ -4,6 +4,7 @@ export {
   FormattedCommit,
   FormattedCommitMessage,
   getFormatCommmitMessage,
+  formattedCommitMessageToString,
 } from "./formatted-log";
 export { createCommit, committing } from "./create-commit";
 export {
@@ -13,4 +14,6 @@ export {
   abortRebase,
   rebaseRowMoveUp,
   rabaseRowMoveDown,
+  changeActionRowRebaseTodo,
+  writeContentRebaseTodo,
 } from "./rebase";

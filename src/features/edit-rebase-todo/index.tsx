@@ -11,6 +11,8 @@ import {
   rebaseRowMoveUp,
   rabaseRowMoveDown,
   FormattedCommitMessage,
+  changeActionRowRebaseTodo,
+  writeContentRebaseTodo,
 } from "features/state-git";
 import { Row, Column } from "ui";
 import { Branch } from "lib/branch";
@@ -19,13 +21,7 @@ const columns = [
   {
     dataIndex: "action",
     key: "action",
-    render: (action: string) => (
-      <Select value={action} size="small" style={{ minWidth: "72px" }}>
-        <Select.Option value="pick">pick</Select.Option>
-        <Select.Option value="reword">reword</Select.Option>
-        <Select.Option value="squash">squash</Select.Option>
-      </Select>
-    ),
+    render: (_: any, row: RowContentRabaseTodo) => <Action row={row} />,
   },
   {
     dataIndex: "shortHash",
@@ -48,12 +44,14 @@ const columns = [
     dataIndex: "message",
     key: "actions",
     render: (_: any, row: RowContentRabaseTodo) => (
-      <Branch if={!row.isFirst && !row.isLast}>
-        <Row>
-          <Icon type="up" onClick={() => rebaseRowMoveUp(row)} />
+      <Row>
+        <Branch if={!row.isLast}>
           <Icon type="down" onClick={() => rabaseRowMoveDown(row)} />
-        </Row>
-      </Branch>
+        </Branch>
+        <Branch if={!row.isFirst}>
+          <Icon type="up" onClick={() => rebaseRowMoveUp(row)} />
+        </Branch>
+      </Row>
     ),
   },
 ];
@@ -63,7 +61,6 @@ export const EditRebaseTodo: React.FC = () => {
 
   return (
     <Column>
-      <Button onClick={() => abortRebase()}>Abort rebase</Button>
       <Table
         showHeader={false}
         size="middle"
@@ -72,6 +69,10 @@ export const EditRebaseTodo: React.FC = () => {
         dataSource={contentRebaseTodo}
         rowKey={(row: RowContentRabaseTodo) => row.shortHash}
       />
+      <Button onClick={() => abortRebase()}>Abort</Button>
+      <Button type="primary" onClick={() => writeContentRebaseTodo()}>
+        Next
+      </Button>
     </Column>
   );
 };
@@ -80,3 +81,20 @@ const Icon = styled(IconAntd)`
   color: ${blue.primary};
   cursor: pointer;
 `;
+
+const Action: React.FC<{ row: RowContentRabaseTodo }> = ({ row }) => {
+  const { action } = row;
+
+  return (
+    <Select
+      value={action}
+      size="small"
+      style={{ minWidth: "72px" }}
+      onChange={(value: string) => changeActionRowRebaseTodo({ row, value })}
+    >
+      <Select.Option value="pick">pick</Select.Option>
+      <Select.Option value="reword">reword</Select.Option>
+      <Select.Option value="squash">squash</Select.Option>
+    </Select>
+  );
+};

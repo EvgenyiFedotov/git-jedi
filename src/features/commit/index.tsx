@@ -30,9 +30,8 @@ export const getColorCommit = (commit: FormattedCommit): string | undefined => {
 
 export const Commit: React.FC<{
   commit: FormattedCommit;
-  isFirst: boolean;
-}> = ({ commit, isFirst }) => {
-  const { refs, hash, note, type, scope } = commit;
+}> = ({ commit }) => {
+  const { refs, hash, note, type, scope, isLast } = commit;
 
   const color = getColorCommit(commit);
   // const editCommitHash = useStore($editCommitHash);
@@ -80,11 +79,11 @@ export const Commit: React.FC<{
         </CommitTag>
         {/* </Branch> */}
 
-        <Branch if={!isFirst}>
+        <Branch if={!isLast}>
           <MyIcon
             type="branches"
             title="Rebase up"
-            onClick={() => rebaseUp(hash)}
+            onClick={() => rebaseUp(`${hash}~1`)}
           />
         </Branch>
 

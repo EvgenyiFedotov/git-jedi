@@ -1,9 +1,6 @@
 import { createStore, createEvent } from "effector";
 
-export interface CommitFormValue {
-  type: string;
-  note: string;
-}
+import { FormattedCommitMessage } from "features/state-git";
 
 export const $types = createStore<string[]>([
   "feat",
@@ -22,7 +19,7 @@ export const $note = createStore<string>("");
 export const changeType = createEvent<string>();
 export const changeNote = createEvent<React.ChangeEvent<HTMLTextAreaElement>>();
 export const formatNote = createEvent<any>();
-export const mount = createEvent<CommitFormValue>();
+export const mount = createEvent<FormattedCommitMessage>();
 
 $type.on(changeType, (_, type) => type);
 $type.on(mount, (_, { type }) => type || "feat");
