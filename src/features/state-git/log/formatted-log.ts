@@ -47,7 +47,7 @@ function formatCommit(
   byCommitHashRefs: Map<string, Ref[]>,
 ): FormattedCommit {
   const { hash } = commit;
-  const { type, scope, note } = getTypeCommit(commit);
+  const { type, scope, note } = getFormatCommmitMessage(commit.message);
   const isMerged = getIsMerged(commit);
 
   return {
@@ -61,31 +61,37 @@ function formatCommit(
   };
 }
 
-function getTypeCommit(
-  commit: CommitGit,
-): { type: string; note: string; scope: string } {
+export interface FormattedCommitMessage {
+  type: string;
+  note: string;
+  scope: string;
+}
+
+export function getFormatCommmitMessage(
+  message: string,
+): FormattedCommitMessage {
   const regOnlyType = /^([\w_]*):/;
-  let matchResult = commit.message.match(regOnlyType);
+  let matchResult = message.match(regOnlyType);
 
   if (matchResult) {
     const type = matchResult[1];
-    const note = commit.message.replace(regOnlyType, "").trim();
+    const note = message.replace(regOnlyType, "").trim();
 
     return { type, note, scope: "" };
   }
 
   const regWithScope = /^([\w_]*)\(([\w_/-]*)\):/;
-  matchResult = commit.message.match(regWithScope);
+  matchResult = message.match(regWithScope);
 
   if (matchResult) {
     const type = matchResult[1];
     const scope = matchResult[2].trim();
-    const note = commit.message.replace(regWithScope, "").trim();
+    const note = message.replace(regWithScope, "").trim();
 
     return { type, note, scope };
   }
 
-  return { type: "", scope: "", note: commit.message };
+  return { type: "", scope: "", note: message };
 }
 
 function getIsMerged(commit: CommitGit): boolean {

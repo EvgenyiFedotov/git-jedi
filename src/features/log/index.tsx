@@ -12,12 +12,12 @@ export const Log: React.FC = () => {
   const formattedLog = useStore($formattedLog);
   const status = useStore($status);
 
-  const listLog = Array.from(formattedLog.values()).map((commit) => {
+  const listLog = Array.from(formattedLog.values()).map((commit, index) => {
     const color = getColorCommit(commit);
 
     return (
       <Timeline.Item key={commit.hash} color={color}>
-        <Commit commit={commit} />
+        <Commit commit={commit} isFirst={index === 0} />
       </Timeline.Item>
     );
   });

@@ -22,4 +22,4 @@ export { checkout, checkoutSync, CheckoutOptions } from "./checkout";
 export { add, addSync, AddOptions } from "./add";
 export { reset, resetSync, ResetOptions } from "./reset";
 export { commit, commitSync, CommitOptions } from "./commit";
-export { rebase, RebaseOptions } from "./rebase";
+export { rebase, RebaseOptions, RebaseResult } from "./rebase";

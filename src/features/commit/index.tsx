@@ -2,18 +2,19 @@ import * as React from "react";
 import { Tag, message, Divider, Icon } from "antd";
 import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
-import { useStore } from "effector-react";
+// import { useStore } from "effector-react";
 
 import { FormattedCommit } from "features/state-git";
 import { Branch } from "lib/branch";
-import { CommitForm } from "features/commit-form";
+// import { CommitForm } from "features/commit-form";
+import { rebaseUp } from "features/state-git";
 
-import {
-  editCommit,
-  $editCommitHash,
-  $commitFormValue,
-  changeCommitFormValue,
-} from "./modal";
+// import {
+//   editCommit,
+//   $editCommitHash,
+//   $commitFormValue,
+//   changeCommitFormValue,
+// } from "./modal";
 
 export const hashCopied = () => message.success("Commit hash copied", 1);
 
@@ -27,14 +28,17 @@ export const getColorCommit = (commit: FormattedCommit): string | undefined => {
   return commit.isMerged ? cyan.primary : blue.primary;
 };
 
-export const Commit: React.FC<{ commit: FormattedCommit }> = ({ commit }) => {
+export const Commit: React.FC<{
+  commit: FormattedCommit;
+  isFirst: boolean;
+}> = ({ commit, isFirst }) => {
   const { refs, hash, note, type, scope } = commit;
 
   const color = getColorCommit(commit);
-  const editCommitHash = useStore($editCommitHash);
-  const commitFormValue = useStore($commitFormValue);
+  // const editCommitHash = useStore($editCommitHash);
+  // const commitFormValue = useStore($commitFormValue);
 
-  const isEdit = editCommitHash === hash;
+  // const isEdit = editCommitHash === hash;
 
   const refList = refs.map((ref) => {
     const { type, shortName, name } = ref;
@@ -53,9 +57,9 @@ export const Commit: React.FC<{ commit: FormattedCommit }> = ({ commit }) => {
     hashCopied();
   }, [hash]);
 
-  const edit = React.useCallback(() => {
-    editCommit(hash);
-  }, [hash]);
+  // const edit = React.useCallback(() => {
+  //   editCommit(hash);
+  // }, [hash]);
 
   return (
     <CommitContainer>
@@ -64,48 +68,56 @@ export const Commit: React.FC<{ commit: FormattedCommit }> = ({ commit }) => {
           {hash.substr(0, 8)}
         </a>
 
-        <Branch if={!!type && !isEdit}>
-          <CommitTag color={color}>
-            {type}
-            <Branch if={!!scope}>
-              <>
-                <CommitDevider type="vertical" />
-                <>{scope}</>
-              </>
-            </Branch>
-          </CommitTag>
+        {/* <Branch if={!!type && !isEdit}> */}
+        <CommitTag color={color}>
+          {type}
+          <Branch if={!!scope}>
+            <>
+              <CommitDevider type="vertical" />
+              <>{scope}</>
+            </>
+          </Branch>
+        </CommitTag>
+        {/* </Branch> */}
+
+        <Branch if={!isFirst}>
+          <MyIcon
+            type="branches"
+            title="Rebase up"
+            onClick={() => rebaseUp(hash)}
+          />
         </Branch>
 
-        <Branch if={!isEdit}>
+        {/* <Branch if={!isEdit}>
           <IconIdit type="edit" onClick={edit} />
-        </Branch>
+        </Branch> */}
       </CommitBlock>
 
       <CommitBlock>{refList}</CommitBlock>
 
-      <Branch if={!isEdit}>
-        <CommitNote>{note}</CommitNote>
-      </Branch>
+      {/* <Branch if={!isEdit}> */}
+      <CommitNote>{note}</CommitNote>
+      {/* </Branch> */}
 
-      <Branch if={isEdit}>
+      {/* <Branch if={isEdit}>
         <CommitForm value={commitFormValue} onChange={changeCommitFormValue} />
-      </Branch>
+      </Branch> */}
     </CommitContainer>
   );
 };
 
-const IconIdit = styled(Icon)`
+const MyIcon = styled(Icon)`
   cursor: pointer;
 `;
 
 const CommitContainer = styled.div`
   border-radius: 3px;
 
-  & ${IconIdit} {
+  & ${MyIcon} {
     visibility: hidden;
   }
 
-  &:hover ${IconIdit} {
+  &:hover ${MyIcon} {
     visibility: visible;
   }
 `;
@@ -122,7 +134,7 @@ const CommitBlock = styled.div`
   align-items: center;
 
   & > ${CommitDevider}, ${CommitTag}, a,
-  ${IconIdit} {
+  ${MyIcon} {
     margin-bottom: 8px;
   }
 `;
