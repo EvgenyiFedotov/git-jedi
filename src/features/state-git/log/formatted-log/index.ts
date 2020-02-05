@@ -5,6 +5,12 @@ import { $originalLog } from "../original-log";
 import { $byCommitHashRefs } from "../../refs";
 import { FormattedLog, formatLog } from "./handlers";
 
+export {
+  FormattedCommitMessage,
+  FormattedCommit,
+  formattedCommitMessageToString,
+} from "./handlers";
+
 interface CombineStores {
   originalLog: Store<Log>;
   byCommitHashRefs: Store<Map<string, Ref[]>>;

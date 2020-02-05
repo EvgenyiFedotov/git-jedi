@@ -1,7 +1,7 @@
 import { createStore, split, combine } from "effector";
 import {
-  $contentRebaseTodo,
-  $contentCommitEditMessagePrev,
+  $contentRebaseTodoFormatted,
+  $contentCommitMessageOriginal,
 } from "features/state-git";
 
 type Tab = "log" | "edit-rebase-todo" | "edit-commit-message";
@@ -10,15 +10,22 @@ export const $tab = createStore<Tab>("log");
 
 const changeTab = split(
   combine({
-    contentRebaseTodo: $contentRebaseTodo,
-    contentCommitEditMessagePrev: $contentCommitEditMessagePrev,
+    contentRebaseTodoFormatted: $contentRebaseTodoFormatted,
+    contentCommitMessageOriginal: $contentCommitMessageOriginal,
   }),
   {
-    log: ({ contentRebaseTodo }) => !contentRebaseTodo.ref.length,
-    editRebaseTodo: ({ contentRebaseTodo, contentCommitEditMessagePrev }) =>
-      !!contentRebaseTodo.ref.length && !contentCommitEditMessagePrev,
-    editCommitMessage: ({ contentRebaseTodo, contentCommitEditMessagePrev }) =>
-      !!contentRebaseTodo.ref.length && !!contentCommitEditMessagePrev,
+    log: ({ contentRebaseTodoFormatted }) =>
+      !contentRebaseTodoFormatted.ref.length,
+    editRebaseTodo: ({
+      contentRebaseTodoFormatted,
+      contentCommitMessageOriginal,
+    }) =>
+      !!contentRebaseTodoFormatted.ref.length && !contentCommitMessageOriginal,
+    editCommitMessage: ({
+      contentRebaseTodoFormatted,
+      contentCommitMessageOriginal,
+    }) =>
+      !!contentRebaseTodoFormatted.ref.length && !!contentCommitMessageOriginal,
   },
 );
 

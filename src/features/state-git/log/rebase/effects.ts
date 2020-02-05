@@ -29,8 +29,10 @@ export const abordingRebase = createEffect<BaseOptions, void>({
 });
 
 export const rebasing = createEffect<RebaseOptions, RebaseResult>({
-  handler: (options) => {
-    abordingRebase({ execOptions: options.execOptions });
+  handler: async (options) => {
+    try {
+      await abordingRebase({ execOptions: options.execOptions });
+    } catch (e) {}
     return rebaseGit(options);
   },
 });
@@ -38,11 +40,11 @@ export const rebasing = createEffect<RebaseOptions, RebaseResult>({
 export const writingContentRabaseTodo = createEffect<
   {
     pathFile: string;
-    contentRebaseTodo: { ref: RowContentRabaseTodo[] };
+    contentRebaseTodoFormatted: { ref: RowContentRabaseTodo[] };
   },
   void
 >({
-  handler: async ({ contentRebaseTodo: { ref }, pathFile }) => {
+  handler: async ({ contentRebaseTodoFormatted: { ref }, pathFile }) => {
     const content = ref
       .reduce<string[]>((memo, row) => {
         const message = formattedCommitMessageToString(row.message);
@@ -59,12 +61,14 @@ export const writingContentRabaseTodo = createEffect<
 export const writingContentCommitMesssage = createEffect<
   {
     pathFile: string;
-    contentCommitMessage: FormattedCommitMessage;
+    contentCommitMessageFormatted: FormattedCommitMessage;
   },
   void
 >({
-  handler: async ({ pathFile, contentCommitMessage }) => {
-    const content = formattedCommitMessageToString(contentCommitMessage);
+  handler: async ({ pathFile, contentCommitMessageFormatted }) => {
+    const content = formattedCommitMessageToString(
+      contentCommitMessageFormatted,
+    );
 
     writeFileSync(pathFile, content);
     ipcRenderer.send("rebase-response", content);

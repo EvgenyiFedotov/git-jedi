@@ -4,6 +4,7 @@ export interface FormatLogParams {
   originalLog: Log;
   byCommitHashRefs: Map<string, Ref[]>;
 }
+
 export interface FormattedCommit extends CommitGit {
   key: string;
   type: string;

@@ -5,11 +5,11 @@ import { blue } from "@ant-design/colors";
 import styled from "styled-components";
 
 import {
-  $contentRebaseTodo,
+  $contentRebaseTodoFormatted,
   RowContentRabaseTodo,
   abortRebase,
   rebaseRowMoveUp,
-  rabaseRowMoveDown,
+  rebaseRowMoveDown,
   FormattedCommitMessage,
   changeActionRowRebaseTodo,
   writeContentRebaseTodo,
@@ -46,7 +46,7 @@ const columns = [
     render: (_: any, row: RowContentRabaseTodo) => (
       <Row>
         <Branch if={!row.isLast}>
-          <Icon type="down" onClick={() => rabaseRowMoveDown(row)} />
+          <Icon type="down" onClick={() => rebaseRowMoveDown(row)} />
         </Branch>
         <Branch if={!row.isFirst}>
           <Icon type="up" onClick={() => rebaseRowMoveUp(row)} />
@@ -57,7 +57,7 @@ const columns = [
 ];
 
 export const EditRebaseTodo: React.FC = () => {
-  const { ref: contentRebaseTodo } = useStore($contentRebaseTodo);
+  const { ref: contentRebaseTodo } = useStore($contentRebaseTodoFormatted);
 
   return (
     <Column>
