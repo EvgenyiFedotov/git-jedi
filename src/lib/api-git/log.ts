@@ -1,4 +1,5 @@
 import { exec, execSync, BaseOptions } from "./process";
+import { log as logV2 } from "../api-git-v2";
 
 export interface Commit {
   hash: string;
@@ -64,6 +65,12 @@ export const logSync = (options: LogOptions = {}): Log => {
   const command = createCommand(options);
   const execResult = execSync(command, options);
   const lines = stdoutToCommitLines(execResult);
+
+  const pipe = logV2({ spawnOptions: options.execOptions });
+  pipe.next((value) => {
+    console.log(value);
+    pipe.destroy();
+  });
 
   return commitLinesToLog(lines);
 };
