@@ -5,6 +5,7 @@ import * as electron from "electron";
 import styled from "styled-components";
 
 import { changeCwd, $cwd } from "features/state-git";
+import { changeCwd as changeCwdV2 } from "features/state-git-v2";
 import { Row } from "ui";
 
 const { Text } = Typography;
@@ -24,6 +25,7 @@ const selectPath = () =>
 
       if (canceled === false) {
         changeCwd(nextPath);
+        changeCwdV2(nextPath);
       }
     });
 

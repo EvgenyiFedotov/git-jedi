@@ -15,19 +15,17 @@ export const logCommitFormat = ["%H", "%P", "%ct", "%an", "%B"].join("%n");
 
 export const log = (options: LogOptions = {}) => {
   const args = createArgs(options);
-  const res = runCommandGit(args);
+  const res = runCommandGit(args, options);
   const dataPipe = createPipe<string>();
 
   res.data(dataPipe.resolve);
-  res.error(console.log);
-  res.close(console.log);
 
   return dataPipe.next(toCommitBlocks).next(toCommits);
 };
 
 export function createArgs(options: LogOptions): string[] {
   const pretty = `--pretty=format:${COMMIT_BEGIN}%n${logCommitFormat}`;
-  return ["log", "--all", pretty];
+  return ["log", pretty];
 }
 
 export function toCommitBlocks(stdout: string): string[] {

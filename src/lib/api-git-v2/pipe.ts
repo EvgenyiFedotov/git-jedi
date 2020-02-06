@@ -1,15 +1,18 @@
 export interface Pipe<Value> {
-  next: <Result>(callback: (value: Value) => Result) => Pipe<Result>;
+  next: <Result>(
+    callback: (value: Value, icr: number) => Result,
+  ) => Pipe<Result>;
   resolve: (value: Value) => void;
   destroy: () => void;
 }
 
 export const createPipe = <Value>() => {
-  let callbacks: ((value: Value) => any)[] = [];
+  let callbacks: ((value: Value, icr: number) => any)[] = [];
   let pipes: Pipe<any>[] = [];
+  let indexCallResolve = 0;
 
   const result: Pipe<Value> = {
-    next: <Result>(callback: (value: Value) => Result) => {
+    next: <Result>(callback: (value: Value, icr: number) => Result) => {
       const pipe = createPipe<Result>();
       callbacks.push(callback);
       pipes.push(pipe);
@@ -18,8 +21,9 @@ export const createPipe = <Value>() => {
 
     resolve: (value: Value) => {
       callbacks.forEach((callback, index) => {
-        pipes[index].resolve(callback(value));
+        pipes[index].resolve(callback(value, indexCallResolve));
       });
+      indexCallResolve += 1;
     },
 
     destroy: () => {
