@@ -11,6 +11,5 @@ export const commit = (options: CommitOptions) => {
 
 function createArgs(options: CommitOptions): string[] {
   const { message } = options;
-
   return ["commit", "-m", message];
 }
