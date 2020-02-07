@@ -1,5 +1,4 @@
 import { runCommandGit, RunCommandOptions } from "./process";
-import { createPipe } from "./pipe";
 
 export interface LogOptions extends RunCommandOptions {}
 export interface Commit {
@@ -10,32 +9,29 @@ export interface Commit {
   message: string;
 }
 
-export const COMMIT_BEGIN = "COMMIT::BEGIN";
-export const logCommitFormat = ["%H", "%P", "%ct", "%an", "%B"].join("%n");
+const COMMIT_BEGIN = "COMMIT::BEGIN";
+const logCommitFormat = ["%H", "%P", "%ct", "%an", "%B"].join("%n");
 
 export const log = (options: LogOptions = {}) => {
   const args = createArgs(options);
-  const res = runCommandGit(args, options);
-  const dataPipe = createPipe<string>();
+  const gitPipe = runCommandGit(args, options);
 
-  res.data(dataPipe.resolve);
-
-  return dataPipe.next(toCommitBlocks).next(toCommits);
+  return gitPipe.next(toCommitBlocks).next(toCommits);
 };
 
-export function createArgs(options: LogOptions): string[] {
+function createArgs(options: LogOptions): string[] {
   const pretty = `--pretty=format:${COMMIT_BEGIN}%n${logCommitFormat}`;
   return ["log", pretty];
 }
 
-export function toCommitBlocks(stdout: string): string[] {
+function toCommitBlocks(stdout: string): string[] {
   return stdout
     .split(COMMIT_BEGIN)
     .map((value) => value.replace(/^\n/, ""))
     .filter(Boolean);
 }
 
-export function toCommits(commitBlocks: string[]): Map<string, Commit> {
+function toCommits(commitBlocks: string[]): Map<string, Commit> {
   return commitBlocks.reduce((memo, commitBlock) => {
     const commit = toCommit(commitBlock);
     memo.set(commit.hash, commit);
@@ -43,7 +39,7 @@ export function toCommits(commitBlocks: string[]): Map<string, Commit> {
   }, new Map());
 }
 
-export function toCommit(commitBlock: string): Commit {
+function toCommit(commitBlock: string): Commit {
   const [hash, parentHash, dateTime, author, ...note] = commitBlock.split("\n");
 
   note.pop();

@@ -5,6 +5,7 @@ import {
   formattedCommitMessageToString,
   FormattedCommitMessage,
 } from "features/state-git";
+import { createCommit as createCommitGitV2 } from "features/state-git-v2";
 
 export const $isShowChanges = createStore<boolean>(true);
 export const $commitFormValue = createStore<FormattedCommitMessage>({
@@ -21,8 +22,15 @@ sample({
   source: $commitFormValue,
   clock: createCommit,
   fn: (commit) => formattedCommitMessageToString(commit),
-  target: createCommitGit,
+  target: createCommitGitV2,
 });
+
+// sample({
+//   source: $commitFormValue,
+//   clock: createCommit,
+//   fn: (commit) => formattedCommitMessageToString(commit),
+//   target: createCommitGit,
+// });
 
 $isShowChanges.on(toggleIsShowChanges, (prev) => !prev);
 

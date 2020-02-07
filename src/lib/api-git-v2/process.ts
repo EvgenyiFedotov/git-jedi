@@ -1,5 +1,7 @@
 import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 
+import { createPipe } from "./pipe";
+
 export interface RunCommandScope {
   command: string;
   options: RunCommandOptions;
@@ -118,13 +120,16 @@ export const runCommand = (
   return result;
 };
 
-export const runCommandGit = (
-  args: string[],
-  options?: RunCommandOptions,
-): RunCommandResult => {
-  return runCommand("git", {
+export const runCommandGit = (args: string[], options?: RunCommandOptions) => {
+  const runningCommand = runCommand("git", {
     args,
     commandOptions: options && options.commandOptions,
     spawnOptions: options && options.spawnOptions,
   });
+  const pipe = createPipe<string, number>();
+
+  runningCommand.data(pipe.resolve);
+  runningCommand.close(pipe.close);
+
+  return pipe;
 };

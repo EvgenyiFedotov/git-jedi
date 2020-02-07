@@ -1,7 +1,15 @@
-import { createStore, createEffect, createEvent, forward } from "effector";
+import {
+  createStore,
+  createEffect,
+  createEvent,
+  sample,
+  merge,
+} from "effector";
 import { Commit, LogOptions, log as logGit } from "lib/api-git-v2";
 
 import { $runCommandOptions } from "../../config";
+import { createCommit } from "../events";
+import { commit } from "../effects";
 
 export { Commit } from "lib/api-git-v2";
 
@@ -18,9 +26,20 @@ export const log = createEffect<LogOptions, void>({
   },
 });
 
-forward({
-  from: $runCommandOptions,
-  to: log,
+sample({
+  source: $runCommandOptions,
+  clock: createCommit,
+  fn: (options, message) => ({
+    ...options,
+    message,
+  }),
+  target: commit,
+});
+
+sample({
+  source: $runCommandOptions,
+  clock: merge([$runCommandOptions, commit.done]),
+  target: log,
 });
 
 $logOriginal.on(addChunkLog, (store, { chunk, index }) => {

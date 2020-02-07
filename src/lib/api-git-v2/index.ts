@@ -19,3 +19,5 @@ export {
   toMessage,
   toMessageFormatted,
 } from "./message-formatted";
+export { commit, CommitOptions } from "./commit";
+export { showRef, ShowRefOptions, Ref } from "./show-ref";
