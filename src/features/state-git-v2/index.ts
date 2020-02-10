@@ -8,3 +8,4 @@ export {
   createBranch,
   checkout,
 } from "./current-branch";
+export * from "./changes";
