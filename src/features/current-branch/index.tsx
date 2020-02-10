@@ -3,34 +3,37 @@ import { Select } from "antd";
 import { useStore } from "effector-react";
 
 import {
-  $onlyBranchRefs,
+  $refsOnlyBranches,
   $currentBranch,
   checkoutTo,
-} from "features/state-git";
+} from "features/state-git-v2";
 import { Row } from "ui";
+import { Branch } from "lib/branch";
 
 const { Option } = Select;
 
 export const CurrentBrunch: React.FC = () => {
   const currentBrunch = useStore($currentBranch);
-  const onlyBranchRefs = useStore($onlyBranchRefs);
+  const refsOnlyBranches = useStore($refsOnlyBranches);
 
-  const options = onlyBranchRefs.map((ref, index) => (
+  const options = Array.from(refsOnlyBranches.values()).map((ref, index) => (
     <Option key={index} value={ref.shortName}>
       {ref.shortName}
     </Option>
   ));
 
   return (
-    <Row>
-      <Select
-        size="small"
-        style={{ width: "140px" }}
-        value={currentBrunch}
-        onChange={checkoutTo}
-      >
-        {options}
-      </Select>
-    </Row>
+    <Branch if={typeof currentBrunch === "string"}>
+      <Row>
+        <Select
+          size="small"
+          style={{ width: "140px" }}
+          value={currentBrunch || ""}
+          onChange={checkoutTo}
+        >
+          {options}
+        </Select>
+      </Row>
+    </Branch>
   );
 };

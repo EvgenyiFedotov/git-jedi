@@ -11,7 +11,8 @@ export const $runCommandOptions = combine(
   ({ cwd }): RunCommandOptions => ({
     spawnOptions: { cwd },
     commandOptions: {
-      onBefore: (command) => console.log(command),
+      onBefore: ({ command, options }) =>
+        console.log("V2:", [command, ...(options.args || [])].join(" ")),
       onError,
     },
   }),

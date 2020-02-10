@@ -66,16 +66,5 @@ export const logSync = (options: LogOptions = {}): Log => {
   const execResult = execSync(command, options);
   const lines = stdoutToCommitLines(execResult);
 
-  // const pipe = logV2({
-  //   spawnOptions: options.execOptions,
-  //   commandOptions: {
-  //     onData: console.log,
-  //   },
-  // });
-  // pipe.next((value) => {
-  //   console.log("PIPE:", value);
-  //   pipe.destroy();
-  // });
-
   return commitLinesToLog(lines);
 };

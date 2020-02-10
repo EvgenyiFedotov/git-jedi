@@ -1,8 +1,8 @@
 import { createStore, createEvent, sample } from "effector";
 import {
-  creatingBranch,
   createBranch as createBranchGit,
-} from "features/state-git";
+  checkout,
+} from "features/state-git-v2";
 
 export const $nameBranch = createStore<string>("");
 export const $isShowButton = createStore<boolean>(true);
@@ -21,8 +21,8 @@ sample({
 });
 
 $nameBranch.on(changeNameBranch, (_, event) => event.currentTarget.value);
-$nameBranch.on(creatingBranch.done, () => "");
+$nameBranch.on(checkout.done, () => "");
 
 $isShowButton.on(showButton, () => true);
 $isShowButton.on(hideButton, () => false);
-$isShowButton.on(creatingBranch.done, () => true);
+$isShowButton.on(checkout.done, () => true);

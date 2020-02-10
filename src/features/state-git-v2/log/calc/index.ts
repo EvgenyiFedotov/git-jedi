@@ -18,7 +18,6 @@ $logCalc.on(addChunkLog, (store, { chunk, index }) => {
 
   return toLogCalc(chunk);
 });
-$logCalc.watch(console.log);
 
 export function toLogCalc(log: Map<string, Commit>): Map<string, CommitCalc> {
   const values = Array.from(log.values());
