@@ -9,3 +9,4 @@ export {
   checkout,
 } from "./current-branch";
 export * from "./changes";
+export * from "./rebase";
