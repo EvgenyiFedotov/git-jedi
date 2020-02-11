@@ -5,6 +5,9 @@ import { pipeCommandToPromise } from "lib/pipe-command-promise";
 import { $runCommandOptions } from "../../config";
 import { $currentBranch } from "../../current-branch";
 import { commit } from "../../log";
+import { add } from "../staged/effects";
+import { reset } from "../unstaged/effects";
+import { discard } from "../discard-paths/effects";
 
 export const $status = createStore<ChangeLine[]>([]);
 
@@ -17,7 +20,14 @@ export const status = createEffect<StatusOptions, ChangeLine[]>({
 
 sample({
   source: $runCommandOptions,
-  clock: merge([$runCommandOptions, $currentBranch, commit.done]),
+  clock: merge([
+    $runCommandOptions,
+    $currentBranch,
+    commit.done,
+    add.done,
+    reset.done,
+    discard.done,
+  ]),
   target: status,
 });
 

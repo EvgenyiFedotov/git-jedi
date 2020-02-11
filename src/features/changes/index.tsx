@@ -10,6 +10,7 @@ import {
   $discardPaths,
   $stagedChanges,
   addDiscardPath,
+  discardAll,
   stage,
   stageAll,
   unstage,
@@ -80,6 +81,7 @@ const UnstageChanges: React.FC = () => {
             type="rollback"
             title="Discard all changes"
             style={{ marginRight: "4px" }}
+            onClick={() => discardAll()}
           />
           <Icon
             type="plus"

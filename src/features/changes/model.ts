@@ -1,9 +1,4 @@
 import { createEvent, createStore, sample } from "effector";
-// import {
-//   commit,
-//   formattedCommitMessageToString,
-//   FormattedCommitMessage,
-// } from "features/state-git-v2";
 import { createCommit as createCommitGitV2 } from "features/state-git-v2";
 import { MessageFormatted, toMessage } from "lib/api-git-v2";
 
@@ -25,18 +20,6 @@ sample({
   target: createCommitGitV2,
 });
 
-// sample({
-//   source: $commitFormValue,
-//   clock: createCommit,
-//   fn: (commit) => formattedCommitMessageToString(commit),
-//   target: createCommitGit,
-// });
-
 $isShowChanges.on(toggleIsShowChanges, (prev) => !prev);
 
-// $commitFormValue.on(commit.done, () => ({
-//   type: "feat",
-//   note: "",
-//   scope: "",
-// }));
 $commitFormValue.on(changeCommitFormValue, (_, value) => value);

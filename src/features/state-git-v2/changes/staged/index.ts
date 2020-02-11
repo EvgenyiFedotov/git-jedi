@@ -1,9 +1,8 @@
-import { combine, createEvent, createEffect, sample } from "effector";
-import { add as addGit, AddOptions } from "lib/api-git-v2";
-import { pipeCommandToPromise } from "lib/pipe-command-promise";
+import { combine, createEvent, sample } from "effector";
 
 import { $status } from "../status";
 import { $runCommandOptions } from "../../config";
+import { add } from "./effects";
 
 export const $stagedChanges = combine($status, (status) =>
   status.filter((status) => {
@@ -13,12 +12,6 @@ export const $stagedChanges = combine($status, (status) =>
 
 export const stage = createEvent<string>();
 export const stageAll = createEvent<void>();
-
-export const add = createEffect<AddOptions, void>({
-  handler: async (options) => {
-    await pipeCommandToPromise(addGit(options));
-  },
-});
 
 sample({
   source: $runCommandOptions,
