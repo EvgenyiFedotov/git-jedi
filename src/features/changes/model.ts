@@ -1,14 +1,14 @@
 import { createEvent, createStore, sample } from "effector";
-import {
-  createCommit as createCommitGit,
-  committing,
-  formattedCommitMessageToString,
-  FormattedCommitMessage,
-} from "features/state-git";
+// import {
+//   commit,
+//   formattedCommitMessageToString,
+//   FormattedCommitMessage,
+// } from "features/state-git-v2";
 import { createCommit as createCommitGitV2 } from "features/state-git-v2";
+import { MessageFormatted, toMessage } from "lib/api-git-v2";
 
 export const $isShowChanges = createStore<boolean>(true);
-export const $commitFormValue = createStore<FormattedCommitMessage>({
+export const $commitFormValue = createStore<MessageFormatted>({
   type: "feat",
   note: "",
   scope: "",
@@ -16,12 +16,12 @@ export const $commitFormValue = createStore<FormattedCommitMessage>({
 
 export const createCommit = createEvent<void>();
 export const toggleIsShowChanges = createEvent<any>();
-export const changeCommitFormValue = createEvent<FormattedCommitMessage>();
+export const changeCommitFormValue = createEvent<MessageFormatted>();
 
 sample({
   source: $commitFormValue,
   clock: createCommit,
-  fn: (commit) => formattedCommitMessageToString(commit),
+  fn: (commit) => toMessage(commit),
   target: createCommitGitV2,
 });
 
@@ -34,9 +34,9 @@ sample({
 
 $isShowChanges.on(toggleIsShowChanges, (prev) => !prev);
 
-$commitFormValue.on(committing.done, () => ({
-  type: "feat",
-  note: "",
-  scope: "",
-}));
+// $commitFormValue.on(commit.done, () => ({
+//   type: "feat",
+//   note: "",
+//   scope: "",
+// }));
 $commitFormValue.on(changeCommitFormValue, (_, value) => value);

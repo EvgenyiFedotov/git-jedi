@@ -4,13 +4,13 @@ import * as antd from "antd";
 import styled from "styled-components";
 
 import { useMousetrap } from "lib/use-mousetrap";
-import { FormattedCommitMessage } from "features/state-git";
+import { MessageFormatted } from "lib/api-git-v2";
 
 import { $types } from "./model";
 
 export interface CommitFormProps {
-  value: FormattedCommitMessage;
-  onChange?: (value: FormattedCommitMessage) => void;
+  value: MessageFormatted;
+  onChange?: (value: MessageFormatted) => void;
   onSave?: () => void;
 }
 

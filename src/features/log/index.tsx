@@ -2,22 +2,34 @@ import * as React from "react";
 import { Timeline, Icon } from "antd";
 import { useStore } from "effector-react";
 
-import { $formattedLog, $status } from "features/state-git";
+import {
+  $logOriginal,
+  $logCalc,
+  $status,
+  $refsByCommitHash,
+} from "features/state-git-v2";
 import { Branch } from "lib/branch";
 import { Changes } from "features/changes";
 import { toggleIsShowChanges } from "features/changes/model";
 import { Commit, getColorCommit } from "features/commit";
 
 export const Log: React.FC = () => {
-  const formattedLog = useStore($formattedLog);
+  const logOriginal = useStore($logOriginal);
+  const logCalc = useStore($logCalc);
+  const refsByCommitHash = useStore($refsByCommitHash);
   const status = useStore($status);
 
-  const listLog = Array.from(formattedLog.values()).map((commit, index) => {
-    const color = getColorCommit(commit);
+  const listLog = Array.from(logOriginal.values()).map((commit, index) => {
+    const commitCalc = logCalc.get(commit.hash);
+    const refs = refsByCommitHash.get(commit.hash);
+
+    if (!commitCalc) return null;
+
+    const color = getColorCommit(commitCalc);
 
     return (
       <Timeline.Item key={commit.hash} color={color}>
-        <Commit commit={commit} />
+        <Commit commit={commit} commitCalc={commitCalc} refs={refs || []} />
       </Timeline.Item>
     );
   });

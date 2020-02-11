@@ -9,12 +9,12 @@ import {
   $unstagedChanges,
   $discardPaths,
   $stagedChanges,
-  discard,
+  addDiscardPath,
   stage,
   stageAll,
   unstage,
   unstageAll,
-} from "features/state-git";
+} from "features/state-git-v2";
 import { Branch } from "lib/branch";
 import { StatusPath } from "lib/api-git";
 import { CommitForm } from "features/commit-form";
@@ -100,7 +100,7 @@ const ListUnstageChanges: React.FC = (props) => {
   const list = unstageChanges.map((status) => {
     return (
       <div key={status.path}>
-        <Branch if={discardPaths.has(status.path)}>
+        <Branch if={discardPaths.ref.has(status.path)}>
           <Icon type="loading" />
           <Status status={status.status} />
         </Branch>
@@ -109,7 +109,7 @@ const ListUnstageChanges: React.FC = (props) => {
           type="rollback"
           title="Discard changes"
           style={{ marginRight: "4px" }}
-          onClick={() => discard(status.path)}
+          onClick={() => addDiscardPath(status.path)}
         />
         <Icon
           type="plus"

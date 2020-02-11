@@ -7,7 +7,7 @@ import {
   abortRebase,
   writeContentCommitMessage,
   changeContentCommitMessageFormatted,
-} from "features/state-git";
+} from "features/state-git"; // TODO rebase
 import { CommitForm } from "features/commit-form";
 import { Column } from "ui";
 

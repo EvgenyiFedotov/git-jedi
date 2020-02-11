@@ -2,46 +2,36 @@ import * as React from "react";
 import { Tag, message, Divider, Icon } from "antd";
 import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
-// import { useStore } from "effector-react";
-
-import { FormattedCommit } from "features/state-git";
+import { Commit as CommitGit, CommitCalc, Ref } from "features/state-git-v2";
 import { Branch } from "lib/branch";
-// import { CommitForm } from "features/commit-form";
-import { rebaseUp } from "features/state-git";
-
-// import {
-//   editCommit,
-//   $editCommitHash,
-//   $commitFormValue,
-//   changeCommitFormValue,
-// } from "./modal";
+// import { rebaseUp } from "features/state-git"; // TODO rebase
 
 export const hashCopied = () => message.success("Commit hash copied", 1);
 
 export const getColorStringCommit = (
-  commit: FormattedCommit,
+  commitCalc: CommitCalc,
 ): string | undefined => {
-  return commit.isMerged ? "cyan" : "blue";
+  return commitCalc.isMerged ? "cyan" : "blue";
 };
 
-export const getColorCommit = (commit: FormattedCommit): string | undefined => {
-  return commit.isMerged ? cyan.primary : blue.primary;
+export const getColorCommit = (commitCalc: CommitCalc): string | undefined => {
+  return commitCalc.isMerged ? cyan.primary : blue.primary;
 };
 
 export const Commit: React.FC<{
-  commit: FormattedCommit;
-}> = ({ commit }) => {
-  const { refs, hash, note, type, scope, isLast } = commit;
+  commit: CommitGit;
+  commitCalc: CommitCalc;
+  refs: Ref[];
+}> = ({ commit, commitCalc, refs }) => {
+  const { hash } = commit;
+  const { messageFormatted, isLast } = commitCalc;
+  const { type, scope, note } = messageFormatted;
 
-  const color = getColorCommit(commit);
-  // const editCommitHash = useStore($editCommitHash);
-  // const commitFormValue = useStore($commitFormValue);
-
-  // const isEdit = editCommitHash === hash;
+  const color = getColorCommit(commitCalc);
 
   const refList = refs.map((ref) => {
     const { type, shortName, name } = ref;
-    const color = type === "tags" ? "purple" : getColorStringCommit(commit);
+    const color = type === "tags" ? "purple" : getColorStringCommit(commitCalc);
     const text = type === "tags" ? shortName.replace("^{}", "") : shortName;
 
     return (
@@ -56,10 +46,6 @@ export const Commit: React.FC<{
     hashCopied();
   }, [hash]);
 
-  // const edit = React.useCallback(() => {
-  //   editCommit(hash);
-  // }, [hash]);
-
   return (
     <CommitContainer>
       <CommitBlock>
@@ -67,7 +53,6 @@ export const Commit: React.FC<{
           {hash.substr(0, 8)}
         </a>
 
-        {/* <Branch if={!!type && !isEdit}> */}
         <CommitTag color={color}>
           {type}
           <Branch if={!!scope}>
@@ -77,30 +62,19 @@ export const Commit: React.FC<{
             </>
           </Branch>
         </CommitTag>
-        {/* </Branch> */}
 
         <Branch if={!isLast}>
           <MyIcon
             type="branches"
             title="Rebase up"
-            onClick={() => rebaseUp(`${hash}~1`)}
+            // onClick={() => rebaseUp(`${hash}~1`)}
           />
         </Branch>
-
-        {/* <Branch if={!isEdit}>
-          <IconIdit type="edit" onClick={edit} />
-        </Branch> */}
       </CommitBlock>
 
       <CommitBlock>{refList}</CommitBlock>
 
-      {/* <Branch if={!isEdit}> */}
       <CommitNote>{note}</CommitNote>
-      {/* </Branch> */}
-
-      {/* <Branch if={isEdit}>
-        <CommitForm value={commitFormValue} onChange={changeCommitFormValue} />
-      </Branch> */}
     </CommitContainer>
   );
 };

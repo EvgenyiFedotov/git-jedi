@@ -13,7 +13,7 @@ import {
   FormattedCommitMessage,
   changeActionRowRebaseTodo,
   writeContentRebaseTodo,
-} from "features/state-git";
+} from "features/state-git"; // TODO rebase
 import { Row, Column } from "ui";
 import { Branch } from "lib/branch";
 

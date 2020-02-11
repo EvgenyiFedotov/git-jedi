@@ -10,6 +10,7 @@ import { Commit, LogOptions, log as logGit } from "lib/api-git-v2";
 import { $runCommandOptions } from "../../config";
 import { createCommit } from "../events";
 import { commit } from "../effects";
+import { checkout } from "../../current-branch";
 
 export { Commit } from "lib/api-git-v2";
 
@@ -38,7 +39,7 @@ sample({
 
 sample({
   source: $runCommandOptions,
-  clock: merge([$runCommandOptions, commit.done]),
+  clock: merge([$runCommandOptions, commit.done, checkout.done]),
   target: log,
 });
 
