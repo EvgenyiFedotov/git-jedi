@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface StashOptions extends RunCommandOptions {
   action?: "push" | "pop" | "drop";
@@ -7,16 +7,16 @@ export interface StashOptions extends RunCommandOptions {
 
 export const stash = (options: StashOptions = {}) => {
   const args = createArgs(options);
-  return runCommandGit(args, options);
+  return runCommandGit("stash", args, options);
 };
 
 function createArgs(options: StashOptions): string[] {
   const { action = "push", paths = [] } = options;
 
   if (action === "drop") {
-    return ["stash", "drop"];
+    return ["drop"];
   } else if (action === "pop") {
-    return ["stash", "pop"];
+    return ["pop"];
   }
 
   return [

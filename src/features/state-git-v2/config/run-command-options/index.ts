@@ -2,7 +2,7 @@ import { combine } from "effector";
 import { RunCommandOptions } from "lib/api-git-v2";
 
 import { $cwd } from "../cwd";
-import { onError } from "./notification-error";
+import { onClose } from "./notification";
 
 export const $runCommandOptions = combine(
   {
@@ -11,9 +11,9 @@ export const $runCommandOptions = combine(
   ({ cwd }): RunCommandOptions => ({
     spawnOptions: { cwd },
     commandOptions: {
-      onBefore: ({ command, options }) =>
-        console.log("V2:", [command, ...(options.args || [])].join(" ")),
-      onError,
+      onBefore: ({ command, args = [] }) =>
+        console.log([command, ...args].join(" ")),
+      onClose,
     },
   }),
 );

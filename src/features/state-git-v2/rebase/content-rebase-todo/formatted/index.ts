@@ -1,10 +1,12 @@
-import { combine, createEvent, sample } from "effector";
+import { combine, createEvent, sample, merge } from "effector";
 import { toMessageFormatted } from "lib/api-git-v2";
 
 import { $contentRebaseTodoOriginal } from "../original";
-import { abortRebase } from "../../events";
+import { abortRebase, rebaseEnd } from "../../events";
 import { $pathFile } from "../../path-file";
 import { RowContentRabaseTodo, writeContentRabaseTodo } from "./effects";
+
+export { RowContentRabaseTodo } from "./effects";
 
 export const $contentRebaseTodoFormatted = combine<
   string,
@@ -71,7 +73,9 @@ $contentRebaseTodoFormatted.on(
     return { ref };
   },
 );
-$contentRebaseTodoFormatted.on(abortRebase, () => ({ ref: [] }));
+$contentRebaseTodoFormatted.on(merge([abortRebase, rebaseEnd]), () => ({
+  ref: [],
+}));
 
 function setIsFirstLast(rows: RowContentRabaseTodo[]): RowContentRabaseTodo[] {
   return rows.map((row, index) => {

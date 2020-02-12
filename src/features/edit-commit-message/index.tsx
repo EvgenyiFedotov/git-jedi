@@ -5,9 +5,9 @@ import { Button } from "antd";
 import {
   $contentCommitMessageFormatted,
   abortRebase,
-  writeContentCommitMessage,
+  saveContentCommitMessage,
   changeContentCommitMessageFormatted,
-} from "features/state-git"; // TODO rebase
+} from "features/state-git-v2";
 import { CommitForm } from "features/commit-form";
 import { Column } from "ui";
 
@@ -21,7 +21,7 @@ export const EditCommitMessage: React.FC = () => {
         onChange={changeContentCommitMessageFormatted}
       />
       <Button onClick={() => abortRebase()}>Abort</Button>
-      <Button type="primary" onClick={() => writeContentCommitMessage()}>
+      <Button type="primary" onClick={() => saveContentCommitMessage()}>
         Next
       </Button>
     </Column>

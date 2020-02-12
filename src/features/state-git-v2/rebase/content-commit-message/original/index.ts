@@ -1,6 +1,6 @@
-import { createStore, createEvent } from "effector";
+import { createStore, createEvent, merge } from "effector";
 
-import { abortRebase } from "../../events";
+import { abortRebase, rebaseEnd } from "../../events";
 
 export const $contentCommitMessageOriginal = createStore<string>("");
 
@@ -10,4 +10,4 @@ $contentCommitMessageOriginal.on(
   changeContentCommitMessageOriginal,
   (_, content) => content,
 );
-$contentCommitMessageOriginal.on(abortRebase, () => "");
+$contentCommitMessageOriginal.on(merge([abortRebase, rebaseEnd]), () => "");

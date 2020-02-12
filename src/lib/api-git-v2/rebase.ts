@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface RebaseOptions extends RunCommandOptions {
   target?: string;
@@ -8,7 +8,7 @@ export interface RebaseOptions extends RunCommandOptions {
 
 export const rebase = (options: RebaseOptions = {}) => {
   const args = createArgs(options);
-  return runCommandGit(args, options);
+  return runCommandGit("rebase", args, options);
 };
 
 function createArgs(options: RebaseOptions = {}): string[] {
@@ -16,9 +16,9 @@ function createArgs(options: RebaseOptions = {}): string[] {
 
   if (target) {
     const { interactive } = options;
-    return ["git rebase", interactive ? "-i" : "", target].filter(Boolean);
+    return [interactive ? "-i" : "", target].filter(Boolean);
   } else if (abort) {
-    return ["rebase", "--abort"];
+    return ["--abort"];
   }
 
   throw new Error("Error! Rebase options is not correct");

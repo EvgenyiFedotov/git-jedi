@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface RevParseOptions extends RunCommandOptions {
   mode?: "branch" | "commitHash";
@@ -6,7 +6,7 @@ export interface RevParseOptions extends RunCommandOptions {
 
 export const revParse = (options: RevParseOptions = {}) => {
   const args = createArgs(options);
-  return runCommandGit(args, options).next((stdout) =>
+  return runCommandGit("rev-parse", args, options).next((stdout) =>
     stdout.replace("\n", "").trim(),
   );
 };
@@ -16,8 +16,8 @@ function createArgs(options: RevParseOptions = {}): string[] {
 
   switch (mode) {
     case "branch":
-      return ["rev-parse", "--abbrev-ref", "HEAD"];
+      return ["--abbrev-ref", "HEAD"];
     case "commitHash":
-      return ["rev-parse", "--verify", "HEAD"];
+      return ["--verify", "HEAD"];
   }
 }

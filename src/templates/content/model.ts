@@ -2,7 +2,7 @@ import { createStore, split, combine } from "effector";
 import {
   $contentRebaseTodoFormatted,
   $contentCommitMessageOriginal,
-} from "features/state-git"; // TODO rebase
+} from "features/state-git-v2";
 
 type Tab = "log" | "edit-rebase-todo" | "edit-commit-message";
 

@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface CheckoutOptions extends RunCommandOptions {
   target: string;
@@ -7,7 +7,7 @@ export interface CheckoutOptions extends RunCommandOptions {
 
 export const checkout = (options: CheckoutOptions) => {
   const args = createArgs(options);
-  return runCommandGit(args, options);
+  return runCommandGit("checkout", args, options);
 };
 
 function createArgs(options: CheckoutOptions): string[] {
@@ -17,5 +17,5 @@ function createArgs(options: CheckoutOptions): string[] {
     throw new Error("Error! Insert target for checkout!");
   }
 
-  return ["checkout", createBranch ? "-b" : "", target].filter(Boolean);
+  return [createBranch ? "-b" : "", target].filter(Boolean);
 }

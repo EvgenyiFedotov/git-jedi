@@ -4,6 +4,7 @@ import { createPipe } from "./pipe";
 
 export interface RunCommandScope {
   command: string;
+  args?: string[];
   options: RunCommandOptions;
   log: RunCommandLogItem[];
 }
@@ -21,7 +22,6 @@ export interface RunCommandOptions {
     onError?: RunCommandOnError;
     onClose?: RunCommandOnClose;
   };
-  args?: string[];
   spawnOptions?: SpawnOptionsWithoutStdio;
 }
 
@@ -47,11 +47,25 @@ export interface RunCommandLogItem {
   data: string | Error | number;
 }
 
-export const runCommand = (
+export function runCommand(
   command: string,
-  options: RunCommandOptions = {},
-): RunCommandResult => {
-  const { args = [], commandOptions = {}, spawnOptions } = options;
+  options?: RunCommandOptions,
+): RunCommandResult;
+export function runCommand(command: string, args?: string[]): RunCommandResult;
+export function runCommand(
+  command: string,
+  args?: string[],
+  options?: RunCommandOptions,
+): RunCommandResult;
+export function runCommand(
+  command: string,
+  _args?: RunCommandOptions | string[],
+  _options: RunCommandOptions = {},
+): RunCommandResult {
+  const args = isOptions(_args) ? [] : _args || [];
+  const options = isOptions(_args) ? _args : _options;
+
+  const { commandOptions = {}, spawnOptions } = options;
   const {
     onBefore = () => {},
     onData = () => {},
@@ -64,7 +78,7 @@ export const runCommand = (
   const closeCallbacks: RunCommandCallback<number>[] = [];
 
   const log: RunCommandLogItem[] = [];
-  const scope = { command, options, log };
+  const scope = { command, args, options, log };
 
   onBefore(scope);
 
@@ -118,18 +132,8 @@ export const runCommand = (
   };
 
   return result;
-};
+}
 
-export const runCommandGit = (args: string[], options?: RunCommandOptions) => {
-  const runningCommand = runCommand("git", {
-    args,
-    commandOptions: options && options.commandOptions,
-    spawnOptions: options && options.spawnOptions,
-  });
-  const pipe = createPipe<string, number>();
-
-  runningCommand.data(pipe.resolve);
-  runningCommand.close(pipe.close);
-
-  return pipe;
-};
+export function isOptions(x: any): x is RunCommandOptions {
+  return x && !(x instanceof Array);
+}

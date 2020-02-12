@@ -11,8 +11,7 @@ export {
   RunCommandResult,
   RunCommandLogItem,
   runCommand,
-  runCommandGit,
-} from "./process";
+} from "./run-command";
 export { Pipe, createPipe } from "./pipe";
 export {
   MessageFormatted,

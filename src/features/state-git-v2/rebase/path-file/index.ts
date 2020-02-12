@@ -1,10 +1,10 @@
-import { createStore, createEvent } from "effector";
+import { createStore, createEvent, merge } from "effector";
 
-import { abortRebase } from "../events";
+import { abortRebase, rebaseEnd } from "../events";
 
 export const $pathFile = createStore<string>("");
 
 export const changePathFile = createEvent<string>();
 
 $pathFile.on(changePathFile, (_, path) => path);
-$pathFile.on(abortRebase, () => "");
+$pathFile.on(merge([abortRebase, rebaseEnd]), () => "");

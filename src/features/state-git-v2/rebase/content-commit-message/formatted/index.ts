@@ -1,8 +1,8 @@
-import { combine, createEvent, sample } from "effector";
+import { combine, createEvent, sample, merge } from "effector";
 import { MessageFormatted } from "lib/api-git-v2";
 
 import { $contentCommitMessageOriginal } from "../original";
-import { abortRebase } from "../../events";
+import { abortRebase, rebaseEnd } from "../../events";
 import { $pathFile } from "../../path-file";
 import { writeContentCommitMesssage } from "./effects";
 
@@ -33,7 +33,7 @@ $contentCommitMessageFormatted.on(
   changeContentCommitMessageFormatted,
   (_, value) => value,
 );
-$contentCommitMessageFormatted.on(abortRebase, () => ({
+$contentCommitMessageFormatted.on(merge([abortRebase, rebaseEnd]), () => ({
   type: "feat",
   scope: "",
   note: "",

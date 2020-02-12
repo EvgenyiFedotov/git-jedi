@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface LogOptions extends RunCommandOptions {}
 export interface Commit {
@@ -14,14 +14,14 @@ const logCommitFormat = ["%H", "%P", "%ct", "%an", "%B"].join("%n");
 
 export const log = (options: LogOptions = {}) => {
   const args = createArgs(options);
-  const gitPipe = runCommandGit(args, options);
+  const gitPipe = runCommandGit("log", args, options);
 
   return gitPipe.next(toCommitBlocks).next(toCommits);
 };
 
 function createArgs(options: LogOptions): string[] {
   const pretty = `--pretty=format:${COMMIT_BEGIN}%n${logCommitFormat}`;
-  return ["log", pretty];
+  return [pretty];
 }
 
 function toCommitBlocks(stdout: string): string[] {

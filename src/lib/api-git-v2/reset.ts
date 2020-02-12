@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface ResetOptions extends RunCommandOptions {
   intexTree?: string;
@@ -7,10 +7,10 @@ export interface ResetOptions extends RunCommandOptions {
 
 export const reset = (options: ResetOptions = {}) => {
   const args = createArgs(options);
-  return runCommandGit(args, options);
+  return runCommandGit("reset", args, options);
 };
 
 function createArgs(options: ResetOptions = {}): string[] {
   const { intexTree = "HEAD", paths = [] } = options;
-  return ["reset", intexTree, "--", ...paths];
+  return [intexTree, "--", ...paths];
 }

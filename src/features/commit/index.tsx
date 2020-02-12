@@ -4,7 +4,7 @@ import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
 import { Commit as CommitGit, CommitCalc, Ref } from "features/state-git-v2";
 import { Branch } from "lib/branch";
-// import { rebaseUp } from "features/state-git"; // TODO rebase
+import { rebaseUp } from "features/state-git-v2";
 
 export const hashCopied = () => message.success("Commit hash copied", 1);
 
@@ -67,7 +67,7 @@ export const Commit: React.FC<{
           <MyIcon
             type="branches"
             title="Rebase up"
-            // onClick={() => rebaseUp(`${hash}~1`)}
+            onClick={() => rebaseUp(`${hash}~1`)}
           />
         </Branch>
       </CommitBlock>

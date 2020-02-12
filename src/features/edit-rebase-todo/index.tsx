@@ -3,19 +3,18 @@ import { useStore } from "effector-react";
 import { Select, Tag, Icon as IconAntd, Button, Table } from "antd";
 import { blue } from "@ant-design/colors";
 import styled from "styled-components";
-
 import {
   $contentRebaseTodoFormatted,
   RowContentRabaseTodo,
   abortRebase,
   rebaseRowMoveUp,
   rebaseRowMoveDown,
-  FormattedCommitMessage,
-  changeActionRowRebaseTodo,
-  writeContentRebaseTodo,
-} from "features/state-git"; // TODO rebase
+  changeActionRowRebaseTodoFormatted,
+  saveContentRebaseTodo,
+} from "features/state-git-v2";
 import { Row, Column } from "ui";
 import { Branch } from "lib/branch";
+import { MessageFormatted } from "lib/api-git-v2";
 
 const columns = [
   {
@@ -31,14 +30,14 @@ const columns = [
   {
     dataIndex: "message",
     key: "type",
-    render: (message: FormattedCommitMessage) => (
+    render: (message: MessageFormatted) => (
       <Tag color={blue.primary}>{message.type}</Tag>
     ),
   },
   {
     dataIndex: "message",
     key: "note",
-    render: (message: FormattedCommitMessage) => <div>{message.note}</div>,
+    render: (message: MessageFormatted) => <div>{message.note}</div>,
   },
   {
     dataIndex: "message",
@@ -70,7 +69,7 @@ export const EditRebaseTodo: React.FC = () => {
         rowKey={(row: RowContentRabaseTodo) => row.shortHash}
       />
       <Button onClick={() => abortRebase()}>Abort</Button>
-      <Button type="primary" onClick={() => writeContentRebaseTodo()}>
+      <Button type="primary" onClick={() => saveContentRebaseTodo()}>
         Next
       </Button>
     </Column>
@@ -90,7 +89,9 @@ const Action: React.FC<{ row: RowContentRabaseTodo }> = ({ row }) => {
       value={action}
       size="small"
       style={{ minWidth: "72px" }}
-      onChange={(value: string) => changeActionRowRebaseTodo({ row, value })}
+      onChange={(value: string) =>
+        changeActionRowRebaseTodoFormatted({ row, value })
+      }
     >
       <Select.Option value="pick">pick</Select.Option>
       <Select.Option value="reword">reword</Select.Option>

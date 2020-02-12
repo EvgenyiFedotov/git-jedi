@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface ShowRefOptions extends RunCommandOptions {}
 
@@ -11,13 +11,13 @@ export interface Ref {
 
 export const showRef = (options: RunCommandOptions = {}) => {
   const args = createArgs(options);
-  const pipe = runCommandGit(args, options);
+  const pipe = runCommandGit("show-ref", args, options);
 
   return pipe.next(toLines).next(toRefs);
 };
 
 function createArgs(options: RunCommandOptions = {}): string[] {
-  return ["show-ref", "--head", "--dereference"];
+  return ["--head", "--dereference"];
 }
 
 function toLines(stdout: string): string[] {

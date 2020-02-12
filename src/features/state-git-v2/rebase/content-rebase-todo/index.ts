@@ -4,6 +4,7 @@ export {
   rebaseRowMoveUp,
   rebaseRowMoveDown,
   saveContentRebaseTodo,
+  RowContentRabaseTodo,
 } from "./formatted";
 export {
   $contentRebaseTodoOriginal,

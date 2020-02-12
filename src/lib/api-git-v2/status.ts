@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export type StatusFile = "modified" | "untracked" | "deleted" | "added" | null;
 
@@ -12,13 +12,13 @@ export interface StatusOptions extends RunCommandOptions {}
 
 export const status = (options: StatusOptions = {}) => {
   const args = createArgs(options);
-  return runCommandGit(args, options)
+  return runCommandGit("status", args, options)
     .next(toLines)
     .next(toChangeLines);
 };
 
 function createArgs(options: StatusOptions = {}): string[] {
-  return ["status", "-s"];
+  return ["-s"];
 }
 
 function toLines(stdout: string): string[] {

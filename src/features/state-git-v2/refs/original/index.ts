@@ -10,6 +10,7 @@ import { showRef as showRefGit, ShowRefOptions, Ref } from "lib/api-git-v2";
 import { $runCommandOptions } from "../../config";
 import { commit } from "../../log";
 import { checkout } from "../../current-branch";
+import { rebaseEnd } from "../../rebase";
 
 export { Ref } from "lib/api-git-v2";
 
@@ -28,7 +29,7 @@ export const addChunkRefs = createEvent<{
 
 sample({
   source: $runCommandOptions,
-  clock: merge([$runCommandOptions, commit.done, checkout.done]),
+  clock: merge([$runCommandOptions, commit.done, checkout.done, rebaseEnd]),
   target: showRef,
 });
 

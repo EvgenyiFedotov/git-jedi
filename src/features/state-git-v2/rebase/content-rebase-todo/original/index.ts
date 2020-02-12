@@ -1,6 +1,6 @@
-import { createStore, createEvent } from "effector";
+import { createStore, createEvent, merge } from "effector";
 
-import { abortRebase } from "../../events";
+import { abortRebase, rebaseEnd } from "../../events";
 
 export const $contentRebaseTodoOriginal = createStore<string>("");
 
@@ -10,4 +10,4 @@ $contentRebaseTodoOriginal.on(
   changeContentRebaseTodoOriginal,
   (_, content) => content,
 );
-$contentRebaseTodoOriginal.on(abortRebase, () => "");
+$contentRebaseTodoOriginal.on(merge([abortRebase, rebaseEnd]), () => "");

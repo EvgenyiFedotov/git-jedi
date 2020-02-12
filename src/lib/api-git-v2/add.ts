@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./process";
+import { runCommandGit, RunCommandOptions } from "./run-command-git";
 
 export interface AddOptions extends RunCommandOptions {
   paths?: string[];
@@ -6,13 +6,13 @@ export interface AddOptions extends RunCommandOptions {
 
 export const add = (options: AddOptions = {}) => {
   const args = createArgs(options);
-  return runCommandGit(args, options);
+  return runCommandGit("add", args, options);
 };
 
 function createArgs(options: AddOptions = {}): string[] {
   const { paths = [] } = options;
   if (paths.length) {
-    return ["add", ...paths];
+    return [...paths];
   }
-  return ["add", "-A"];
+  return ["-A"];
 }
