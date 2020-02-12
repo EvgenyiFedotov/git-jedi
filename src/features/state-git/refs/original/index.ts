@@ -5,14 +5,14 @@ import {
   sample,
   merge,
 } from "effector";
-import { showRef as showRefGit, ShowRefOptions, Ref } from "lib/api-git-v2";
+import { showRef as showRefGit, ShowRefOptions, Ref } from "lib/api-git";
 
 import { $runCommandOptions } from "../../config";
 import { commit } from "../../log";
 import { checkout } from "../../current-branch";
 import { rebaseEnd } from "../../rebase";
 
-export { Ref } from "lib/api-git-v2";
+export { Ref } from "lib/api-git";
 
 export const $refsOriginal = createStore<Map<string, Ref>>(new Map());
 

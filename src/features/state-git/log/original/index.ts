@@ -5,7 +5,7 @@ import {
   sample,
   merge,
 } from "effector";
-import { Commit, LogOptions, log as logGit } from "lib/api-git-v2";
+import { Commit, LogOptions, log as logGit } from "lib/api-git";
 
 import { $runCommandOptions } from "../../config";
 import { createCommit } from "../events";
@@ -13,7 +13,7 @@ import { commit } from "../effects";
 import { checkout } from "../../current-branch";
 import { rebaseEnd } from "../../rebase";
 
-export { Commit } from "lib/api-git-v2";
+export { Commit } from "lib/api-git";
 
 export const $logOriginal = createStore<Map<string, Commit>>(new Map());
 

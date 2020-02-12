@@ -1,7 +1,7 @@
 import { createEffect } from "effector";
 import { writeFileSync } from "fs";
 import { ipcRenderer } from "electron";
-import { MessageFormatted, toMessage } from "lib/api-git-v2";
+import { MessageFormatted, toMessage } from "lib/api-git";
 
 export const writeContentCommitMesssage = createEffect<
   {

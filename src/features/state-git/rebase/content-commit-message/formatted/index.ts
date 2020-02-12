@@ -1,5 +1,5 @@
 import { combine, createEvent, sample, merge } from "effector";
-import { MessageFormatted } from "lib/api-git-v2";
+import { MessageFormatted } from "lib/api-git";
 
 import { $contentCommitMessageOriginal } from "../original";
 import { abortRebase, rebaseEnd } from "../../events";

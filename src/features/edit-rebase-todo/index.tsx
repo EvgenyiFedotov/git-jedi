@@ -14,7 +14,7 @@ import {
 } from "features/state-git";
 import { Row, Column } from "ui";
 import { Branch } from "lib/branch";
-import { MessageFormatted } from "lib/api-git-v2";
+import { MessageFormatted } from "lib/api-git";
 
 const columns = [
   {

@@ -10,7 +10,7 @@ import {
   revParse as revParseGit,
   checkout as checkoutGit,
   CheckoutOptions,
-} from "lib/api-git-v2";
+} from "lib/api-git";
 import { pipeCommandToPromise } from "lib/pipe-command-promise";
 
 import { $runCommandOptions } from "../config";

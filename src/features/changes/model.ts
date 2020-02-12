@@ -1,6 +1,6 @@
 import { createEvent, createStore, sample } from "effector";
 import { createCommit as createCommitGitV2 } from "features/state-git";
-import { MessageFormatted, toMessage } from "lib/api-git-v2";
+import { MessageFormatted, toMessage } from "lib/api-git";
 
 export const $isShowChanges = createStore<boolean>(true);
 export const $commitFormValue = createStore<MessageFormatted>({

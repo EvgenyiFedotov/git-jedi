@@ -1,5 +1,5 @@
 import { createEffect, sample, guard } from "effector";
-import { rebase as rebaseGit, ResetOptions } from "lib/api-git-v2";
+import { rebase as rebaseGit, ResetOptions } from "lib/api-git";
 import { pipeCommandToPromise } from "lib/pipe-command-promise";
 
 import { $runCommandOptions } from "../config";

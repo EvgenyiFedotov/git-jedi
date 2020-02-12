@@ -1,4 +1,4 @@
-import { Pipe } from "lib/api-git-v2";
+import { Pipe } from "lib/api-git";
 
 export const pipeCommandToPromise = <V>(pipe: Pipe<V, number>) => {
   const log: V[] = [];

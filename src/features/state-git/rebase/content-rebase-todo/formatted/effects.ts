@@ -1,5 +1,5 @@
 import { createEffect } from "effector";
-import { MessageFormatted, toMessage } from "lib/api-git-v2";
+import { MessageFormatted, toMessage } from "lib/api-git";
 import { writeFileSync } from "fs";
 import { ipcRenderer } from "electron";
 

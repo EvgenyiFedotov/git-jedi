@@ -1,7 +1,7 @@
 import { createStore } from "effector";
 
 import { addChunkLog, Commit } from "../original";
-import { MessageFormatted, toMessageFormatted } from "lib/api-git-v2";
+import { MessageFormatted, toMessageFormatted } from "lib/api-git";
 
 export interface CommitCalc {
   messageFormatted: MessageFormatted;

@@ -1,5 +1,5 @@
 import { createStore, createEffect, sample, merge } from "effector";
-import { status as statusGit, StatusOptions, ChangeLine } from "lib/api-git-v2";
+import { status as statusGit, StatusOptions, ChangeLine } from "lib/api-git";
 import { pipeCommandToPromise } from "lib/pipe-command-promise";
 
 import { $runCommandOptions } from "../../config";

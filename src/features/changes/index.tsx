@@ -17,7 +17,7 @@ import {
   unstageAll,
 } from "features/state-git";
 import { Branch } from "lib/branch";
-import { ChangeLine } from "lib/api-git-v2";
+import { ChangeLine } from "lib/api-git";
 import { CommitForm } from "features/commit-form";
 
 import {

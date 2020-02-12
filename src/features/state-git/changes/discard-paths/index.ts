@@ -1,5 +1,5 @@
 import { createStore, createEvent, sample, combine, forward } from "effector";
-import { StashOptions } from "lib/api-git-v2";
+import { StashOptions } from "lib/api-git";
 
 import { $runCommandOptions } from "../../config";
 import { discard } from "./effects";

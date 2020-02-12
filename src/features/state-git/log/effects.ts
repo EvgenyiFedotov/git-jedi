@@ -1,6 +1,6 @@
 import { createEffect } from "effector";
 
-import { CommitOptions, commit as commitGit } from "lib/api-git-v2";
+import { CommitOptions, commit as commitGit } from "lib/api-git";
 
 export const commit = createEffect<CommitOptions, void>({
   handler: (options) =>

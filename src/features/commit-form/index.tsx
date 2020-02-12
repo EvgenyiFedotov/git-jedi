@@ -4,7 +4,7 @@ import * as antd from "antd";
 import styled from "styled-components";
 
 import { useMousetrap } from "lib/use-mousetrap";
-import { MessageFormatted } from "lib/api-git-v2";
+import { MessageFormatted } from "lib/api-git";
 
 import { $types } from "./model";
 
