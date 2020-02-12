@@ -1,8 +1,5 @@
 import { createStore, createEvent, sample } from "effector";
-import {
-  createBranch as createBranchGit,
-  checkout,
-} from "features/state-git-v2";
+import { createBranch as createBranchGit, checkout } from "features/state-git";
 
 export const $nameBranch = createStore<string>("");
 export const $isShowButton = createStore<boolean>(true);

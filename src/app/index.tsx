@@ -6,7 +6,7 @@ import { Row } from "antd";
 import { Header } from "templates/header";
 import { Content } from "templates/content";
 import { Footer } from "templates/footer";
-import { initStateGit } from "features/state-git-v2";
+import { initStateGit } from "features/state-git";
 
 export const App = () => {
   React.useEffect(() => {

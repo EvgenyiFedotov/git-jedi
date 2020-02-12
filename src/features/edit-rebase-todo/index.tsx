@@ -11,7 +11,7 @@ import {
   rebaseRowMoveDown,
   changeActionRowRebaseTodoFormatted,
   saveContentRebaseTodo,
-} from "features/state-git-v2";
+} from "features/state-git";
 import { Row, Column } from "ui";
 import { Branch } from "lib/branch";
 import { MessageFormatted } from "lib/api-git-v2";

@@ -4,7 +4,7 @@ import { useStore } from "effector-react";
 import * as electron from "electron";
 import styled from "styled-components";
 
-import { $cwd, changeCwd as changeCwdV2 } from "features/state-git-v2";
+import { $cwd, changeCwd as changeCwdV2 } from "features/state-git";
 import { Row } from "ui";
 
 const { Text } = Typography;

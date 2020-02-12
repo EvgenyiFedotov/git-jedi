@@ -7,7 +7,7 @@ import {
   abortRebase,
   saveContentCommitMessage,
   changeContentCommitMessageFormatted,
-} from "features/state-git-v2";
+} from "features/state-git";
 import { CommitForm } from "features/commit-form";
 import { Column } from "ui";
 

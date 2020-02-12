@@ -7,7 +7,7 @@ import {
   $logCalc,
   $status,
   $refsByCommitHash,
-} from "features/state-git-v2";
+} from "features/state-git";
 import { Branch } from "lib/branch";
 import { Changes } from "features/changes";
 import { toggleIsShowChanges } from "features/changes/model";

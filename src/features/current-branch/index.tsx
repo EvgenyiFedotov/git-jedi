@@ -6,7 +6,7 @@ import {
   $refsOnlyBranches,
   $currentBranch,
   checkoutTo,
-} from "features/state-git-v2";
+} from "features/state-git";
 import { Row } from "ui";
 import { Branch } from "lib/branch";
 

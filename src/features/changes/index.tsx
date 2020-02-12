@@ -15,7 +15,7 @@ import {
   stageAll,
   unstage,
   unstageAll,
-} from "features/state-git-v2";
+} from "features/state-git";
 import { Branch } from "lib/branch";
 import { StatusPath } from "lib/api-git";
 import { CommitForm } from "features/commit-form";

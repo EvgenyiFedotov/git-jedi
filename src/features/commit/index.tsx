@@ -2,9 +2,9 @@ import * as React from "react";
 import { Tag, message, Divider, Icon } from "antd";
 import { blue, cyan } from "@ant-design/colors";
 import styled from "styled-components";
-import { Commit as CommitGit, CommitCalc, Ref } from "features/state-git-v2";
+import { Commit as CommitGit, CommitCalc, Ref } from "features/state-git";
 import { Branch } from "lib/branch";
-import { rebaseUp } from "features/state-git-v2";
+import { rebaseUp } from "features/state-git";
 
 export const hashCopied = () => message.success("Commit hash copied", 1);
 
