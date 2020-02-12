@@ -17,7 +17,7 @@ import {
   unstageAll,
 } from "features/state-git";
 import { Branch } from "lib/branch";
-import { StatusPath } from "lib/api-git";
+import { ChangeLine } from "lib/api-git-v2";
 import { CommitForm } from "features/commit-form";
 
 import {
@@ -170,7 +170,7 @@ const ListStageChanges: React.FC = () => {
 };
 
 const Status: React.FC<{
-  status: StatusPath["status"] | StatusPath["stagedStatus"];
+  status: ChangeLine["status"] | ChangeLine["stagedStatus"];
 }> = ({ status }) => {
   return (
     <Tooltip title={status}>
@@ -182,7 +182,7 @@ const Status: React.FC<{
 };
 
 interface StatusCotainerProps {
-  status: StatusPath["status"] | StatusPath["stagedStatus"];
+  status: ChangeLine["status"] | ChangeLine["stagedStatus"];
 }
 
 const StatusCotainer = styled.span<StatusCotainerProps>`
