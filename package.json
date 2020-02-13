@@ -8,7 +8,8 @@
     "start": "yarn build && electron ./app/main.js",
     "start-watch": "yarn build --watch",
     "pack-app": "yarn electron-packager ./app git-jedi",
-    "pack-app-full": "yarn build && yarn pack-app"
+    "pack-app-full": "yarn build && yarn pack-app",
+    "pack-git-editor": "yarn pkg ./app/git-editor.js --out-path ./app"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",

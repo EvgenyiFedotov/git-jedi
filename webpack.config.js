@@ -71,4 +71,28 @@ const renderer = {
   ],
 };
 
-module.exports = [main, renderer];
+const gitEditor = {
+  mode: "development",
+  entry: "./src/git-editor.ts",
+  target: "node",
+  module: {
+    rules: [
+      {
+        test: /\.ts(x?)$/,
+        include: /src/,
+        exclude: /node_modules/,
+        use: ["babel-loader", "ts-loader"],
+      },
+    ],
+  },
+  resolve: {
+    modules: ["node_modules", path.resolve(__dirname, "src")],
+    extensions: [".js", ".ts", ".json", ".tsx"],
+  },
+  output: {
+    path: OUTPUT_PATH,
+    filename: "git-editor.js",
+  },
+};
+
+module.exports = [main, renderer, gitEditor];
