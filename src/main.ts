@@ -41,6 +41,6 @@ server.post("/", (req, res) => {
   win.webContents.send("rebase-query", args);
 });
 
-server.listen(3000, function() {
-  console.log("Example app listening on port 3000!");
+server.listen(30000, function() {
+  console.log("Example app listening on port 30000!");
 });
