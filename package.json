@@ -1,8 +1,14 @@
 {
   "name": "git-chat",
   "version": "0.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "build": "webpack --config ./webpack.config.js",
+    "start": "yarn build && electron ./app/main.js",
+    "start-watch": "yarn build --watch",
+    "pack-app": "yarn build && yarn electron-packager ./app git-jedi"
+  },
   "devDependencies": {
     "@babel/core": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
@@ -14,8 +20,10 @@
     "@types/styled-components": "^4.4.2",
     "babel-loader": "^8.0.6",
     "babel-plugin-import": "^1.13.0",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
     "electron": "^7.1.7",
+    "electron-packager": "^14.2.1",
     "eslint": "^6.8.0",
     "eslint-plugin-prettier": "^3.1.2",
     "html-webpack-plugin": "^3.2.0",
@@ -30,11 +38,6 @@
     "typescript": "^3.7.4",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
-  },
-  "scripts": {
-    "build": "webpack --config ./webpack.config.js",
-    "start": "yarn build && electron ./dist/electron.js",
-    "start-render": "yarn build --watch"
   },
   "dependencies": {
     "antd": "^3.26.7",

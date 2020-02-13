@@ -18,7 +18,7 @@ function createWindow() {
   win.webContents.openDevTools();
 
   // и загрузить index.html приложения.
-  win.loadFile("../dist/index.html");
+  win.loadFile("../app/index.html");
 }
 
 app.on("ready", createWindow);

@@ -1,5 +1,8 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
+
+const OUTPUT_PATH = __dirname + "/app";
 
 const main = {
   mode: "development",
@@ -16,8 +19,8 @@ const main = {
     ],
   },
   output: {
-    path: __dirname + "/dist",
-    filename: "electron.js",
+    path: OUTPUT_PATH,
+    filename: "main.js",
   },
 };
 
@@ -50,13 +53,17 @@ const renderer = {
     extensions: [".js", ".ts", ".json", ".tsx"],
   },
   output: {
-    path: __dirname + "/dist",
+    path: OUTPUT_PATH,
     filename: "react.js",
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
+    new CopyPlugin([
+      { from: "package.json", to: `${OUTPUT_PATH}/package.json` },
+      { from: "LICENSE", to: `${OUTPUT_PATH}/LICENSE` },
+    ]),
   ],
 };
 
