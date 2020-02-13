@@ -1,19 +1,5 @@
 export { log, Commit, LogOptions } from "./log";
 export {
-  RunCommandScope,
-  RunCommandOnBefore,
-  RunCommandOnData,
-  RunCommandOnError,
-  RunCommandOnClose,
-  RunCommandOptions,
-  RunCommandCallbackChannel,
-  RunCommandCallback,
-  RunCommandResult,
-  RunCommandLogItem,
-  runCommand,
-} from "./run-command";
-export { Pipe, createPipe } from "./pipe";
-export {
   MessageFormatted,
   toMessage,
   toMessageFormatted,

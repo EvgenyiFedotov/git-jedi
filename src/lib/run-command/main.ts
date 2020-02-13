@@ -1,7 +1,5 @@
 import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 
-import { createPipe } from "./pipe";
-
 export interface RunCommandScope {
   command: string;
   args?: string[];

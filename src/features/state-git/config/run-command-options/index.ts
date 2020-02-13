@@ -1,5 +1,5 @@
 import { combine } from "effector";
-import { RunCommandOptions } from "lib/api-git";
+import { RunCommandOptions } from "lib/run-command";
 
 import { $cwd } from "../cwd";
 import { onClose } from "./notification";

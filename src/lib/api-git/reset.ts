@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./run-command-git";
+import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
 export interface ResetOptions extends RunCommandOptions {
   intexTree?: string;

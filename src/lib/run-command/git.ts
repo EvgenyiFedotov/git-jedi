@@ -1,19 +1,5 @@
-import { runCommand, RunCommandOptions, isOptions } from "./run-command";
-import { Pipe, createPipe } from "./pipe";
-
-export {
-  RunCommandScope,
-  RunCommandOnBefore,
-  RunCommandOnData,
-  RunCommandOnError,
-  RunCommandOnClose,
-  RunCommandOptions,
-  RunCommandCallbackChannel,
-  RunCommandCallback,
-  RunCommandResult,
-  RunCommandLogItem,
-  runCommand,
-} from "./run-command";
+import { runCommand, RunCommandOptions, isOptions } from "./main";
+import { Pipe, createPipe } from "lib/pipe";
 
 export function runCommandGit(
   command: string,

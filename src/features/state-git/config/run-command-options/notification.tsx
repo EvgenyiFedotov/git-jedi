@@ -1,6 +1,6 @@
 import * as React from "react";
 import { notification, Icon, message } from "antd";
-import { RunCommandOnClose } from "lib/api-git";
+import { RunCommandOnClose } from "lib/run-command";
 import { Branch } from "lib/branch";
 import { Column, Row } from "ui";
 

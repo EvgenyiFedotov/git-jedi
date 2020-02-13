@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "./run-command-git";
+import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
 export type StatusFile = "modified" | "untracked" | "deleted" | "added" | null;
 
