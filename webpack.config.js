@@ -18,6 +18,10 @@ const main = {
       },
     ],
   },
+  resolve: {
+    modules: ["node_modules", path.resolve(__dirname, "src")],
+    extensions: [".js", ".ts", ".json", ".tsx"],
+  },
   output: {
     path: OUTPUT_PATH,
     filename: "main.js",
@@ -54,7 +58,7 @@ const renderer = {
   },
   output: {
     path: OUTPUT_PATH,
-    filename: "react.js",
+    filename: "renderer.js",
   },
   plugins: [
     new HtmlWebpackPlugin({
