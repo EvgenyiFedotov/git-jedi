@@ -1,6 +1,6 @@
-export interface Pipe<Value, EndValue> {
+export interface Pipe<Value, EndValue = any> {
   next: <Result>(
-    callback: (value: Value, icr: number) => Result,
+    callback: (value: Value, icr: number) => Result | Pipe<Result>,
   ) => Pipe<Result, EndValue>;
   resolve: (value: Value) => void;
 
@@ -12,28 +12,43 @@ export interface Pipe<Value, EndValue> {
   destroy: () => void;
 }
 
-export const createPipe = <Value, EndValue>() => {
+const isPipe = <Value, EndValue>(x: any): x is Pipe<Value, EndValue> => {
+  return typeof x === "object" && !!x.next && !!x.destroy;
+};
+
+export const createPipe = <Value, EndValue = any>() => {
   let nextCallbacks: ((value: Value, icr: number) => any)[] = [];
   let endCallbacks: ((value: EndValue, icr: number) => void)[] = [];
   let pipes: Pipe<any, any>[] = [];
   let indexCallResolve = 0;
 
   const result: Pipe<Value, EndValue> = {
-    next: <Result>(callback: (value: Value, icr: number) => Result) => {
+    next: <Result>(
+      callback: (value: Value, icr: number) => Result | Pipe<Result>,
+    ) => {
       const pipe = createPipe<Result, EndValue>();
+
       nextCallbacks.push(callback);
       pipes.push(pipe);
+
       return pipe;
     },
     resolve: (value: Value) => {
       nextCallbacks.forEach((callback, index) => {
-        pipes[index].resolve(callback(value, indexCallResolve));
+        const result = callback(value, indexCallResolve);
+
+        if (isPipe(result)) {
+          result.next(pipes[index].resolve);
+        } else {
+          pipes[index].resolve(result);
+        }
       });
       indexCallResolve += 1;
     },
 
     end: (callback: (value: EndValue, icr: number) => void) => {
       endCallbacks.push(callback);
+
       return result;
     },
     close: (value: EndValue) => {
