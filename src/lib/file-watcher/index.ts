@@ -1,10 +1,27 @@
 import * as fs from "fs";
 import { sha1 } from "object-hash";
-import { createPipe } from "lib/pipe";
+import { createPipe, Pipe } from "lib/pipe";
 
 export type Action = "created" | "changed" | "deleted";
 
-export const createFileWatcher = (path: string) => {
+export interface FileWatcherOptions {
+  isWatch?: boolean;
+}
+
+export interface FileWatcher {
+  path: () => string;
+  onChange: (
+    cb: (value: { action: Action; data: Buffer }) => void,
+  ) => FileWatcher;
+  watch: () => FileWatcher;
+  stop: () => FileWatcher;
+}
+
+export const createFileWatcher = (
+  path: string,
+  options: FileWatcherOptions = {},
+): FileWatcher => {
+  let { isWatch = true } = options;
   const checkHash = updateHashFile();
   const pipe = createPipe<{ action: Action; data: Buffer }>();
   let isExisFilePrev = fs.existsSync(path);
@@ -30,13 +47,31 @@ export const createFileWatcher = (path: string) => {
       }
     }
 
-    await delay()();
-    process.nextTick(nextTick);
+    if (isWatch) {
+      await delay()();
+      process.nextTick(nextTick);
+    }
+  };
+
+  const result: FileWatcher = {
+    path: () => path,
+    onChange: (cb) => {
+      pipe.next(cb);
+      return result;
+    },
+    watch: () => {
+      isWatch = true;
+      return result;
+    },
+    stop: () => {
+      isWatch = false;
+      return result;
+    },
   };
 
   process.nextTick(nextTick);
 
-  return pipe;
+  return result;
 };
 
 function existFile(path: string) {
