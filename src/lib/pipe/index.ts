@@ -5,9 +5,9 @@ export interface Pipe<Value, EndValue = any> {
   resolve: (value: Value) => void;
 
   end: (
-    callback: (value: EndValue, icr: number) => void,
+    callback: (value: EndValue | undefined, icr: number) => void,
   ) => Pipe<Value, EndValue>;
-  close: (value: EndValue) => void;
+  close: (value?: EndValue) => void;
 
   destroy: () => void;
 }
@@ -18,7 +18,7 @@ const isPipe = <Value, EndValue>(x: any): x is Pipe<Value, EndValue> => {
 
 export const createPipe = <Value, EndValue = any>() => {
   let nextCallbacks: ((value: Value, icr: number) => any)[] = [];
-  let endCallbacks: ((value: EndValue, icr: number) => void)[] = [];
+  let endCallbacks: ((value: EndValue | undefined, icr: number) => void)[] = [];
   let pipes: Pipe<any, any>[] = [];
   let indexCallResolve = 0;
 
@@ -46,12 +46,12 @@ export const createPipe = <Value, EndValue = any>() => {
       indexCallResolve += 1;
     },
 
-    end: (callback: (value: EndValue, icr: number) => void) => {
+    end: (callback: (value: EndValue | undefined, icr: number) => void) => {
       endCallbacks.push(callback);
 
       return result;
     },
-    close: (value: EndValue) => {
+    close: (value?: EndValue) => {
       endCallbacks.forEach((callback) => callback(value, indexCallResolve));
       pipes.forEach((pipe) => pipe.close(value));
       indexCallResolve = 0;
