@@ -2,24 +2,36 @@ import * as fs from "fs";
 import { sha1 } from "object-hash";
 import { createPipe } from "lib/pipe";
 
+export type Action = "created" | "changed" | "deleted";
+
 export const createFileWatcher = (path: string) => {
   const checkHash = updateHashFile();
-  const pipe = createPipe<Buffer>();
+  const pipe = createPipe<{ action: Action; data: Buffer }>();
+  let isExisFilePrev = fs.existsSync(path);
 
-  const nextTick = () => {
-    existFile(path)
-      .then(async (value) => {
-        if (value) {
-          const data = await readFile(path);
-          const isChanged = checkHash(data);
+  const nextTick = async () => {
+    const isExisFile = await existFile(path);
 
-          if (isChanged) {
-            pipe.resolve(data);
-          }
-        }
-      })
-      .then(delay())
-      .then(() => process.nextTick(nextTick));
+    if (isExisFile) {
+      const data = await readFile(path);
+      const isChanged = checkHash(data);
+      const action: Action = isExisFilePrev ? "changed" : "created";
+
+      if (isChanged || action === "created") {
+        pipe.resolve({ action, data });
+      }
+
+      isExisFilePrev = true;
+    } else {
+      if (isExisFilePrev) {
+        pipe.resolve({ action: "deleted", data: new Buffer([]) });
+        pipe.close();
+        isExisFilePrev = false;
+      }
+    }
+
+    await delay()();
+    process.nextTick(nextTick);
   };
 
   process.nextTick(nextTick);
@@ -28,7 +40,7 @@ export const createFileWatcher = (path: string) => {
 };
 
 function existFile(path: string) {
-  return new Promise((resolve) => {
+  return new Promise<boolean>((resolve) => {
     fs.exists(path, (value) => resolve(value));
   });
 }
@@ -45,8 +57,8 @@ function readFile(path: string) {
   });
 }
 
-function updateHashFile() {
-  let prevHashFile = "";
+function updateHashFile(defaultHash: string = "") {
+  let prevHashFile = defaultHash;
 
   return (data: Buffer) => {
     const nextHashFile = sha1(data);
