@@ -8,15 +8,17 @@ export interface FileConnectorConfig {
 }
 
 export interface FileConnector {
-  onMessage: (cb: (message: string) => void) => FileConnector;
-  send: (message: string) => FileConnector;
+  onMessage: <Message>(
+    cb: (_: { message: Message; id: string }) => void,
+  ) => FileConnector;
+  send: (message: any) => FileConnector;
 }
 
 export const createFileConnector = (
   config: FileConnectorConfig,
 ): FileConnector => {
   const { fileWatcher, id } = config;
-  const pipe = createPipe<string>();
+  const pipe = createPipe<{ message: any; id: string }>();
 
   fileWatcher.onChange(({ data }) => {
     const dataString = data.toString();
@@ -25,7 +27,7 @@ export const createFileConnector = (
       const { id: authorId, message } = JSON.parse(dataString);
 
       if (authorId !== id) {
-        pipe.resolve(message);
+        pipe.resolve({ message, id: authorId });
       }
     }
   });
@@ -35,7 +37,7 @@ export const createFileConnector = (
       pipe.next(cb);
       return result;
     },
-    send: (message: string) => {
+    send: (message: any) => {
       const content = JSON.stringify({
         id,
         message,
