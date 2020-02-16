@@ -30,6 +30,7 @@ export const createFileWatcher = (
     const isExisFile = await existFile(path);
 
     if (isExisFile) {
+      // TODO Use timestamp change file
       const data = await readFile(path);
       const isChanged = checkHash(data);
       const action: Action = isExisFilePrev ? "changed" : "created";
@@ -41,7 +42,7 @@ export const createFileWatcher = (
       isExisFilePrev = true;
     } else {
       if (isExisFilePrev) {
-        pipe.resolve({ action: "deleted", data: new Buffer([]) });
+        pipe.resolve({ action: "deleted", data: Buffer.alloc(0) });
         pipe.close();
         isExisFilePrev = false;
       }
