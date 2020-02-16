@@ -14,6 +14,8 @@ export const onClose: RunCommandOnClose = (code, scope) => {
 
   const copy = () => copyValue({ code, scope });
 
+  console.error("Error!", scope.log.map(({ data }) => data).join("\n"));
+
   notification.error({
     message: <Message onCopy={copy}>Application error</Message>,
     description: (
@@ -65,6 +67,5 @@ function copyValue<T>(value: T) {
 }
 
 function sliceWord(value: string): string {
-  console.log(value.slice(0, 7));
   return value.length > 7 ? `${value.slice(0, 7)}...` : value;
 }
