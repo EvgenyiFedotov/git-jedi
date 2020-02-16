@@ -1,7 +1,8 @@
 import { createEffect } from "effector";
 import { writeFileSync } from "fs";
-import { ipcRenderer } from "electron";
 import { MessageFormatted, toMessage } from "lib/api-git";
+
+import { fileConnector } from "../../connector-rebase-file";
 
 export const writeContentCommitMesssage = createEffect<
   {
@@ -15,6 +16,6 @@ export const writeContentCommitMesssage = createEffect<
 
     writeFileSync(pathFile, content);
 
-    ipcRenderer.send("rebase-response", content);
+    fileConnector.send(content);
   },
 });

@@ -1,4 +1,4 @@
-import "./ipc-renderer";
+import "./connector-rebase-file";
 import "./effects";
 export * from "./content-rebase-todo";
 export * from "./content-commit-message";

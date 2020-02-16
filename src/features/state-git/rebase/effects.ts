@@ -1,4 +1,4 @@
-import { createEffect, sample, guard } from "effector";
+import { createEffect, sample, guard, forward } from "effector";
 import {
   rebase as rebaseGit,
   ResetOptions,
@@ -6,11 +6,11 @@ import {
   ConfigOptions,
 } from "lib/api-git";
 import { pipeCommandToPromise } from "lib/pipe-command-promise";
+import { parseArgs } from "lib/parse-args";
 
 import { $runCommandOptions } from "../config";
 import { rebaseUp, abortRebase, rebaseEnd } from "./events";
-
-import { parseArgs } from "lib/parse-args";
+import { fileConnector } from "./connector-rebase-file";
 
 const CORE_EDITOR = "CORE_EDITOR";
 
@@ -20,7 +20,9 @@ export const rebase = createEffect<ResetOptions, void>({
       commandOptions: options.commandOptions,
       spawnOptions: options.spawnOptions,
     });
+
     await pipeCommandToPromise(rebaseGit(options));
+
     await backCoreEditor({
       commandOptions: options.commandOptions,
       spawnOptions: options.spawnOptions,
@@ -66,6 +68,12 @@ const backCoreEditor = createEffect<ConfigOptions, void>({
   },
 });
 
+const aborting = createEffect<void, void>({
+  handler: async () => {
+    fileConnector.send("abort");
+  },
+});
+
 sample({
   source: $runCommandOptions,
   clock: rebaseUp,
@@ -85,15 +93,9 @@ guard({
   target: rebaseEnd.prepend((v: any) => {}),
 });
 
-sample({
-  source: $runCommandOptions,
-  clock: abortRebase,
-  fn: (options) => ({
-    ...options,
-    abort: true,
-    commandOptions: { ...options.commandOptions, key: "rebase-abort" },
-  }),
-  target: rebase,
+forward({
+  from: abortRebase,
+  to: aborting,
 });
 
 function getPathToEditor(): string {

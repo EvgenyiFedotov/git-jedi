@@ -1,7 +1,8 @@
 import { createEffect } from "effector";
 import { MessageFormatted, toMessage } from "lib/api-git";
 import { writeFileSync } from "fs";
-import { ipcRenderer } from "electron";
+
+import { fileConnector } from "../../connector-rebase-file";
 
 export interface RowContentRabaseTodo {
   action: string;
@@ -30,6 +31,7 @@ export const writeContentRabaseTodo = createEffect<
       .join("\n");
 
     writeFileSync(pathFile, content);
-    ipcRenderer.send("rebase-response", content);
+
+    fileConnector.send(content);
   },
 });
