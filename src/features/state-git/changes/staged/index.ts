@@ -10,15 +10,15 @@ export const $stagedChanges = combine($status, (status) =>
   }),
 );
 
-export const stage = createEvent<string>();
+export const stage = createEvent<string[]>();
 export const stageAll = createEvent<void>();
 
 sample({
   source: $runCommandOptions,
   clock: stage,
-  fn: (options, path) => ({
+  fn: (options, paths) => ({
     ...options,
-    paths: [path],
+    paths,
   }),
   target: add,
 });
