@@ -1,4 +1,10 @@
-import { createStore, createEffect, sample, merge } from "effector";
+import {
+  createStore,
+  createEffect,
+  sample,
+  merge,
+  createEvent,
+} from "effector";
 import { status as statusGit, StatusOptions, ChangeLine } from "lib/api-git";
 import { pipeCommandToPromise } from "lib/pipe-command-promise";
 
@@ -18,6 +24,8 @@ export const status = createEffect<StatusOptions, ChangeLine[]>({
   },
 });
 
+export const refreshStatus = createEvent<void>();
+
 sample({
   source: $runCommandOptions,
   clock: merge([
@@ -27,6 +35,7 @@ sample({
     add.done,
     reset.done,
     discard.done,
+    refreshStatus,
   ]),
   target: status,
 });
