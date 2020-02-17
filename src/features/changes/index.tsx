@@ -19,6 +19,7 @@ import {
 import { Branch } from "lib/branch";
 import { ChangeLine } from "lib/api-git";
 import { CommitForm } from "features/commit-form";
+import { Column } from "ui";
 
 import {
   $isShowChanges,
@@ -37,20 +38,19 @@ export const Changes: React.FC = () => {
     <div>
       <Header />
       <Branch if={isShowChanges}>
-        <>
+        <Column>
           <CommitForm
             value={commitFormValue}
             onChange={changeCommitFormValue}
             onSave={() => createCommit()}
           />
-          <Branch if={!!unstagedChanges.length}>
-            <UnstageChanges />
-          </Branch>
-
           <Branch if={!!stagedChanges.length}>
             <StageChanges />
           </Branch>
-        </>
+          <Branch if={!!unstagedChanges.length}>
+            <UnstageChanges />
+          </Branch>
+        </Column>
       </Branch>
     </div>
   );

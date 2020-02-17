@@ -1,5 +1,5 @@
 import { createEvent, createStore, sample } from "effector";
-import { createCommit as createCommitGitV2 } from "features/state-git";
+import { createCommit as createCommitGitV2, commit } from "features/state-git";
 import { MessageFormatted, toMessage } from "lib/api-git";
 
 export const $isShowChanges = createStore<boolean>(true);
@@ -23,3 +23,8 @@ sample({
 $isShowChanges.on(toggleIsShowChanges, (prev) => !prev);
 
 $commitFormValue.on(changeCommitFormValue, (_, value) => value);
+$commitFormValue.on(commit.done, () => ({
+  type: "feat",
+  note: "",
+  scope: "",
+}));
