@@ -1,6 +1,7 @@
 import { createStore, combine } from "effector";
 import { $status } from "features/state-git";
 import path from "path";
+import { getScopePath } from "lib/scope-path";
 
 export const $types = createStore<string[]>([
   "feat",
@@ -19,10 +20,10 @@ export const $scopes = combine([$status], ([status]) => {
   const scopeRoot = "src/";
 
   const scopes = status.reduce<Set<string>>((memo, line) => {
-    const dirname = path.dirname(line.path);
+    const scopePath = getScopePath(line.path, scopeRoot);
 
-    if (dirname && dirname !== ".") {
-      memo.add(dirname.replace(scopeRoot, ""));
+    if (scopePath) {
+      memo.add(scopePath);
     }
 
     return memo;
