@@ -19,12 +19,5 @@ function createArgs(options: StashOptions): string[] {
     return ["pop"];
   }
 
-  return [
-    "stash",
-    "push",
-    "--keep-index",
-    "--include-untracked",
-    "--",
-    ...paths,
-  ];
+  return ["push", "--keep-index", "--include-untracked", "--", ...paths];
 }
