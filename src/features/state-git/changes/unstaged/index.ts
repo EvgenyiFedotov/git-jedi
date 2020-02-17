@@ -14,7 +14,7 @@ export const unstageAll = createEvent();
 sample({
   source: $runCommandOptions,
   clock: unstage,
-  fn: (options, path) => ({ ...options, path: [path] }),
+  fn: (options, path) => ({ ...options, paths: [path] }),
   target: reset,
 });
 
