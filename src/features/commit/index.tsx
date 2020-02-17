@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Commit as CommitGit, CommitCalc, Ref } from "features/state-git";
 import { Branch } from "lib/branch";
 import { rebaseUp } from "features/state-git";
+import { Row } from "ui";
 
 export const hashCopied = () => message.success("Commit hash copied", 1);
 
@@ -48,33 +49,37 @@ export const Commit: React.FC<{
 
   return (
     <CommitContainer>
-      <CommitBlock>
-        <a style={{ color, marginRight: "8px" }} onClick={clickHash}>
-          {hash.substr(0, 8)}
-        </a>
-
-        <CommitTag color={color}>
-          {type}
-          <Branch if={!!scope}>
-            <>
-              <CommitDevider type="vertical" />
-              <>{scope}</>
-            </>
+      <FastInfo>
+        <Row>
+          <Branch if={!!type}>
+            <CommitTag color={color}>
+              {type}
+              <Branch if={!!scope}>
+                <>
+                  <CommitDevider type="vertical" />
+                  <>{scope}</>
+                </>
+              </Branch>
+            </CommitTag>
           </Branch>
-        </CommitTag>
+          <CommitNote>{note.split("\n")[0]}</CommitNote>
+        </Row>
 
-        <Branch if={!isLast}>
-          <MyIcon
-            type="branches"
-            title="Rebase up"
-            onClick={() => rebaseUp(`${hash}~1`)}
-          />
-        </Branch>
-      </CommitBlock>
+        <Row>
+          <Branch if={!isLast}>
+            <MyIcon
+              type="branches"
+              title="Rebase up"
+              onClick={() => rebaseUp(`${hash}~1`)}
+            />
+          </Branch>
+          <a style={{ color, marginRight: "8px" }} onClick={clickHash}>
+            {hash.substr(0, 8)}
+          </a>
+        </Row>
+      </FastInfo>
 
       <CommitBlock>{refList}</CommitBlock>
-
-      <CommitNote>{note}</CommitNote>
     </CommitContainer>
   );
 };
@@ -99,6 +104,10 @@ const CommitDevider = styled(Divider)``;
 
 const CommitTag = styled(Tag)``;
 
+const CommitNote = styled.div`
+  white-space: pre;
+`;
+
 const CommitBlock = styled.div`
   display: flex;
   flex: none;
@@ -107,11 +116,11 @@ const CommitBlock = styled.div`
   align-items: center;
 
   & > ${CommitDevider}, ${CommitTag}, a,
-  ${MyIcon} {
+  ${MyIcon}, ${CommitNote} {
     margin-bottom: 8px;
   }
 `;
 
-const CommitNote = styled.div`
-  white-space: pre;
+const FastInfo = styled(CommitBlock)`
+  justify-content: space-between;
 `;
