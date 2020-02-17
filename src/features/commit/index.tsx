@@ -52,7 +52,7 @@ export const Commit: React.FC<{
       <FastInfo>
         <Row>
           <Branch if={!!type}>
-            <CommitTag color={color}>
+            <div className="block" style={{ color }}>
               {type}
               <Branch if={!!scope}>
                 <>
@@ -60,7 +60,7 @@ export const Commit: React.FC<{
                   <>{scope}</>
                 </>
               </Branch>
-            </CommitTag>
+            </div>
           </Branch>
           <CommitNote>{note.split("\n")[0]}</CommitNote>
         </Row>
@@ -79,7 +79,7 @@ export const Commit: React.FC<{
         </Row>
       </FastInfo>
 
-      <CommitBlock>{refList}</CommitBlock>
+      {/* <CommitBlock>{refList}</CommitBlock> */}
     </CommitContainer>
   );
 };
@@ -116,7 +116,7 @@ const CommitBlock = styled.div`
   align-items: center;
 
   & > ${CommitDevider}, ${CommitTag}, a,
-  ${MyIcon}, ${CommitNote} {
+  ${MyIcon}, ${CommitNote}, .block {
     margin-bottom: 8px;
   }
 `;
