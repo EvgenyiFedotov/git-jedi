@@ -116,7 +116,7 @@ const ListUnstageChanges: React.FC = (props) => {
         <Icon
           type="plus"
           title="Stage changes"
-          onClick={() => stage(status.path)}
+          onClick={() => stage([status.path])}
         />
         <Divider type="vertical" />
         {status.path}

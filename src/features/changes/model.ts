@@ -1,6 +1,20 @@
-import { createEvent, createStore, sample } from "effector";
-import { createCommit as createCommitGitV2, commit } from "features/state-git";
-import { MessageFormatted, toMessage } from "lib/api-git";
+import {
+  createEvent,
+  createStore,
+  sample,
+  guard,
+  combine,
+  Store,
+} from "effector";
+import {
+  createCommit as createCommitGitV2,
+  commit,
+  stage,
+  $stagedChanges,
+  $unstagedChanges,
+} from "features/state-git";
+import { MessageFormatted, toMessage, ChangeLine } from "lib/api-git";
+import { getScopePath } from "lib/scope-path";
 
 export const $isShowChanges = createStore<boolean>(true);
 export const $commitFormValue = createStore<MessageFormatted>({
@@ -20,6 +34,31 @@ sample({
   target: createCommitGitV2,
 });
 
+const autoStagePaths = sample({
+  source: combine([$stagedChanges, $unstagedChanges]),
+  clock: $commitFormValue,
+  fn: ([stagedChanges, unstagedChanges], { scope }) => {
+    if (!stagedChanges.length && !!scope) {
+      // TODO Use config (scope-root)
+      const scopeRoot = "src/";
+
+      return unstagedChanges
+        .map((change) => change.path)
+        .filter((path) => {
+          return !!path.match(new RegExp(`^${scopeRoot}${scope}`));
+        });
+    }
+
+    return [];
+  },
+});
+
+guard({
+  source: autoStagePaths,
+  filter: (paths) => !!paths.length,
+  target: stage,
+});
+
 $isShowChanges.on(toggleIsShowChanges, (prev) => !prev);
 
 $commitFormValue.on(changeCommitFormValue, (_, value) => value);
@@ -28,3 +67,13 @@ $commitFormValue.on(commit.done, () => ({
   note: "",
   scope: "",
 }));
+$commitFormValue.on(stage, (store, paths) => {
+  if (store.scope) {
+    return store;
+  }
+
+  // TODO Use config (scope-root)
+  const scopeRoot = "src/";
+
+  return { ...store, scope: getScopePath(paths[0], scopeRoot) };
+});
