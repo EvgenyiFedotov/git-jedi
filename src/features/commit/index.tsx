@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Tag, message, Divider, Icon } from "antd";
-import { blue, cyan } from "@ant-design/colors";
+import { blue, cyan, grey } from "@ant-design/colors";
 import styled from "styled-components";
 import { Commit as CommitGit, CommitCalc, Ref } from "features/state-git";
 import { Branch } from "lib/branch";
@@ -30,17 +30,17 @@ export const Commit: React.FC<{
 
   const color = getColorCommit(commitCalc);
 
-  const refList = refs.map((ref) => {
-    const { type, shortName, name } = ref;
-    const color = type === "tags" ? "purple" : getColorStringCommit(commitCalc);
-    const text = type === "tags" ? shortName.replace("^{}", "") : shortName;
+  // const refList = refs.map((ref) => {
+  //   const { type, shortName, name } = ref;
+  //   const color = type === "tags" ? "purple" : getColorStringCommit(commitCalc);
+  //   const text = type === "tags" ? shortName.replace("^{}", "") : shortName;
 
-    return (
-      <CommitTag color={color} key={name}>
-        {text}
-      </CommitTag>
-    );
-  });
+  //   return (
+  //     <CommitTag color={color} key={name}>
+  //       {text}
+  //     </CommitTag>
+  //   );
+  // });
 
   const clickHash = React.useCallback(() => {
     window.navigator.clipboard.writeText(hash);
