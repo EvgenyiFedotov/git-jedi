@@ -30,5 +30,7 @@ export const toMessageFormatted = (message: string): MessageFormatted => {
 };
 
 export const toMessage = (message: MessageFormatted): string => {
-  return `${message.type}: ${message.note.trim()}`;
+  const scope = message.scope ? `(${message.scope})` : "";
+
+  return `${message.type}${scope}: ${message.note.trim()}`;
 };
