@@ -18,7 +18,7 @@ export const status = (options: StatusOptions = {}) => {
 };
 
 function createArgs(options: StatusOptions = {}): string[] {
-  return ["-s"];
+  return ["-s", "--untracked-files=all"];
 }
 
 function toLines(stdout: string): string[] {
