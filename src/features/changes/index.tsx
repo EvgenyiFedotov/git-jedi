@@ -3,6 +3,7 @@ import { useStore } from "effector-react";
 import { blue, cyan, red, green } from "@ant-design/colors";
 import styled from "styled-components";
 import { Divider, Icon, Tooltip } from "antd";
+import { Row } from "ui";
 
 import {
   $status,
@@ -15,6 +16,7 @@ import {
   stageAll,
   unstage,
   unstageAll,
+  refreshStatus,
 } from "features/state-git";
 import { Branch } from "lib/branch";
 import { ChangeLine } from "lib/api-git";
@@ -33,11 +35,12 @@ export const Changes: React.FC = () => {
   const unstagedChanges = useStore($unstagedChanges);
   const stagedChanges = useStore($stagedChanges);
   const commitFormValue = useStore($commitFormValue);
+  const status = useStore($status);
 
   return (
     <div>
       <Header />
-      <Branch if={isShowChanges}>
+      <Branch if={!!status.length && isShowChanges}>
         <Column>
           <CommitForm
             value={commitFormValue}
@@ -61,11 +64,14 @@ const Header: React.FC = () => {
 
   return (
     <div style={{ marginBottom: "8px" }}>
-      <b>
-        Changes
-        <Divider type="vertical" />
-        <span style={{ color: blue.primary }}>{status.length}</span>
-      </b>
+      <b style={{ marginRight: "8px" }}>Changes</b>
+      <Icon
+        type="reload"
+        style={{ cursor: "pointer" }}
+        onClick={() => refreshStatus()}
+      />
+      <Divider type="vertical" />
+      <span style={{ color: blue.primary }}>{status.length}</span>
     </div>
   );
 };
