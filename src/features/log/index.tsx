@@ -36,11 +36,9 @@ export const Log: React.FC = () => {
 
   return (
     <Timeline>
-      <Branch if={!!status.length}>
-        <Timeline.Item dot={<Icon type="bars" onClick={toggleIsShowChanges} />}>
-          <Changes />
-        </Timeline.Item>
-      </Branch>
+      <Timeline.Item dot={<Icon type="bars" onClick={toggleIsShowChanges} />}>
+        <Changes />
+      </Timeline.Item>
       {listLog}
     </Timeline>
   );
