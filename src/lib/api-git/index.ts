@@ -19,5 +19,5 @@ export {
   DiffOptions,
   FileDiff,
   FileDiffChunk,
-  FileDiffLineV2,
+  FileDiffLine,
 } from "./diff";

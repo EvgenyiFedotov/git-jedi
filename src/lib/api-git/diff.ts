@@ -54,7 +54,7 @@ export interface FileInfo {
 
 export interface FileDiffChunk {
   header: FileDiffHeader;
-  linesV2: FileDiffLineV2[];
+  lines: FileDiffLine[];
 }
 
 export interface FileDiffHeader {
@@ -70,7 +70,7 @@ export interface FileDiffHeaderMeta {
   length: number;
 }
 
-export interface FileDiffLineV2 {
+export interface FileDiffLine {
   chunks: string[];
   removeNumLine: number;
   addNumLine: number;
@@ -102,7 +102,7 @@ function toFileDiffChunk(block: string): FileDiffChunk {
 
   return {
     header: diffHeader,
-    linesV2: toFileDiffLinesV2(lines, diffHeader),
+    lines: toFileDiffLines(lines, diffHeader),
   };
 }
 
@@ -125,18 +125,16 @@ function toFileDiffHeaderMeta(value: string): FileDiffHeaderMeta {
   return { from: parseInt(from.slice(1), 10), length: parseInt(length, 10) };
 }
 
-function toFileDiffLinesV2(
+function toFileDiffLines(
   lines: string[],
   diffHeader: FileDiffHeader,
-): FileDiffLineV2[] {
-  const nextlines: FileDiffLineV2[] = [];
+): FileDiffLine[] {
+  const nextlines: FileDiffLine[] = [];
 
   let lastSpaceIndex = 0;
   let removeNumLine = diffHeader.meta.remove.from;
   let addNumLine = diffHeader.meta.add.from;
   let lastNextLine;
-
-  console.log(diffHeader);
 
   for (let index = 0; index < lines.length - 1; index += 1) {
     const line = lines[index];
