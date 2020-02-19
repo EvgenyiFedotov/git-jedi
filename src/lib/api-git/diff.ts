@@ -54,7 +54,6 @@ export interface FileInfo {
 
 export interface FileDiffChunk {
   header: FileDiffHeader;
-  lines: FileDiffLine[];
   linesV2: FileDiffLineV2[];
 }
 
@@ -71,10 +70,13 @@ export interface FileDiffHeaderMeta {
   length: number;
 }
 
-export interface FileDiffLine {
+export interface FileDiffLineV2 {
   chunks: string[];
+  removeNumLine: number;
+  addNumLine: number;
   remove: boolean;
   add: boolean;
+  spase: boolean;
 }
 
 function toDiffFile(fileBlock: string): FileDiff {
@@ -100,7 +102,6 @@ function toFileDiffChunk(block: string): FileDiffChunk {
 
   return {
     header: diffHeader,
-    lines: toFileDiffLines(lines),
     linesV2: toFileDiffLinesV2(lines, diffHeader),
   };
 }
@@ -122,49 +123,6 @@ function toFileDiffHeaderMeta(value: string): FileDiffHeaderMeta {
   const [from, length] = value.split(",");
 
   return { from: parseInt(from.slice(1), 10), length: parseInt(length, 10) };
-}
-
-function toFileDiffLines(value: string[]): FileDiffLine[] {
-  const lines: FileDiffLine[] = [];
-  const getDefDiffLine = () => ({ chunks: [], remove: false, add: false });
-
-  for (let index = 0; index < value.length - 1; index += 1) {
-    const line = value[index];
-
-    if (line[0] === "~") {
-      if (!lines[lines.length - 1].chunks.length) {
-        lines[lines.length - 1].add = true;
-      }
-
-      lines.push(getDefDiffLine());
-    } else {
-      if (!lines[lines.length - 1]) {
-        lines.push(getDefDiffLine());
-      }
-
-      lines[lines.length - 1].chunks.push(line);
-
-      switch (line[0]) {
-        case "-":
-          lines[lines.length - 1].remove = true;
-          break;
-        case "+":
-          lines[lines.length - 1].add = true;
-          break;
-      }
-    }
-  }
-
-  return lines;
-}
-
-export interface FileDiffLineV2 {
-  chunks: string[];
-  removeNumLine: number;
-  addNumLine: number;
-  remove: boolean;
-  add: boolean;
-  spase: boolean;
 }
 
 function toFileDiffLinesV2(
@@ -210,6 +168,7 @@ function toFileDiffLinesV2(
         const lastChunkLastNextLine =
           lastNextLine.chunks[lastNextLine.chunks.length - 1];
 
+        // If block 'remove' was before current 'add' line
         if (lastChunkLastNextLine && lastChunkLastNextLine[0] === "-") {
           nextlines[lastSpaceIndex].chunks.push(line);
           nextlines[lastSpaceIndex].add = true;
@@ -231,12 +190,23 @@ function toFileDiffLinesV2(
           addNumLine += 1;
         }
 
-        // If add empty line
+        // If remove/add empty line
         if (!lastNextLine.remove && !lastNextLine.add && !lastNextLine.spase) {
+          const prevLastNextLine = nextlines[nextlines.length - 2];
+
           lastNextLine.addNumLine = addNumLine;
-          lastNextLine.chunks.push("+");
-          lastNextLine.add = true;
-          addNumLine += 1;
+
+          if (prevLastNextLine.add) {
+            lastNextLine.chunks.push("+");
+            lastNextLine.add = true;
+            addNumLine += 1;
+          }
+
+          if (prevLastNextLine.remove) {
+            lastNextLine.chunks.push("-");
+            lastNextLine.remove = true;
+            removeNumLine += 1;
+          }
         }
 
         nextlines.push({
