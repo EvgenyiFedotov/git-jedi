@@ -33,6 +33,7 @@ import {
 import { $runCommandOptions } from "features/state-git";
 import { diff } from "lib/api-git";
 import { Diff } from "features/diff";
+import { DiffV2 } from "features/diff-v2";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
@@ -165,7 +166,10 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
         </div>
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
-        <Diff fileDiff={fileDiff} />
+        <Row style={{ flexWrap: "nowrap" }}>
+          <DiffV2 fileDiff={fileDiff} type="-" />
+          <DiffV2 fileDiff={fileDiff} type="+" />
+        </Row>
       </Branch>
     </Column>
   );
