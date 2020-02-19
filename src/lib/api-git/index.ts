@@ -14,3 +14,11 @@ export { stash, StashOptions } from "./stash";
 export { status, StatusOptions, StatusFile, ChangeLine } from "./status";
 export { rebase, RebaseOptions } from "./rebase";
 export { config, ConfigOptions } from "./config";
+export {
+  diff,
+  DiffOptions,
+  FileDiff,
+  FileDiffChunk,
+  FileDiffLine,
+  FileDiffLineV2,
+} from "./diff";
