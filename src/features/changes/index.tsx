@@ -19,7 +19,7 @@ import {
   refreshStatus,
 } from "features/state-git";
 import { Branch } from "lib/branch";
-import { ChangeLine } from "lib/api-git";
+import { ChangeLine, FileDiff } from "lib/api-git";
 import { CommitForm } from "features/commit-form";
 import { Column } from "ui";
 
@@ -29,6 +29,10 @@ import {
   changeCommitFormValue,
   createCommit,
 } from "./model";
+
+import { $runCommandOptions } from "features/state-git";
+import { diff } from "lib/api-git";
+import { Diff } from "features/diff";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
@@ -103,34 +107,68 @@ const UnstageChanges: React.FC = () => {
 
 const ListUnstageChanges: React.FC = (props) => {
   const unstageChanges = useStore($unstagedChanges);
-  const discardPaths = useStore($discardPaths);
 
-  const list = unstageChanges.map((status) => {
-    return (
-      <div key={status.path}>
-        <Branch if={discardPaths.ref.has(status.path)}>
-          <Icon type="loading" />
-          <Status status={status.status} />
-        </Branch>
-        <Divider type="vertical" />
-        <Icon
-          type="rollback"
-          title="Discard changes"
-          style={{ marginRight: "4px" }}
-          onClick={() => addDiscardPath(status.path)}
-        />
-        <Icon
-          type="plus"
-          title="Stage changes"
-          onClick={() => stage([status.path])}
-        />
-        <Divider type="vertical" />
-        {status.path}
-      </div>
-    );
+  const list = unstageChanges.map((changeLine) => {
+    return <UnstageChange key={changeLine.path} changeLine={changeLine} />;
   });
 
   return <div>{list}</div>;
+};
+
+const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
+  changeLine,
+}) => {
+  const { path, status } = changeLine;
+  const discardPaths = useStore($discardPaths);
+  const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
+
+  const [fileDiff, setDiffChange] = React.useState<FileDiff | null>(null);
+
+  const click = React.useCallback(() => {
+    setIsShowDiff((prev) => !prev);
+  }, [isShowDiff]);
+
+  React.useEffect(() => {
+    if (isShowDiff && !fileDiff) {
+      diff({
+        ...$runCommandOptions.getState(),
+        paths: [path],
+      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+    }
+  }, [isShowDiff, fileDiff]);
+
+  return (
+    <Column>
+      <Row style={{ justifyContent: "space-between" }}>
+        <div>
+          <Branch if={discardPaths.ref.has(path)}>
+            <Icon type="loading" />
+            <Status status={status} />
+          </Branch>
+          <Divider type="vertical" />
+          <Icon
+            type="rollback"
+            title="Discard changes"
+            style={{ marginRight: "4px" }}
+            onClick={() => addDiscardPath(path)}
+          />
+          <Icon
+            type="plus"
+            title="Stage changes"
+            onClick={() => stage([path])}
+          />
+          <Divider type="vertical" />
+          {path}
+        </div>
+        <div>
+          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+        </div>
+      </Row>
+      <Branch if={isShowDiff && !!fileDiff}>
+        <Diff fileDiff={fileDiff} />
+      </Branch>
+    </Column>
+  );
 };
 
 const StageChanges: React.FC = () => {
