@@ -4,6 +4,8 @@ import { Column, Row } from "ui";
 import { cyan, red, grey } from "@ant-design/colors";
 import { Branch } from "lib/branch";
 
+import { DiffChunks } from "./ui/diff-chunks";
+
 export const Diff: React.FC<{ fileDiff: FileDiff | null }> = ({ fileDiff }) => {
   if (!fileDiff) return null;
 
@@ -47,7 +49,7 @@ const DiffLine: React.FC<{
         </div>
         <div style={{ whiteSpace: "pre" }}>
           <Branch if={diffLine.remove || diffLine.spase}>
-            <>{joinChunks(diffLine.chunks, "-", diffLine)}</>
+            <DiffChunks diffLine={diffLine} type="-" />
           </Branch>
         </div>
       </Row>
@@ -66,55 +68,10 @@ const DiffLine: React.FC<{
         </div>
         <div style={{ whiteSpace: "pre" }}>
           <Branch if={diffLine.add || diffLine.spase}>
-            <>{joinChunks(diffLine.chunks, "+", diffLine)}</>
+            <DiffChunks diffLine={diffLine} type="+" />
           </Branch>
         </div>
       </Row>
     </Row>
   );
 };
-
-function joinChunks(chunks: string[], action: string, diffLine: FileDiffLine) {
-  return chunks
-    .filter((chunk) => {
-      switch (chunk[0]) {
-        case " ":
-        case action:
-          return true;
-      }
-
-      return false;
-    })
-    .map((chunk, index) => {
-      switch (chunk[0]) {
-        case "-":
-          return (
-            <span
-              key={index}
-              style={
-                diffLine.add
-                  ? { backgroundColor: red[1], borderRadius: "3px" }
-                  : undefined
-              }
-            >
-              {chunk.slice(1)}
-            </span>
-          );
-        case "+":
-          return (
-            <span
-              key={index}
-              style={
-                diffLine.remove
-                  ? { backgroundColor: cyan[1], borderRadius: "3px" }
-                  : undefined
-              }
-            >
-              {chunk.slice(1)}
-            </span>
-          );
-      }
-
-      return <React.Fragment key={index}>{chunk.slice(1)}</React.Fragment>;
-    });
-}
