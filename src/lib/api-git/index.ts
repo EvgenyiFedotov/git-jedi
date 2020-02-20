@@ -20,4 +20,6 @@ export {
   FileDiff,
   FileDiffChunk,
   FileDiffLine,
+  FileDiffHeader,
+  FileDiffHeaderMeta,
 } from "./diff";

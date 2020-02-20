@@ -62,7 +62,7 @@ export interface FileDiffHeader {
     remove: FileDiffHeaderMeta;
     add: FileDiffHeaderMeta;
   };
-  codeTitle: string;
+  title: string;
 }
 
 export interface FileDiffHeaderMeta {
@@ -107,7 +107,7 @@ function toFileDiffChunk(block: string): FileDiffChunk {
 }
 
 function toFileDiffHeader(value: string): FileDiffHeader {
-  const [meta, codeTitle] = value.split(" @@ ");
+  const [meta, title] = value.split(" @@ ");
   const [remove, add] = meta.split(" ");
 
   return {
@@ -115,7 +115,7 @@ function toFileDiffHeader(value: string): FileDiffHeader {
       remove: toFileDiffHeaderMeta(remove),
       add: toFileDiffHeaderMeta(add),
     },
-    codeTitle,
+    title: title || "",
   };
 }
 
