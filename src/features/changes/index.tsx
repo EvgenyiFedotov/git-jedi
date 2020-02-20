@@ -122,7 +122,6 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
   const { path, status } = changeLine;
   const discardPaths = useStore($discardPaths);
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-
   const [fileDiff, setDiffChange] = React.useState<FileDiff | null>(null);
 
   const click = React.useCallback(() => {
@@ -198,23 +197,58 @@ const StageChanges: React.FC = () => {
 const ListStageChanges: React.FC = () => {
   const stagedChanges = useStore($stagedChanges);
 
-  const list = stagedChanges.map((status) => {
-    return (
-      <div key={status.path}>
-        <Status status={status.stagedStatus} />
-        <Divider type="vertical" />
-        <Icon
-          type="minus"
-          title="Unstage changes"
-          onClick={() => unstage(status.path)}
-        />
-        <Divider type="vertical" />
-        {status.path}
-      </div>
-    );
+  const list = stagedChanges.map((changeLine) => {
+    return <StageChange key={changeLine.path} changeLine={changeLine} />;
   });
 
   return <div>{list}</div>;
+};
+
+const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
+  const { stagedStatus, path } = changeLine;
+  const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
+  const [fileDiff, setDiffChange] = React.useState<FileDiff | null>(null);
+
+  const click = React.useCallback(() => {
+    setIsShowDiff((prev) => !prev);
+  }, [isShowDiff]);
+
+  React.useEffect(() => {
+    if (isShowDiff && !fileDiff) {
+      diff({
+        ...$runCommandOptions.getState(),
+        paths: [path],
+        cached: true,
+      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+    }
+  }, [isShowDiff, fileDiff]);
+
+  return (
+    <Column>
+      <Row style={{ justifyContent: "space-between" }}>
+        <div>
+          <Status status={stagedStatus} />
+          <Divider type="vertical" />
+          <Icon
+            type="minus"
+            title="Unstage changes"
+            onClick={() => unstage(path)}
+          />
+          <Divider type="vertical" />
+          {path}
+        </div>
+        <div>
+          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+        </div>
+      </Row>
+      <Branch if={isShowDiff && !!fileDiff}>
+        <Row style={{ flexWrap: "nowrap" }}>
+          <DiffV2 fileDiff={fileDiff} type="-" />
+          <DiffV2 fileDiff={fileDiff} type="+" />
+        </Row>
+      </Branch>
+    </Column>
+  );
 };
 
 const Status: React.FC<{
