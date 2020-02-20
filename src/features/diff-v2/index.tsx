@@ -1,7 +1,12 @@
 import * as React from "react";
-import { FileDiff, FileDiffChunk, FileDiffLine } from "lib/api-git";
+import {
+  FileDiff,
+  FileDiffChunk,
+  FileDiffLine,
+  FileDiffHeader,
+} from "lib/api-git";
 import styled from "styled-components";
-import { cyan, red, grey } from "@ant-design/colors";
+import { cyan, red, grey, geekblue } from "@ant-design/colors";
 import { DiffChunks } from "features/diff/ui/diff-chunks";
 import { Branch } from "lib/branch";
 
@@ -14,7 +19,12 @@ export const DiffV2: React.FC<{
   if (!fileDiff) return null;
 
   const chunks = fileDiff.chunks.map((diffChunk, index) => (
-    <DiffChunk diffChunk={diffChunk} type={type} key={index} />
+    <DiffChunk
+      diffChunk={diffChunk}
+      type={type}
+      key={index}
+      isLast={index === fileDiff.chunks.length - 1}
+    />
   ));
 
   return (
@@ -24,21 +34,37 @@ export const DiffV2: React.FC<{
   );
 };
 
-const DiffChunk: React.FC<{ diffChunk: FileDiffChunk; type: DiffType }> = ({
-  diffChunk,
-  type,
-}) => {
+const DiffChunk: React.FC<{
+  diffChunk: FileDiffChunk;
+  type: DiffType;
+  isLast: boolean;
+}> = ({ diffChunk, type, isLast }) => {
   const lines = diffChunk.lines.map((diffLine, index) => (
     <DiffLine diffLine={diffLine} type={type} key={index} />
   ));
 
   return (
     <>
+      <DiffHeader diffHeader={diffChunk.header} />
       {lines}
-      <tr>
-        <td colSpan={2}></td>
-      </tr>
+      <Branch if={!isLast}>
+        <tr>
+          <td colSpan={2}></td>
+        </tr>
+      </Branch>
     </>
+  );
+};
+
+const DiffHeader: React.FC<{ diffHeader: FileDiffHeader }> = ({
+  diffHeader,
+}) => {
+  return (
+    <tr>
+      <Header colSpan={2}>
+        {`@@ -${diffHeader.meta.remove.from},${diffHeader.meta.remove.length} +${diffHeader.meta.add.from},${diffHeader.meta.add.length} @@ ${diffHeader.title}`}
+      </Header>
+    </tr>
   );
 };
 
@@ -96,6 +122,7 @@ const DiffTable = styled.table`
   display: block;
   overflow-x: auto;
   white-space: nowrap;
+  width: 100%;
 
   tr {
     height: 21px;
@@ -116,6 +143,7 @@ const NumLine = styled.td`
 `;
 
 const Code = styled.td<{ type: DiffType | null }>`
+  width: 100%;
   white-space: pre;
   background-color: ${({ type }) => {
     switch (type) {
@@ -125,4 +153,9 @@ const Code = styled.td<{ type: DiffType | null }>`
         return cyan[0];
     }
   }};
+`;
+
+const Header = styled.td`
+  background-color: ${geekblue[0]};
+  font-weight: bold;
 `;
