@@ -31,9 +31,9 @@ import {
 } from "./model";
 
 import { $runCommandOptions } from "features/state-git";
-import { diff } from "lib/api-git";
-import { Diff } from "features/diff";
-import { DiffV2 } from "features/diff-v2";
+import { diff, diffV2 } from "lib/api-git";
+import { DiffV3 } from "features/diff-v3";
+import { DiffV4 } from "features/diff-v4";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
@@ -122,7 +122,9 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
   const { path, status } = changeLine;
   const discardPaths = useStore($discardPaths);
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-  const [fileDiff, setDiffChange] = React.useState<FileDiff | null>(null);
+  const [fileDiff, setDiffChange] = React.useState<diffV2.DiffFile<
+    diffV2.DiffLine[]
+  > | null>(null);
 
   const click = React.useCallback(() => {
     setIsShowDiff((prev) => !prev);
@@ -130,10 +132,17 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
 
   React.useEffect(() => {
     if (isShowDiff && !fileDiff) {
-      diff({
-        ...$runCommandOptions.getState(),
-        paths: [path],
-      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+      // diff({
+      //   ...$runCommandOptions.getState(),
+      //   paths: [path],
+      // }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+
+      diffV2
+        .diff({
+          ...$runCommandOptions.getState(),
+          paths: [path],
+        })
+        .next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
     }
   }, [isShowDiff, fileDiff]);
 
@@ -165,10 +174,10 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
         </div>
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
-        <Row style={{ flexWrap: "nowrap" }}>
-          <DiffV2 fileDiff={fileDiff} type="-" />
-          <DiffV2 fileDiff={fileDiff} type="+" />
-        </Row>
+        <DiffRemoveAdd>
+          <DiffV4 diffFile={fileDiff} mode="remove" />
+          <DiffV4 diffFile={fileDiff} mode="add" />
+        </DiffRemoveAdd>
       </Branch>
     </Column>
   );
@@ -207,7 +216,9 @@ const ListStageChanges: React.FC = () => {
 const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
   const { stagedStatus, path } = changeLine;
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-  const [fileDiff, setDiffChange] = React.useState<FileDiff | null>(null);
+  const [fileDiff, setDiffChange] = React.useState<diffV2.DiffFile<
+    diffV2.DiffLine[]
+  > | null>(null);
 
   const click = React.useCallback(() => {
     setIsShowDiff((prev) => !prev);
@@ -215,11 +226,19 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
 
   React.useEffect(() => {
     if (isShowDiff && !fileDiff) {
-      diff({
-        ...$runCommandOptions.getState(),
-        paths: [path],
-        cached: true,
-      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+      // diff({
+      //   ...$runCommandOptions.getState(),
+      //   paths: [path],
+      //   cached: true,
+      // }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+
+      diffV2
+        .diff({
+          ...$runCommandOptions.getState(),
+          paths: [path],
+          cached: true,
+        })
+        .next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
     }
   }, [isShowDiff, fileDiff]);
 
@@ -242,10 +261,10 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
         </div>
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
-        <Row style={{ flexWrap: "nowrap" }}>
-          <DiffV2 fileDiff={fileDiff} type="-" />
-          <DiffV2 fileDiff={fileDiff} type="+" />
-        </Row>
+        <DiffRemoveAdd>
+          <DiffV4 diffFile={fileDiff} mode="remove" />
+          <DiffV4 diffFile={fileDiff} mode="add" />
+        </DiffRemoveAdd>
       </Branch>
     </Column>
   );
@@ -282,4 +301,15 @@ const StatusCotainer = styled.span<StatusCotainerProps>`
         return blue.primary;
     }
   }};
+`;
+
+const DiffRemoveAdd = styled(Row)`
+  flex-wrap: nowrap;
+
+  & > *:not(:last-child),
+  & > * {
+    margin: 0;
+    padding: 0 8px;
+    width: 50%;
+  }
 `;

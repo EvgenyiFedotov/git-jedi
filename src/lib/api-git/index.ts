@@ -22,4 +22,8 @@ export {
   FileDiffLine,
   FileDiffHeader,
   FileDiffHeaderMeta,
+  FileDiffLineV2,
+  FileDiffLineByMode,
 } from "./diff";
+import * as diffV2 from "./diff-v2";
+export { diffV2 };

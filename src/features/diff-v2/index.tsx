@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { cyan, red, grey, geekblue } from "@ant-design/colors";
 import { DiffChunks } from "features/diff/ui/diff-chunks";
 import { Branch } from "lib/branch";
+import { Icon, Tooltip } from "antd";
 
 type DiffType = "-" | "+";
 
@@ -60,11 +61,17 @@ const DiffHeader: React.FC<{ diffHeader: FileDiffHeader }> = ({
   diffHeader,
 }) => {
   return (
-    <tr>
-      <Header colSpan={2}>
+    <DiffHeaderContainer>
+      <AddLine>
+        <Tooltip title="Add chunk">
+          <Icon type="plus" />
+        </Tooltip>
+      </AddLine>
+      <NumLine></NumLine>
+      <td>
         {`@@ -${diffHeader.meta.remove.from},${diffHeader.meta.remove.length} +${diffHeader.meta.add.from},${diffHeader.meta.add.length} @@ ${diffHeader.title}`}
-      </Header>
-    </tr>
+      </td>
+    </DiffHeaderContainer>
   );
 };
 
@@ -103,16 +110,23 @@ const DiffLine: React.FC<{
   }, [type]);
 
   return (
-    <tr>
+    <DiffLineContainer>
+      <AddLine>
+        <Branch if={showLine && !!paintColorCode}>
+          <Tooltip title="Add line">
+            <Icon type="plus" />
+          </Tooltip>
+        </Branch>
+      </AddLine>
       <NumLine>
         <Branch if={showLine}>{numLine}</Branch>
       </NumLine>
       <Code type={paintColorCode}>
         <Branch if={showLine}>
-          <DiffChunks diffLine={diffLine} type={type} />
+          {/* <DiffChunks diffLine={diffLine} mode={type} /> */}
         </Branch>
       </Code>
-    </tr>
+    </DiffLineContainer>
   );
 };
 
@@ -123,6 +137,7 @@ const DiffTable = styled.table`
   overflow-x: auto;
   white-space: nowrap;
   width: 100%;
+  position: relative;
 
   tr {
     height: 21px;
@@ -133,12 +148,31 @@ const DiffTable = styled.table`
   }
 `;
 
+const DiffHeaderContainer = styled.tr`
+  td {
+    background-color: ${geekblue[0]};
+    font-weight: bold;
+  }
+`;
+
+const AddLine = styled.td`
+  cursor: pointer;
+  color: ${grey[2]};
+  position: absolute;
+  left: 0;
+  /* position: sticky;
+  left: 0; */
+  background-color: white;
+`;
+
+const DiffLineContainer = styled.tr``;
+
 const NumLine = styled.td`
   color: ${grey[0]};
   white-space: nowrap;
   text-align: right;
-  position: sticky;
-  left: 0;
+  /* position: sticky; */
+  /* left: 20px; */
   background-color: white;
 `;
 
@@ -153,9 +187,4 @@ const Code = styled.td<{ type: DiffType | null }>`
         return cyan[0];
     }
   }};
-`;
-
-const Header = styled.td`
-  background-color: ${geekblue[0]};
-  font-weight: bold;
 `;

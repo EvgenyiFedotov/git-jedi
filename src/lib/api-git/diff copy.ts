@@ -55,7 +55,7 @@ export interface FileInfo {
 export interface FileDiffChunk {
   header: FileDiffHeader;
   lines: FileDiffLine[];
-  linesV2: FileDiffLineV2[];
+  linesV2: FileDiffLine[];
 }
 
 export interface FileDiffHeader {
@@ -80,17 +80,6 @@ export interface FileDiffLine {
   spase: boolean;
 }
 
-export interface FileDiffLineV2 {
-  remove: FileDiffLineByMode | null;
-  add: FileDiffLineByMode | null;
-}
-
-export interface FileDiffLineByMode {
-  chunks: string[];
-  numLine: number;
-  change: boolean;
-}
-
 function toDiffFile(fileBlock: string): FileDiff {
   const [info, ...code] = fileBlock.split("\n@@");
   return { info: toFileInfo(info), chunks: code.map(toFileDiffChunk) };
@@ -108,7 +97,6 @@ function toFileInfo(block: string): FileInfo {
   };
 }
 
-// TODO For line use different algoritms
 function toFileDiffChunk(block: string): FileDiffChunk {
   const [header, ...lines] = block.split("\n");
   const diffHeader = toFileDiffHeader(header.trim());
@@ -116,7 +104,7 @@ function toFileDiffChunk(block: string): FileDiffChunk {
   return {
     header: diffHeader,
     lines: toFileDiffLines(lines, diffHeader),
-    linesV2: toFileDiffLinesV2(lines.filter(Boolean), diffHeader),
+    linesV2: toFileDiffLinesV2(lines, diffHeader),
   };
 }
 
@@ -239,86 +227,57 @@ function toFileDiffLines(
 function toFileDiffLinesV2(
   lines: string[],
   diffHeader: FileDiffHeader,
-): FileDiffLineV2[] {
-  const resultLines: FileDiffLineV2[] = [];
-  const removeLines = getLines(lines, diffHeader, "-");
-  const addLines = getLines(lines, diffHeader, "+");
+): FileDiffLine[] {
+  const removeLines: string[][] = [];
+  const addLines: string[][] = [];
 
-  for (let index = 0; index < lines.length; index += 1) {
-    const remove = removeLines.add(index);
-    const add = addLines.add(index);
+  for (let index = 0; index < lines.length - 1; index += 1) {
+    if (index === 0) {
+      removeLines.push([]);
+      addLines.push([]);
+    }
 
-    if (remove || add) {
-      resultLines.push({ remove, add });
+    const line = lines[index];
+    const action = line[0];
+
+    const prevLine = lines[index - 1] || "";
+    const actionPrevLine = prevLine[0];
+
+    switch (action) {
+      case " ":
+        removeLines[removeLines.length - 1].push(line);
+        addLines[addLines.length - 1].push(line);
+        break;
+      case "-":
+        removeLines[removeLines.length - 1].push(line);
+        break;
+      case "+":
+        addLines[addLines.length - 1].push(line);
+        break;
+      case "~":
+        const isCheckActionPrevRemoveLine =
+          actionPrevLine === " " ||
+          actionPrevLine === "-" ||
+          actionPrevLine === "~";
+
+        if (isCheckActionPrevRemoveLine) {
+          removeLines.push([]);
+        }
+
+        const isCheckActionPrevAddLine =
+          actionPrevLine === " " ||
+          actionPrevLine === "+" ||
+          actionPrevLine === "~";
+
+        if (isCheckActionPrevAddLine) {
+          addLines.push([]);
+        }
+        break;
     }
   }
 
-  return resultLines;
-}
+  console.log("REMOVE:", removeLines);
+  console.log("ADD:", addLines);
 
-function getLines(
-  lines: string[],
-  diffHeader: FileDiffHeader,
-  mode: "+" | "-",
-) {
-  const result: FileDiffLineByMode[] = [
-    {
-      chunks: [],
-      numLine: diffHeader.meta[mode === "-" ? "remove" : "add"].from,
-      change: false,
-    },
-  ];
-  const reverseMode = mode === "-" ? "+" : "-";
-
-  return {
-    result: () => result,
-    add: (index: number) => {
-      const line = lines[index];
-      const action = line[0];
-
-      switch (action) {
-        case " ":
-          result[result.length - 1].chunks.push(line);
-          break;
-        case mode:
-          result[result.length - 1].chunks.push(line);
-          result[result.length - 1].change = true;
-          break;
-        case "~":
-          const prevLine = lines[index - 1] || "!";
-          const prevAction = prevLine[0] || "";
-          const nextLine = lines[index + 1] || "!";
-          const nextAction = nextLine[0] || "";
-          const lastLine = result[result.length - 1];
-
-          if (
-            (prevAction === mode && nextAction === mode) ||
-            (prevAction === mode && nextAction === " ") ||
-            (prevAction === mode && nextAction === "~") ||
-            (prevAction === mode && nextAction === "!") ||
-            (prevAction === " " && nextAction === mode) ||
-            (prevAction === " " && nextAction === " ") ||
-            (prevAction === " " && nextAction === "~") ||
-            (prevAction === " " && nextAction === "!") ||
-            (prevAction === "~" && nextAction === mode) ||
-            (prevAction === "~" && nextAction === " ") ||
-            (prevAction === "~" && nextAction === "!") ||
-            (prevAction === reverseMode && nextAction === " ")
-          ) {
-            result.push({
-              chunks: [],
-              numLine:
-                diffHeader.meta[mode === "+" ? "add" : "remove"].from +
-                result.length,
-              change: false,
-            });
-
-            return lastLine;
-          }
-          break;
-      }
-
-      return null;
-    },
-  };
+  return [];
 }

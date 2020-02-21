@@ -49,7 +49,7 @@ const DiffLine: React.FC<{
         </div>
         <div style={{ whiteSpace: "pre" }}>
           <Branch if={diffLine.remove || diffLine.spase}>
-            <DiffChunks diffLine={diffLine} type="-" />
+            {/* <DiffChunks diffLine={diffLine} type="-" /> */}
           </Branch>
         </div>
       </Row>
@@ -68,7 +68,7 @@ const DiffLine: React.FC<{
         </div>
         <div style={{ whiteSpace: "pre" }}>
           <Branch if={diffLine.add || diffLine.spase}>
-            <DiffChunks diffLine={diffLine} type="+" />
+            {/* <DiffChunks diffLine={diffLine} type="+" /> */}
           </Branch>
         </div>
       </Row>
