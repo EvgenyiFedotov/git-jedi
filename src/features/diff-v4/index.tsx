@@ -13,8 +13,6 @@ export const DiffV4: React.FC<{
 }> = ({ diffFile, mode }) => {
   if (!diffFile) return null;
 
-  console.log(diffFile);
-
   const content = diffFile.chunks.reduce<{
     infoLines: React.ReactElement[];
     lines: React.ReactElement[];
@@ -104,7 +102,7 @@ const LineHeaderChunk: React.FC<{
 }> = ({ diffHeader }) => {
   return (
     <Header>
-      <td>
+      <td data-type="title">
         {`@@ -${diffHeader.meta.remove.from},${diffHeader.meta.remove.length} +${diffHeader.meta.add.from},${diffHeader.meta.add.length} @@ ${diffHeader.title}`}
       </td>
     </Header>
@@ -128,8 +126,11 @@ const InfoLine: React.FC<{
         </Branch>
       </AddButton>
       <Num bgColor={bgColor}>
-        {modeLine !== null &&
-          (mode === "remove" ? diffLine.removeNumLine : diffLine.addNumLine)}
+        {modeLine !== null
+          ? mode === "remove"
+            ? diffLine.removeNumLine
+            : diffLine.addNumLine
+          : " "}
       </Num>
     </tr>
   );
@@ -211,6 +212,10 @@ const Lines = styled(Table)`
 const Header = styled.tr`
   background-color: ${geekblue[0]};
   font-weight: bold;
+
+  td[data-type="title"] {
+    width: 100vw;
+  }
 `;
 
 const AddButton = styled.td`
