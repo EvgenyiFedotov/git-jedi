@@ -170,7 +170,9 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
           {path}
         </div>
         <div>
-          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+          <Branch if={status !== "untracked"}>
+            <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+          </Branch>
         </div>
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
@@ -257,7 +259,9 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
           {path}
         </div>
         <div>
-          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+          <Branch if={status !== "untracked"}>
+            <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+          </Branch>
         </div>
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
@@ -305,6 +309,7 @@ const StatusCotainer = styled.span<StatusCotainerProps>`
 
 const DiffRemoveAdd = styled(Row)`
   flex-wrap: nowrap;
+  align-items: flex-start;
 
   & > *:not(:last-child),
   & > * {
