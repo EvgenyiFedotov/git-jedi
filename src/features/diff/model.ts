@@ -14,12 +14,17 @@ export const $diffFiles = createStore<{
 }>({
   ref: new Map(),
 });
+export const $diffCachedFiles = createStore<{
+  ref: Map<string, DiffFile<DiffLine[]>>;
+}>({
+  ref: new Map(),
+});
 export const $diffFilesParams = createStore<Map<string, DiffFileParams>>(
   new Map(),
 );
 
 export const getDiffFile = createEvent<DiffFileParams>();
-export const removeDiffFile = createEvent<string>();
+export const removeDiffFile = createEvent<DiffFileParams>();
 
 const diff = createEffect<DiffOptions, Map<string, DiffFile<DiffLine[]>>[]>({
   handler: (options) => pipeToPromise(diffGit(options)),
@@ -48,15 +53,40 @@ sample({
   target: updateDiff,
 });
 
-$diffFiles.on(diff.done, ({ ref }, { result }) => {
-  result.forEach((diffFiles) => {
-    diffFiles.forEach((diffFile, key) => ref.set(key, diffFile));
-  });
+$diffFiles.on(diff.done, (store, { result, params }) => {
+  if (!params.cached) {
+    result.forEach((diffFiles) => {
+      diffFiles.forEach((diffFile, key) => store.ref.set(key, diffFile));
+    });
 
-  return { ref };
+    return { ref: store.ref };
+  }
+
+  return store;
 });
-$diffFiles.on(removeDiffFile, (store, path) => {
-  if (store.ref.has(path)) {
+$diffFiles.on(removeDiffFile, (store, { path, cached }) => {
+  if (!cached && store.ref.has(path)) {
+    store.ref.delete(path);
+
+    return { ref: store.ref };
+  }
+
+  return store;
+});
+
+$diffCachedFiles.on(diff.done, (store, { result, params }) => {
+  if (params.cached) {
+    result.forEach((diffFiles) => {
+      diffFiles.forEach((diffFile, key) => store.ref.set(key, diffFile));
+    });
+
+    return { ref: store.ref };
+  }
+
+  return store;
+});
+$diffCachedFiles.on(removeDiffFile, (store, { path, cached }) => {
+  if (cached && store.ref.has(path)) {
     store.ref.delete(path);
 
     return { ref: store.ref };
@@ -66,12 +96,12 @@ $diffFiles.on(removeDiffFile, (store, path) => {
 });
 
 $diffFilesParams.on(getDiffFile, (store, params) => {
-  store.set(params.path, params);
+  store.set(`${params.path}-${Boolean(params.cached)}`, params);
 
   return store;
 });
-$diffFilesParams.on(removeDiffFile, (store, path) => {
-  store.delete(path);
+$diffFilesParams.on(removeDiffFile, (store, params) => {
+  store.delete(`${params.path}-${Boolean(params.cached)}`);
 
   return store;
 });

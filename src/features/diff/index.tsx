@@ -4,7 +4,12 @@ import { Row } from "ui";
 import { useStore } from "effector-react";
 import { DiffFile } from "ui/diff-file";
 
-import { $diffFiles, getDiffFile, removeDiffFile } from "./model";
+import {
+  $diffFiles,
+  $diffCachedFiles,
+  getDiffFile,
+  removeDiffFile,
+} from "./model";
 import { getDiffFileToElements } from "./diff-file-to-elements";
 
 interface Props {
@@ -13,7 +18,7 @@ interface Props {
 }
 
 export const Diff: React.FC<Props> = ({ path, cached }) => {
-  const diffFiles = useStore($diffFiles);
+  const diffFiles = useStore(cached ? $diffCachedFiles : $diffFiles);
   const diffFile = React.useMemo(() => diffFiles.ref.get(path) || null, [
     path,
     diffFiles,
@@ -27,7 +32,7 @@ export const Diff: React.FC<Props> = ({ path, cached }) => {
     getDiffFile({ path, cached });
 
     return () => {
-      removeDiffFile(path);
+      removeDiffFile({ path, cached });
     };
   }, [path, cached]);
 
