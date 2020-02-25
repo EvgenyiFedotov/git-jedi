@@ -19,7 +19,7 @@ import {
   refreshStatus,
 } from "features/state-git";
 import { Branch } from "lib/branch";
-import { ChangeLine, FileDiff } from "lib/api-git";
+import { ChangeLine } from "lib/api-git";
 import { CommitForm } from "features/commit-form";
 import { Column } from "ui";
 
@@ -31,8 +31,7 @@ import {
 } from "./model";
 
 import { $runCommandOptions } from "features/state-git";
-import { diff, diffV2 } from "lib/api-git";
-import { DiffV3 } from "features/diff-v3";
+import { diffV2 } from "lib/api-git";
 import { DiffV4 } from "features/diff-v4";
 
 export const Changes: React.FC = () => {
