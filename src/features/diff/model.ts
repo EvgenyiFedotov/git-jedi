@@ -1,5 +1,18 @@
-import { createStore, createEffect, createEvent, sample } from "effector";
-import { DiffFile, DiffLine, diff as diffGit, DiffOptions } from "lib/api-git";
+import {
+  createStore,
+  createEffect,
+  createEvent,
+  sample,
+  forward,
+} from "effector";
+import {
+  DiffFile,
+  DiffLine,
+  diff as diffGit,
+  DiffOptions,
+  DiffFileChunk,
+  DiffChunkHeader,
+} from "lib/api-git";
 import { pipeToPromise } from "lib/pipe-to-promise";
 
 import { $runCommandOptions, refreshStatus } from "features/state-git";
@@ -25,6 +38,10 @@ export const $diffFilesParams = createStore<Map<string, DiffFileParams>>(
 
 export const getDiffFile = createEvent<DiffFileParams>();
 export const removeDiffFile = createEvent<DiffFileParams>();
+export const stageChunk = createEvent<{
+  chunk: DiffFileChunk<DiffLine[]>;
+  diffFile: DiffFile<DiffLine[]>;
+}>();
 
 const diff = createEffect<DiffOptions, Map<string, DiffFile<DiffLine[]>>[]>({
   handler: (options) => pipeToPromise(diffGit(options)),
@@ -33,6 +50,50 @@ const diff = createEffect<DiffOptions, Map<string, DiffFile<DiffLine[]>>[]>({
 const updateDiff = createEffect<Map<string, DiffFileParams>, void>({
   handler: async (params) => {
     params.forEach((getDiffFileParams) => getDiffFile(getDiffFileParams));
+  },
+});
+
+const createPatchByChunk = createEffect<
+  { chunk: DiffFileChunk<DiffLine[]>; diffFile: DiffFile<DiffLine[]> },
+  string
+>({
+  handler: async ({ chunk, diffFile }) => {
+    let lines: string[] = [];
+    let removeLines: string[] = [];
+    let addLines: string[] = [];
+
+    for (let index = 0; index < chunk.lines.length; index += 1) {
+      const line = chunk.lines[index];
+
+      if (line.changed) {
+        if (line.remove) {
+          removeLines.push(`-${line.remove}`);
+        }
+        if (line.add) {
+          addLines.push(`+${line.add}`);
+        }
+      } else {
+        if (removeLines.length) {
+          lines = [...lines, ...removeLines];
+          removeLines = [];
+        }
+        if (addLines.length) {
+          lines = [...lines, ...addLines];
+          addLines = [];
+        }
+        lines.push(` ${line.remove}` || " ");
+      }
+    }
+
+    const result = [
+      `diff --git ${diffFile.info.pathA} ${diffFile.info.pathB}`,
+      diffFile.info.meta,
+      ...diffFile.info.legend,
+      getHeaderChunk(chunk.header),
+      ...lines,
+    ];
+
+    return result.join("\n");
   },
 });
 
@@ -52,6 +113,8 @@ sample({
   clock: refreshStatus,
   target: updateDiff,
 });
+
+forward({ from: stageChunk, to: createPatchByChunk });
 
 $diffFiles.on(diff.done, (store, { result, params }) => {
   if (!params.cached) {
@@ -105,3 +168,10 @@ $diffFilesParams.on(removeDiffFile, (store, params) => {
 
   return store;
 });
+
+export const getHeaderChunk = (diffHeader: DiffChunkHeader) => {
+  const { meta, title } = diffHeader;
+  const { remove, add } = meta;
+
+  return `@@ -${remove.from},${remove.length} +${add.from},${add.length} @@ ${title}`;
+};

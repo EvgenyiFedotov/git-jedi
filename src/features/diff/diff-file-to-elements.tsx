@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  DiffFile,
-  DiffLine,
-  DiffChunkHeader,
-  DiffFileChunk,
-} from "lib/api-git";
+import { DiffFile, DiffLine, DiffFileChunk } from "lib/api-git";
 import {
   ChunkHeaderLine,
   Separator,
@@ -16,6 +11,7 @@ import { cyan, red } from "@ant-design/colors";
 import { Icon, Tooltip } from "antd";
 
 import { NumLine, ButtonAdd } from "./ui";
+import { stageChunk, getHeaderChunk } from "./model";
 
 interface DiffFileToElementsResult {
   remove: { infoLines: React.ReactElement[]; codeLines: React.ReactElement[] };
@@ -33,7 +29,7 @@ export const getDiffFileToElements = (
   if (!diffFile) return def;
 
   return diffFile.chunks.reduce<DiffFileToElementsResult>((memo, chunk) => {
-    addHeaders(memo, chunk);
+    addHeaders(memo, chunk, { diffFile });
     addMainLines(memo, chunk);
     addSeparators(memo, chunk);
 
@@ -44,21 +40,22 @@ export const getDiffFileToElements = (
 const addHeaders = (
   { remove, add }: DiffFileToElementsResult,
   chunk: DiffFileChunk<DiffLine[]>,
+  { diffFile }: { diffFile: DiffFile<DiffLine[]> },
 ) => {
-  const text = getHeaderText(chunk.header);
+  const headerChunk = getHeaderChunk(chunk.header);
 
   remove.infoLines.push(
     <ChunkHeaderLine key={`header-${chunk.id}`}>
       <ButtonAdd>
         <Tooltip title="Add chunk">
-          <Icon type="plus" />
+          <Icon type="plus" onClick={() => stageChunk({ chunk, diffFile })} />
         </Tooltip>
       </ButtonAdd>
     </ChunkHeaderLine>,
   );
   remove.codeLines.push(
     <ChunkHeaderLine key={`header-${chunk.id}`} type="title">
-      {text}
+      {headerChunk}
     </ChunkHeaderLine>,
   );
 
@@ -67,7 +64,7 @@ const addHeaders = (
   );
   add.codeLines.push(
     <ChunkHeaderLine key={`header-${chunk.id}`} type="title">
-      {text}
+      {headerChunk}
     </ChunkHeaderLine>,
   );
 };
@@ -151,13 +148,6 @@ const addSeparators = (
 
   add.infoLines.push(<Separator key={`separator-${chunk.id}`} />);
   add.codeLines.push(<Separator key={`separator-${chunk.id}`} />);
-};
-
-const getHeaderText = (diffHeader: DiffChunkHeader) => {
-  const { meta, title } = diffHeader;
-  const { remove, add } = meta;
-
-  return `@@ -${remove.from},${remove.length} +${add.from},${add.length} @@ ${title}`;
 };
 
 const getBgColorRemove = (diffLine: DiffLine) => {
