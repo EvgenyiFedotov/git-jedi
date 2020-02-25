@@ -1,9 +1,9 @@
 import { createEffect } from "effector";
 import { add as addGit, AddOptions } from "lib/api-git";
-import { pipeCommandToPromise } from "lib/pipe-command-promise";
+import { pipeToPromise } from "lib/pipe-to-promise";
 
 export const add = createEffect<AddOptions, void>({
   handler: async (options) => {
-    await pipeCommandToPromise(addGit(options));
+    await pipeToPromise(addGit(options));
   },
 });

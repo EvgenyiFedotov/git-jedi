@@ -6,7 +6,7 @@ import {
   createEvent,
 } from "effector";
 import { status as statusGit, StatusOptions, ChangeLine } from "lib/api-git";
-import { pipeCommandToPromise } from "lib/pipe-command-promise";
+import { pipeToPromise } from "lib/pipe-to-promise";
 
 import { $runCommandOptions } from "../../config";
 import { $currentBranch } from "../../current-branch";
@@ -19,7 +19,7 @@ export const $status = createStore<ChangeLine[]>([]);
 
 export const status = createEffect<StatusOptions, ChangeLine[]>({
   handler: async (options) => {
-    const result = await pipeCommandToPromise(statusGit(options));
+    const result = await pipeToPromise(statusGit(options));
     return result.reduce((memo, chunk) => [...memo, ...chunk], []);
   },
 });

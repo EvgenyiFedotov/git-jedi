@@ -11,7 +11,7 @@ import {
   checkout as checkoutGit,
   CheckoutOptions,
 } from "lib/api-git";
-import { pipeCommandToPromise } from "lib/pipe-command-promise";
+import { pipeToPromise } from "lib/pipe-to-promise";
 
 import { $runCommandOptions } from "../config";
 
@@ -22,13 +22,13 @@ export const createBranch = createEvent<string>();
 
 export const revParse = createEffect<RevParseOptions, string | null>({
   handler: async (options) => {
-    const log = await pipeCommandToPromise(revParseGit(options));
+    const log = await pipeToPromise(revParseGit(options));
     return log[0] || null;
   },
 });
 export const checkout = createEffect<CheckoutOptions, void>({
   handler: async (options) => {
-    await pipeCommandToPromise(checkoutGit(options));
+    await pipeToPromise(checkoutGit(options));
   },
 });
 

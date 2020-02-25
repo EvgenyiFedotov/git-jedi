@@ -5,7 +5,7 @@ import {
   config as configGit,
   ConfigOptions,
 } from "lib/api-git";
-import { pipeCommandToPromise } from "lib/pipe-command-promise";
+import { pipeToPromise } from "lib/pipe-to-promise";
 import { parseArgs } from "lib/parse-args";
 
 import { $runCommandOptions } from "../config";
@@ -21,7 +21,7 @@ export const rebase = createEffect<ResetOptions, void>({
       spawnOptions: options.spawnOptions,
     });
 
-    await pipeCommandToPromise(rebaseGit(options));
+    await pipeToPromise(rebaseGit(options));
 
     await backCoreEditor({
       commandOptions: options.commandOptions,
@@ -46,7 +46,7 @@ const changeCoreEditor = createEffect<ConfigOptions, void>({
       }
     });
 
-    await pipeCommandToPromise(pipe);
+    await pipeToPromise(pipe);
   },
 });
 
@@ -61,7 +61,7 @@ const backCoreEditor = createEffect<ConfigOptions, void>({
         value: ["core.editor", coreEditor],
       });
 
-      await pipeCommandToPromise(pipe);
+      await pipeToPromise(pipe);
     }
 
     localStorage.removeItem(CORE_EDITOR);

@@ -1,6 +1,6 @@
 import { Pipe } from "lib/pipe";
 
-export const pipeCommandToPromise = <V>(pipe: Pipe<V, number>) => {
+export const pipeToPromise = <V>(pipe: Pipe<V, number>) => {
   const log: V[] = [];
 
   return new Promise<V[]>((resolve, reject) => {
