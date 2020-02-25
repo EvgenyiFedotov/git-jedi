@@ -19,7 +19,7 @@ import {
 } from "./ui";
 import { Mode } from "./types";
 
-export const Diff: React.FC<{
+export const DiffByMode: React.FC<{
   diffFile: DiffFile<DiffLine[]> | null;
   mode: Mode;
 }> = ({ diffFile, mode }) => {

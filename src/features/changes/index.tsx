@@ -32,7 +32,7 @@ import {
 
 import { $runCommandOptions } from "features/state-git";
 import { diff, DiffFile, DiffLine } from "lib/api-git";
-import { Diff } from "ui/diff";
+import { DiffByMode } from "ui/diff-by-mode";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
@@ -169,8 +169,8 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
         <DiffRemoveAdd>
-          <Diff diffFile={fileDiff} mode="remove" />
-          <Diff diffFile={fileDiff} mode="add" />
+          <DiffByMode diffFile={fileDiff} mode="remove" />
+          <DiffByMode diffFile={fileDiff} mode="add" />
         </DiffRemoveAdd>
       </Branch>
     </Column>
@@ -250,8 +250,8 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
         <DiffRemoveAdd>
-          <Diff diffFile={fileDiff} mode="remove" />
-          <Diff diffFile={fileDiff} mode="add" />
+          <DiffByMode diffFile={fileDiff} mode="remove" />
+          <DiffByMode diffFile={fileDiff} mode="add" />
         </DiffRemoveAdd>
       </Branch>
     </Column>
