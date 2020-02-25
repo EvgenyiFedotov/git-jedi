@@ -1,5 +1,6 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 import { Change, diffWords } from "diff";
+import { v4 as uuid } from "uuid";
 
 export interface DiffOptions extends RunCommandOptions {
   commits?: string[];
@@ -93,6 +94,7 @@ function toDiffFileInfo(info: string): DiffFileInfo {
 }
 
 export interface DiffFileChunk<Lines> {
+  id: string;
   header: DiffChunkHeader;
   lines: Lines;
 }
@@ -110,6 +112,7 @@ function toDiffFileChunk<Lines>(_: { toDiffLines: ToDiffLines<Lines> }) {
     const diffHeader = toDiffChunkHeader(header.trim());
 
     return {
+      id: uuid(),
       header: diffHeader,
       lines: toDiffLines(lines, diffHeader),
     };
@@ -149,6 +152,7 @@ function toDiffChunkHeaderMeta(meta: string): DiffChunkHeaderMeta {
 }
 
 export interface DiffLine {
+  id: string;
   remove: string | null;
   removeNumLine: number | null;
   add: string | null;
@@ -163,6 +167,7 @@ function toDiffLines(lines: string[], diffHeader: DiffChunkHeader): DiffLine[] {
   let addNumLine = meta.add.from;
   const result: DiffLine[] = [
     {
+      id: uuid(),
       remove: null,
       removeNumLine,
       add: null,
@@ -202,6 +207,7 @@ function toDiffLines(lines: string[], diffHeader: DiffChunkHeader): DiffLine[] {
     }
 
     result.push({
+      id: uuid(),
       remove: null,
       removeNumLine,
       add: null,
@@ -222,3 +228,8 @@ function toDiffLines(lines: string[], diffHeader: DiffChunkHeader): DiffLine[] {
     return memo;
   }, []);
 }
+
+export function createPatchByDiffFile(
+  diffFile: DiffFile<DiffLine[]>,
+  ids: string[],
+) {}

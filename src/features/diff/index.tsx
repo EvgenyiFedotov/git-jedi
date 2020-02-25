@@ -1,10 +1,11 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Row } from "ui";
-import { DiffByMode } from "ui/diff-by-mode";
 import { useStore } from "effector-react";
+import { DiffFile } from "ui/diff-file";
 
 import { $diffFiles, getDiffFile, removeDiffFile } from "./model";
+import { getDiffFileToElements } from "./diff-file-to-elements";
 
 interface Props {
   path: string;
@@ -17,6 +18,10 @@ export const Diff: React.FC<Props> = ({ path, cached }) => {
     path,
     diffFiles,
   ]);
+  const diffFileToElements = React.useMemo(
+    () => getDiffFileToElements(diffFile),
+    [diffFile],
+  );
 
   React.useEffect(() => {
     getDiffFile({ path, cached });
@@ -28,8 +33,14 @@ export const Diff: React.FC<Props> = ({ path, cached }) => {
 
   return (
     <Container>
-      <DiffByMode diffFile={diffFile} mode="remove" />
-      <DiffByMode diffFile={diffFile} mode="add" />
+      <DiffFile
+        infoLines={diffFileToElements.remove.infoLines}
+        codeLines={diffFileToElements.remove.codeLines}
+      />
+      <DiffFile
+        infoLines={diffFileToElements.add.infoLines}
+        codeLines={diffFileToElements.add.codeLines}
+      />
     </Container>
   );
 };
