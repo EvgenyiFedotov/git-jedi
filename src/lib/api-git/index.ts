@@ -14,5 +14,13 @@ export { stash, StashOptions } from "./stash";
 export { status, StatusOptions, StatusFile, ChangeLine } from "./status";
 export { rebase, RebaseOptions } from "./rebase";
 export { config, ConfigOptions } from "./config";
-import * as diffV2 from "./diff-v2";
-export { diffV2 };
+export {
+  diff,
+  DiffOptions,
+  DiffFile,
+  DiffFileInfo,
+  DiffFileChunk,
+  DiffChunkHeader,
+  DiffChunkHeaderMeta,
+  DiffLine,
+} from "./diff";

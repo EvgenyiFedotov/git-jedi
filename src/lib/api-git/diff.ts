@@ -1,5 +1,5 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
-import { diffChars, Change, diffWords } from "diff";
+import { Change, diffWords } from "diff";
 
 export interface DiffOptions extends RunCommandOptions {
   commits?: string[];
@@ -97,7 +97,7 @@ export interface DiffFileChunk<Lines> {
   lines: Lines;
 }
 
-export type ToDiffLines<Lines> = (
+type ToDiffLines<Lines> = (
   lines: string[],
   chunkHeader: DiffChunkHeader,
 ) => Lines;

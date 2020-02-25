@@ -31,8 +31,8 @@ import {
 } from "./model";
 
 import { $runCommandOptions } from "features/state-git";
-import { diffV2 } from "lib/api-git";
-import { DiffV4 } from "features/diff-v4";
+import { diff, DiffFile, DiffLine } from "lib/api-git";
+import { Diff } from "features/diff";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
@@ -121,9 +121,9 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
   const { path, status } = changeLine;
   const discardPaths = useStore($discardPaths);
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-  const [fileDiff, setDiffChange] = React.useState<diffV2.DiffFile<
-    diffV2.DiffLine[]
-  > | null>(null);
+  const [fileDiff, setDiffChange] = React.useState<DiffFile<DiffLine[]> | null>(
+    null,
+  );
 
   const click = React.useCallback(() => {
     setIsShowDiff((prev) => !prev);
@@ -131,17 +131,10 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
 
   React.useEffect(() => {
     if (isShowDiff && !fileDiff) {
-      // diff({
-      //   ...$runCommandOptions.getState(),
-      //   paths: [path],
-      // }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
-
-      diffV2
-        .diff({
-          ...$runCommandOptions.getState(),
-          paths: [path],
-        })
-        .next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+      diff({
+        ...$runCommandOptions.getState(),
+        paths: [path],
+      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
     }
   }, [isShowDiff, fileDiff]);
 
@@ -176,8 +169,8 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
         <DiffRemoveAdd>
-          <DiffV4 diffFile={fileDiff} mode="remove" />
-          <DiffV4 diffFile={fileDiff} mode="add" />
+          <Diff diffFile={fileDiff} mode="remove" />
+          <Diff diffFile={fileDiff} mode="add" />
         </DiffRemoveAdd>
       </Branch>
     </Column>
@@ -217,9 +210,9 @@ const ListStageChanges: React.FC = () => {
 const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
   const { stagedStatus, path } = changeLine;
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-  const [fileDiff, setDiffChange] = React.useState<diffV2.DiffFile<
-    diffV2.DiffLine[]
-  > | null>(null);
+  const [fileDiff, setDiffChange] = React.useState<DiffFile<DiffLine[]> | null>(
+    null,
+  );
 
   const click = React.useCallback(() => {
     setIsShowDiff((prev) => !prev);
@@ -227,19 +220,11 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
 
   React.useEffect(() => {
     if (isShowDiff && !fileDiff) {
-      // diff({
-      //   ...$runCommandOptions.getState(),
-      //   paths: [path],
-      //   cached: true,
-      // }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
-
-      diffV2
-        .diff({
-          ...$runCommandOptions.getState(),
-          paths: [path],
-          cached: true,
-        })
-        .next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
+      diff({
+        ...$runCommandOptions.getState(),
+        paths: [path],
+        cached: true,
+      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
     }
   }, [isShowDiff, fileDiff]);
 
@@ -265,8 +250,8 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
       </Row>
       <Branch if={isShowDiff && !!fileDiff}>
         <DiffRemoveAdd>
-          <DiffV4 diffFile={fileDiff} mode="remove" />
-          <DiffV4 diffFile={fileDiff} mode="add" />
+          <Diff diffFile={fileDiff} mode="remove" />
+          <Diff diffFile={fileDiff} mode="add" />
         </DiffRemoveAdd>
       </Branch>
     </Column>

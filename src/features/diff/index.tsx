@@ -1,5 +1,5 @@
 import * as React from "react";
-import { diffV2 } from "lib/api-git";
+import { DiffFile, DiffLine, DiffChunkHeader } from "lib/api-git";
 import { cyan, red } from "@ant-design/colors";
 import { Icon, Tooltip } from "antd";
 import { Branch } from "lib/branch";
@@ -19,8 +19,8 @@ import {
 } from "./ui";
 import { Mode } from "./types";
 
-export const DiffV4: React.FC<{
-  diffFile: diffV2.DiffFile<diffV2.DiffLine[]> | null;
+export const Diff: React.FC<{
+  diffFile: DiffFile<DiffLine[]> | null;
   mode: Mode;
 }> = ({ diffFile, mode }) => {
   if (!diffFile) return null;
@@ -39,10 +39,7 @@ export const DiffV4: React.FC<{
   );
 };
 
-const getContent = (
-  diffFile: diffV2.DiffFile<diffV2.DiffLine[]>,
-  mode: Mode,
-) => {
+const getContent = (diffFile: DiffFile<DiffLine[]>, mode: Mode) => {
   return diffFile.chunks.reduce<{
     infoLines: React.ReactElement[];
     lines: React.ReactElement[];
@@ -101,7 +98,7 @@ const getContent = (
 };
 
 const InfoLineHeaderChunk: React.FC<{
-  diffHeader: diffV2.DiffChunkHeader;
+  diffHeader: DiffChunkHeader;
   mode: Mode;
 }> = ({ diffHeader, mode }) => {
   return (
@@ -117,7 +114,7 @@ const InfoLineHeaderChunk: React.FC<{
 };
 
 const LineHeaderChunk: React.FC<{
-  diffHeader: diffV2.DiffChunkHeader;
+  diffHeader: DiffChunkHeader;
 }> = ({ diffHeader: { meta, title } }) => {
   const { remove, add } = meta;
 
@@ -132,7 +129,7 @@ const LineHeaderChunk: React.FC<{
 
 const InfoLine: React.FC<{
   mode: Mode;
-  diffLine: diffV2.DiffLine;
+  diffLine: DiffLine;
   bgColor?: string;
 }> = ({ diffLine, mode, bgColor }) => {
   const modeLine = diffLine[mode];
@@ -162,7 +159,7 @@ const InfoLine: React.FC<{
 
 const Line: React.FC<{
   mode: Mode;
-  diffLine: diffV2.DiffLine;
+  diffLine: DiffLine;
   bgColor?: string;
 }> = ({ mode, diffLine, bgColor }) => {
   const changes = React.useMemo(

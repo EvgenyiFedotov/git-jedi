@@ -1,5 +1,5 @@
 import * as React from "react";
-import { diffV2 } from "lib/api-git";
+import { DiffLine } from "lib/api-git";
 import styled from "styled-components";
 import { cyan, red, grey, geekblue } from "@ant-design/colors";
 
@@ -74,7 +74,7 @@ export const Chunk = styled.span<{ bgColor?: string }>`
   padding: 3px 2px;
 `;
 
-export function getBgColor(diffLine: diffV2.DiffLine, mode: Mode) {
+export function getBgColor(diffLine: DiffLine, mode: Mode) {
   const modeLine = diffLine[mode];
 
   if (!!modeLine && diffLine.changed) {
