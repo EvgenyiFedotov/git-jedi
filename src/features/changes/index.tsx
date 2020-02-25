@@ -32,7 +32,7 @@ import {
 
 import { $runCommandOptions } from "features/state-git";
 import { diff, DiffFile, DiffLine } from "lib/api-git";
-import { Diff } from "features/diff";
+import { Diff } from "ui/diff";
 
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
