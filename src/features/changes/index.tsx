@@ -22,6 +22,7 @@ import { Branch } from "lib/branch";
 import { ChangeLine } from "lib/api-git";
 import { CommitForm } from "features/commit-form";
 import { Column } from "ui";
+import { Diff } from "features/diff";
 
 import {
   $isShowChanges,
@@ -30,15 +31,10 @@ import {
   createCommit,
 } from "./model";
 
-import { $runCommandOptions } from "features/state-git";
-import { diff, DiffFile, DiffLine } from "lib/api-git";
-import { DiffByMode } from "ui/diff-by-mode";
-
 export const Changes: React.FC = () => {
   const isShowChanges = useStore($isShowChanges);
   const unstagedChanges = useStore($unstagedChanges);
   const stagedChanges = useStore($stagedChanges);
-  const commitFormValue = useStore($commitFormValue);
   const status = useStore($status);
 
   return (
@@ -46,11 +42,7 @@ export const Changes: React.FC = () => {
       <Header />
       <Branch if={!!status.length && isShowChanges}>
         <Column>
-          <CommitForm
-            value={commitFormValue}
-            onChange={changeCommitFormValue}
-            onSave={() => createCommit()}
-          />
+          <CForm />
           <Branch if={!!stagedChanges.length}>
             <StageChanges />
           </Branch>
@@ -60,6 +52,18 @@ export const Changes: React.FC = () => {
         </Column>
       </Branch>
     </div>
+  );
+};
+
+const CForm: React.FC = () => {
+  const commitFormValue = useStore($commitFormValue);
+
+  return (
+    <CommitForm
+      value={commitFormValue}
+      onChange={changeCommitFormValue}
+      onSave={() => createCommit()}
+    />
   );
 };
 
@@ -121,22 +125,10 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
   const { path, status } = changeLine;
   const discardPaths = useStore($discardPaths);
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-  const [fileDiff, setDiffChange] = React.useState<DiffFile<DiffLine[]> | null>(
-    null,
-  );
 
-  const click = React.useCallback(() => {
-    setIsShowDiff((prev) => !prev);
-  }, [isShowDiff]);
-
-  React.useEffect(() => {
-    if (isShowDiff && !fileDiff) {
-      diff({
-        ...$runCommandOptions.getState(),
-        paths: [path],
-      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
-    }
-  }, [isShowDiff, fileDiff]);
+  const click = React.useCallback(() => setIsShowDiff((prev) => !prev), [
+    isShowDiff,
+  ]);
 
   return (
     <Column>
@@ -167,11 +159,8 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
           </Branch>
         </div>
       </Row>
-      <Branch if={isShowDiff && !!fileDiff}>
-        <DiffRemoveAdd>
-          <DiffByMode diffFile={fileDiff} mode="remove" />
-          <DiffByMode diffFile={fileDiff} mode="add" />
-        </DiffRemoveAdd>
+      <Branch if={isShowDiff}>
+        <Diff path={path} />
       </Branch>
     </Column>
   );
@@ -210,23 +199,10 @@ const ListStageChanges: React.FC = () => {
 const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
   const { stagedStatus, path } = changeLine;
   const [isShowDiff, setIsShowDiff] = React.useState<boolean>(false);
-  const [fileDiff, setDiffChange] = React.useState<DiffFile<DiffLine[]> | null>(
-    null,
-  );
 
-  const click = React.useCallback(() => {
-    setIsShowDiff((prev) => !prev);
-  }, [isShowDiff]);
-
-  React.useEffect(() => {
-    if (isShowDiff && !fileDiff) {
-      diff({
-        ...$runCommandOptions.getState(),
-        paths: [path],
-        cached: true,
-      }).next((diffFiles) => setDiffChange(diffFiles.get(path) || null));
-    }
-  }, [isShowDiff, fileDiff]);
+  const click = React.useCallback(() => setIsShowDiff((prev) => !prev), [
+    isShowDiff,
+  ]);
 
   return (
     <Column>
@@ -248,11 +224,8 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
           </Branch>
         </div>
       </Row>
-      <Branch if={isShowDiff && !!fileDiff}>
-        <DiffRemoveAdd>
-          <DiffByMode diffFile={fileDiff} mode="remove" />
-          <DiffByMode diffFile={fileDiff} mode="add" />
-        </DiffRemoveAdd>
+      <Branch if={isShowDiff}>
+        <Diff path={path} cached={true} />
       </Branch>
     </Column>
   );
@@ -289,16 +262,4 @@ const StatusCotainer = styled.span<StatusCotainerProps>`
         return blue.primary;
     }
   }};
-`;
-
-const DiffRemoveAdd = styled(Row)`
-  flex-wrap: nowrap;
-  align-items: flex-start;
-
-  & > *:not(:last-child),
-  & > * {
-    margin: 0;
-    padding: 0 8px;
-    width: 50%;
-  }
 `;
