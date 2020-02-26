@@ -5,9 +5,10 @@ import {
   guard,
   combine,
   Store,
+  split,
 } from "effector";
 import {
-  createCommit as createCommitGitV2,
+  createCommit as createCommitGit,
   commit,
   stage,
   $stagedChanges,
@@ -26,18 +27,26 @@ export const $commitFormValue = createStore<MessageFormatted>({
 export const createCommit = createEvent<void>();
 export const toggleIsShowChanges = createEvent<any>();
 export const changeCommitFormValue = createEvent<MessageFormatted>();
+export const changeCommitFormValueByProp = createEvent<{
+  nameProp: string;
+  value: string;
+}>();
+export const changeProp = split(changeCommitFormValueByProp, {
+  scope: ({ nameProp }) => nameProp === "scope",
+});
+export const stageByScope = createEvent<{ nameProp: string; value: string }>();
 
 sample({
   source: $commitFormValue,
   clock: createCommit,
   fn: (commit) => toMessage(commit),
-  target: createCommitGitV2,
+  target: createCommitGit,
 });
 
 const autoStagePaths = sample({
   source: combine([$stagedChanges, $unstagedChanges]),
-  clock: $commitFormValue,
-  fn: ([stagedChanges, unstagedChanges], { scope }) => {
+  clock: guard({ source: changeProp.scope, filter: ({ value }) => !!value }),
+  fn: ([stagedChanges, unstagedChanges], { value: scope }) => {
     if (!stagedChanges.length && !!scope) {
       // TODO Use config (scope-root)
       const scopeRoot = "src/";

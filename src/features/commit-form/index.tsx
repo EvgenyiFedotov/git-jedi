@@ -11,11 +11,17 @@ import { $types, $scopes } from "./model";
 export interface CommitFormProps {
   value: MessageFormatted;
   onChange?: (value: MessageFormatted) => void;
+  onChangeByProp?: (_: { nameProp: string; value: string }) => void;
   onSave?: () => void;
 }
 
 export const CommitForm: React.FC<CommitFormProps> = (props) => {
-  const { value, onChange = () => {}, onSave = () => {} } = props;
+  const {
+    value,
+    onChange = () => {},
+    onSave = () => {},
+    onChangeByProp = () => {},
+  } = props;
 
   const types = useStore($types);
   const scopes = useStore($scopes);
@@ -25,33 +31,40 @@ export const CommitForm: React.FC<CommitFormProps> = (props) => {
   const changeType = React.useCallback(
     (type: string) => {
       onChange({ ...value, type });
+      onChangeByProp({ nameProp: "type", value: type });
     },
-    [onChange, value],
+    [onChange, onChangeByProp, value],
   );
 
   const changeNote = React.useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChange({ ...value, note: event.currentTarget.value });
+      const note = event.currentTarget.value;
+
+      onChange({ ...value, note });
+      onChangeByProp({ nameProp: "note", value: note });
     },
-    [onChange, value],
+    [onChange, onChangeByProp, value],
   );
 
   const formatNote = React.useCallback(() => {
     const [firstLine, secondLine, ...otherLines] = value.note.split("\n");
 
     if (!(secondLine === undefined || secondLine === "")) {
-      onChange({
-        ...value,
-        note: [firstLine, "", secondLine, ...otherLines].join("\n"),
-      });
+      const note = [firstLine, "", secondLine, ...otherLines].join("\n");
+
+      onChange({ ...value, note });
+      onChangeByProp({ nameProp: "note", value: note });
     }
-  }, [onChange, value]);
+  }, [onChange, onChangeByProp, value]);
 
   const changeScope = React.useCallback(
     (scope: string[]) => {
-      onChange({ ...value, scope: scope[scope.length - 1] || "" });
+      const nextScope = scope[scope.length - 1] || "";
+
+      onChange({ ...value, scope: nextScope });
+      onChangeByProp({ nameProp: "scope", value: nextScope });
     },
-    [onChange, value],
+    [onChange, onChangeByProp, value],
   );
 
   return (

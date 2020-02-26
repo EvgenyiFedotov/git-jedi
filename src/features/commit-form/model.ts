@@ -1,6 +1,5 @@
 import { createStore, combine } from "effector";
 import { $status } from "features/state-git";
-import path from "path";
 import { getScopePath } from "lib/scope-path";
 
 export const $types = createStore<string[]>([

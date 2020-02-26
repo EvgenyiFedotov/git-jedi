@@ -29,6 +29,7 @@ import {
   $commitFormValue,
   changeCommitFormValue,
   createCommit,
+  changeCommitFormValueByProp,
 } from "./model";
 
 export const Changes: React.FC = () => {
@@ -63,6 +64,7 @@ const CForm: React.FC = () => {
       value={commitFormValue}
       onChange={changeCommitFormValue}
       onSave={() => createCommit()}
+      onChangeByProp={changeCommitFormValueByProp}
     />
   );
 };
