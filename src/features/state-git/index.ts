@@ -11,3 +11,4 @@ export {
 export * from "./changes";
 export * from "./rebase";
 export * from "./editor";
+export * from "./diff";
