@@ -3,13 +3,13 @@ import styled from "styled-components";
 import { Row } from "ui";
 import { useStore } from "effector-react";
 import { DiffFile } from "ui/diff-file";
-
 import {
   $diffFiles,
   $diffCachedFiles,
   getDiffFile,
   removeDiffFile,
-} from "./model";
+} from "features/state-git";
+
 import { getDiffFileToElements } from "./diff-file-to-elements";
 
 interface Props {

@@ -9,9 +9,9 @@ import {
 } from "ui/diff-file";
 import { cyan, red } from "@ant-design/colors";
 import { Icon, Tooltip } from "antd";
+import { stageChunk, getHeaderChunk } from "features/state-git";
 
 import { NumLine, ButtonAdd } from "./ui";
-import { stageChunk, getHeaderChunk } from "./model";
 
 interface DiffFileToElementsResult {
   remove: { infoLines: React.ReactElement[]; codeLines: React.ReactElement[] };
