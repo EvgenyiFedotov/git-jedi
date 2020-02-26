@@ -3,7 +3,7 @@ import { MessageFormatted } from "lib/api-git";
 
 import { $contentCommitMessageOriginal } from "../original";
 import { abortRebase, rebaseEnd } from "../../events";
-import { $pathFile } from "../../path-file";
+import { $pathFile } from "../../../editor";
 import { writeContentCommitMesssage } from "./effects";
 
 export const $contentCommitMessageFormatted = combine<string, MessageFormatted>(

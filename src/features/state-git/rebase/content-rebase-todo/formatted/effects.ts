@@ -2,7 +2,7 @@ import { createEffect } from "effector";
 import { MessageFormatted, toMessage } from "lib/api-git";
 import { writeFileSync } from "fs";
 
-import { fileConnector } from "../../connector-rebase-file";
+import { fileConnector } from "../../../editor";
 
 export interface RowContentRabaseTodo {
   action: string;

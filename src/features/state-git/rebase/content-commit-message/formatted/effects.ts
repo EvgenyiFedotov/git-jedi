@@ -2,7 +2,7 @@ import { createEffect } from "effector";
 import { writeFileSync } from "fs";
 import { MessageFormatted, toMessage } from "lib/api-git";
 
-import { fileConnector } from "../../connector-rebase-file";
+import { fileConnector } from "../../../editor";
 
 export const writeContentCommitMesssage = createEffect<
   {

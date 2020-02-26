@@ -10,7 +10,7 @@ import { parseArgs } from "lib/parse-args";
 
 import { $runCommandOptions } from "../config";
 import { rebaseUp, abortRebase, rebaseEnd } from "./events";
-import { fileConnector } from "./connector-rebase-file";
+import { fileConnector } from "../editor";
 
 const CORE_EDITOR = "CORE_EDITOR";
 

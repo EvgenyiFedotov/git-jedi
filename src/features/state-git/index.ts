@@ -10,3 +10,4 @@ export {
 } from "./current-branch";
 export * from "./changes";
 export * from "./rebase";
+export * from "./editor";

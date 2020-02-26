@@ -3,7 +3,7 @@ import { toMessageFormatted } from "lib/api-git";
 
 import { $contentRebaseTodoOriginal } from "../original";
 import { abortRebase, rebaseEnd } from "../../events";
-import { $pathFile } from "../../path-file";
+import { $pathFile } from "../../../editor";
 import { RowContentRabaseTodo, writeContentRabaseTodo } from "./effects";
 
 export { RowContentRabaseTodo } from "./effects";
