@@ -154,13 +154,11 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
           {path}
         </div>
         <div>
-          <Branch if={status !== "untracked"}>
-            <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
-          </Branch>
+          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
         </div>
       </Row>
       <Branch if={isShowDiff}>
-        <Diff path={path} />
+        <Diff path={path} statusFile={status} />
       </Branch>
     </Column>
   );
@@ -219,13 +217,16 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
           {path}
         </div>
         <div>
-          <Branch if={status !== "untracked"}>
-            <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
-          </Branch>
+          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
         </div>
       </Row>
       <Branch if={isShowDiff}>
-        <Diff path={path} cached={true} />
+        <Diff
+          path={path}
+          cached={true}
+          reverse={true}
+          statusFile={stagedStatus}
+        />
       </Branch>
     </Column>
   );

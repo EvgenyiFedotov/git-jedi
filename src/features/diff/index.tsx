@@ -9,23 +9,37 @@ import {
   getDiffFile,
   removeDiffFile,
 } from "features/state-git";
+import { StatusFile } from "lib/api-git";
 
 import { getDiffFileToElements } from "./diff-file-to-elements";
 
 interface Props {
   path: string;
+  statusFile: StatusFile;
   cached?: boolean;
+  reverse?: boolean;
 }
 
-export const Diff: React.FC<Props> = ({ path, cached }) => {
+export const Diff: React.FC<Props> = ({
+  path,
+  cached,
+  reverse,
+  statusFile,
+}) => {
   const diffFiles = useStore(cached ? $diffCachedFiles : $diffFiles);
   const diffFile = React.useMemo(() => diffFiles.ref.get(path) || null, [
     path,
     diffFiles,
   ]);
   const diffFileToElements = React.useMemo(
-    () => getDiffFileToElements(diffFile),
-    [diffFile],
+    () =>
+      getDiffFileToElements(diffFile, {
+        reverse,
+        showButtonChangeStage: !(
+          statusFile === "untracked" || statusFile === "added"
+        ),
+      }),
+    [diffFile, statusFile],
   );
 
   React.useEffect(() => {

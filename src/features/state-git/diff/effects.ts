@@ -4,18 +4,34 @@ import {
   DiffFile,
   DiffLine,
   diff as diffGit,
-  DiffFileChunk,
   DiffChunkHeader,
+  add,
+  AddOptions,
 } from "lib/api-git";
 import { pipeToPromise } from "lib/pipe-to-promise";
+import { writeFileSync } from "fs";
 
-import { DiffFileParams, getDiffFile } from "./events";
+import { DiffFileParams, getDiffFile, ChangeStageChunk } from "./events";
+import { changeCoreEditor, backCoreEditor, fileConnector } from "../editor";
 
 export const diff = createEffect<
   DiffOptions,
   Map<string, DiffFile<DiffLine[]>>[]
 >({
-  handler: (options) => pipeToPromise(diffGit(options)),
+  handler: async (options) => {
+    await pipeToPromise(
+      add({
+        commandOptions: options.commandOptions,
+        spawnOptions: options.spawnOptions,
+        paths: options.paths,
+        intentToAdd: true,
+      }),
+    );
+
+    const result = await pipeToPromise(diffGit(options));
+
+    return result;
+  },
 });
 
 export const updateDiff = createEffect<Map<string, DiffFileParams>, void>({
@@ -24,11 +40,8 @@ export const updateDiff = createEffect<Map<string, DiffFileParams>, void>({
   },
 });
 
-export const createPatchByChunk = createEffect<
-  { chunk: DiffFileChunk<DiffLine[]>; diffFile: DiffFile<DiffLine[]> },
-  string
->({
-  handler: async ({ chunk, diffFile }) => {
+export const createPatchByChunk = createEffect<ChangeStageChunk, string>({
+  handler: async ({ chunk, diffFile, reverse }) => {
     let lines: string[] = [];
     let removeLines: string[] = [];
     let addLines: string[] = [];
@@ -37,11 +50,15 @@ export const createPatchByChunk = createEffect<
       const line = chunk.lines[index];
 
       if (line.changed) {
-        if (line.remove) {
-          removeLines.push(`-${line.remove}`);
+        if (line.remove !== null) {
+          const char = reverse ? "+" : "-";
+
+          removeLines.push(`${char}${line.remove}`);
         }
-        if (line.add) {
-          addLines.push(`+${line.add}`);
+        if (line.add !== null) {
+          const char = reverse ? "-" : "+";
+
+          addLines.push(`${char}${line.add}`);
         }
       } else {
         if (removeLines.length) {
@@ -56,19 +73,46 @@ export const createPatchByChunk = createEffect<
       }
     }
 
+    lines = [...lines, ...removeLines, ...addLines];
+
     const result = [
       `diff --git ${diffFile.info.pathA} ${diffFile.info.pathB}`,
       diffFile.info.meta,
       ...diffFile.info.legend,
       getHeaderChunk(chunk.header),
       ...lines,
+      "",
     ];
 
     return result.join("\n");
   },
 });
 
-createPatchByChunk.done.watch(({ result }) => console.log(result));
+export const addChunk = createEffect<AddOptions, void>({
+  handler: async (options) => {
+    await changeCoreEditor({
+      commandOptions: options.commandOptions,
+      spawnOptions: options.spawnOptions,
+    });
+
+    await pipeToPromise(add({ ...options, edit: true }));
+
+    await backCoreEditor({
+      commandOptions: options.commandOptions,
+      spawnOptions: options.spawnOptions,
+    });
+  },
+});
+
+export const writeAddEditFile = createEffect<
+  { content: string; pathFile: string },
+  void
+>({
+  handler: async ({ content, pathFile }) => {
+    writeFileSync(pathFile, content);
+    fileConnector.send(content);
+  },
+});
 
 export const getHeaderChunk = (diffHeader: DiffChunkHeader) => {
   const { meta, title } = diffHeader;

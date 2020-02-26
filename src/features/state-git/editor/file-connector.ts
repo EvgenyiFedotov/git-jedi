@@ -20,10 +20,8 @@ fileConnector.onMessage<string[]>(({ message: [, , pathFile] }) => {
   const fileName = arrPath[arrPath.length - 1];
   const content = getContentFile(pathFile);
 
-  console.log(pathFile);
-
   changePathFile(pathFile);
-  changeContentFile({ fileName, content });
+  changeContentFile({ fileName, content, pathFile });
 });
 
 function getFileContent(pathFile: string): string {

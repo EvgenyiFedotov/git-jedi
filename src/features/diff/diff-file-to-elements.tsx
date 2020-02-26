@@ -9,7 +9,8 @@ import {
 } from "ui/diff-file";
 import { cyan, red } from "@ant-design/colors";
 import { Icon, Tooltip } from "antd";
-import { stageChunk, getHeaderChunk } from "features/state-git";
+import { changeStageChunk, getHeaderChunk } from "features/state-git";
+import { Branch } from "lib/branch";
 
 import { NumLine, ButtonAdd } from "./ui";
 
@@ -18,8 +19,14 @@ interface DiffFileToElementsResult {
   add: { infoLines: React.ReactElement[]; codeLines: React.ReactElement[] };
 }
 
+interface Options {
+  reverse?: boolean;
+  showButtonChangeStage?: boolean;
+}
+
 export const getDiffFileToElements = (
   diffFile: DiffFile<DiffLine[]> | null,
+  options: Options = {},
 ): DiffFileToElementsResult => {
   const def = {
     remove: { infoLines: [], codeLines: [] },
@@ -29,7 +36,11 @@ export const getDiffFileToElements = (
   if (!diffFile) return def;
 
   return diffFile.chunks.reduce<DiffFileToElementsResult>((memo, chunk) => {
-    addHeaders(memo, chunk, { diffFile });
+    addHeaders(memo, chunk, {
+      diffFile,
+      reverse: options.reverse,
+      showButtonChangeStage: options.showButtonChangeStage,
+    });
     addMainLines(memo, chunk);
     addSeparators(memo, chunk);
 
@@ -40,17 +51,30 @@ export const getDiffFileToElements = (
 const addHeaders = (
   { remove, add }: DiffFileToElementsResult,
   chunk: DiffFileChunk<DiffLine[]>,
-  { diffFile }: { diffFile: DiffFile<DiffLine[]> },
+  {
+    diffFile,
+    reverse,
+    showButtonChangeStage = true,
+  }: {
+    diffFile: DiffFile<DiffLine[]>;
+    reverse?: boolean;
+    showButtonChangeStage?: boolean;
+  },
 ) => {
   const headerChunk = getHeaderChunk(chunk.header);
 
   remove.infoLines.push(
     <ChunkHeaderLine key={`header-${chunk.id}`}>
-      <ButtonAdd>
-        <Tooltip title="Add chunk">
-          <Icon type="plus" onClick={() => stageChunk({ chunk, diffFile })} />
-        </Tooltip>
-      </ButtonAdd>
+      <Branch if={showButtonChangeStage}>
+        <ButtonAdd>
+          <Tooltip title={`${reverse ? "Unstage" : "Stage"} chunk`}>
+            <Icon
+              type={reverse ? "minus" : "plus"}
+              onClick={() => changeStageChunk({ chunk, diffFile, reverse })}
+            />
+          </Tooltip>
+        </ButtonAdd>
+      </Branch>
     </ChunkHeaderLine>,
   );
   remove.codeLines.push(

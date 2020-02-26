@@ -18,11 +18,7 @@ export const diff = (options: DiffOptions = {}) => {
         toDiffLines,
       }),
     )
-    .next(toMapDiffFiles)
-    .next((value) => {
-      console.log(value);
-      return value;
-    });
+    .next(toMapDiffFiles);
 };
 
 function createArgs(options: DiffOptions = {}) {

@@ -6,9 +6,12 @@ export interface DiffFileParams {
   cached?: boolean;
 }
 
-export const getDiffFile = createEvent<DiffFileParams>();
-export const removeDiffFile = createEvent<DiffFileParams>();
-export const stageChunk = createEvent<{
+export interface ChangeStageChunk {
   chunk: DiffFileChunk<DiffLine[]>;
   diffFile: DiffFile<DiffLine[]>;
-}>();
+  reverse?: boolean;
+}
+
+export const getDiffFile = createEvent<DiffFileParams>();
+export const removeDiffFile = createEvent<DiffFileParams>();
+export const changeStageChunk = createEvent<ChangeStageChunk>();
