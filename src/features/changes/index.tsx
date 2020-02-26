@@ -87,11 +87,22 @@ const Header: React.FC = () => {
 };
 
 const UnstageChanges: React.FC = () => {
+  const unstageChanges = useStore($unstagedChanges);
+
+  const [isShowList, setIsShowList] = React.useState<boolean>(true);
+
+  const toggleIsShowList = React.useCallback(
+    () => setIsShowList((prev) => !prev),
+    [],
+  );
+
   return (
     <div>
       <div style={{ marginBottom: "8px" }}>
-        <i>
-          Unstaged
+        <span>
+          <span style={{ cursor: "pointer" }} onClick={toggleIsShowList}>
+            Unstaged
+          </span>
           <Divider type="vertical" />
           <Icon
             type="rollback"
@@ -104,14 +115,23 @@ const UnstageChanges: React.FC = () => {
             onClick={() => stageAll()}
             title="Stage all changes"
           />
-        </i>
+          <Divider type="vertical" />
+          <span
+            style={{ color: blue.primary, cursor: "pointer" }}
+            onClick={toggleIsShowList}
+          >
+            {unstageChanges.length}
+          </span>
+        </span>
       </div>
-      <ListUnstageChanges />
+      <Branch if={isShowList}>
+        <ListUnstageChanges />
+      </Branch>
     </div>
   );
 };
 
-const ListUnstageChanges: React.FC = (props) => {
+const ListUnstageChanges: React.FC = () => {
   const unstageChanges = useStore($unstagedChanges);
 
   const list = unstageChanges.map((changeLine) => {
@@ -153,10 +173,9 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
             onClick={() => stage([path])}
           />
           <Divider type="vertical" />
-          {path}
-        </div>
-        <div>
-          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+          <span style={{ cursor: "pointer" }} onClick={click}>
+            {path}
+          </span>
         </div>
       </Row>
       <Branch if={isShowDiff}>
@@ -167,21 +186,40 @@ const UnstageChange: React.FC<{ changeLine: ChangeLine }> = ({
 };
 
 const StageChanges: React.FC = () => {
+  const stagedChanges = useStore($stagedChanges);
+
+  const [isShowList, setIsShowList] = React.useState<boolean>(true);
+
+  const toggleIsShowList = React.useCallback(
+    () => setIsShowList((prev) => !prev),
+    [],
+  );
+
   return (
     <div>
       <div style={{ marginBottom: "8px" }}>
-        <i>
-          Staged
+        <span>
+          <span style={{ cursor: "pointer" }} onClick={toggleIsShowList}>
+            Staged
+          </span>
           <Divider type="vertical" />
           <Icon
             type="minus"
             title="Unstage all changes"
             onClick={() => unstageAll()}
           />
-        </i>
+          <Divider type="vertical" />
+          <span
+            style={{ color: blue.primary, cursor: "pointer" }}
+            onClick={toggleIsShowList}
+          >
+            {stagedChanges.length}
+          </span>
+        </span>
       </div>
-
-      <ListStageChanges />
+      <Branch if={isShowList}>
+        <ListStageChanges />
+      </Branch>
     </div>
   );
 };
@@ -216,10 +254,9 @@ const StageChange: React.FC<{ changeLine: ChangeLine }> = ({ changeLine }) => {
             onClick={() => unstage(path)}
           />
           <Divider type="vertical" />
-          {path}
-        </div>
-        <div>
-          <Icon type="diff" style={{ cursor: "pointer" }} onClick={click} />
+          <span style={{ cursor: "pointer" }} onClick={click}>
+            {path}
+          </span>
         </div>
       </Row>
       <Branch if={isShowDiff}>
