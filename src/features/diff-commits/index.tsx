@@ -12,8 +12,8 @@ import {
   $pendingFetch,
 } from "features/state-git";
 import { useStore } from "effector-react";
-
 import { createCommand, addCommand } from "features/commands";
+import { HotKey } from "features/hot-key";
 
 const commandFetch = createCommand("fetch", () => fetchGit());
 
@@ -39,32 +39,57 @@ export const DiffCommits: React.FC = () => {
     addCommand(commandFetch);
   }, []);
 
+  const fetchRef = React.useRef<HTMLSpanElement>(null);
+  const pullRef = React.useRef<HTMLSpanElement>(null);
+  const pushRef = React.useRef<HTMLSpanElement>(null);
+
   return (
     <Row>
-      <Tooltip title="Fetch">
-        <Icon
-          type="sync"
-          style={{ cursor: "pointer" }}
-          onClick={fetch}
-          spin={pendingFetch}
-        />
-      </Tooltip>
-      <Tooltip title="Pull rebase">
-        <Spin size="small" spinning={pendingPull}>
-          <span onClick={pull} style={{ cursor: "pointer" }}>
-            <Icon type="arrow-down" />
-            <span>{diffLog.pull.size}</span>
+      <HotKey
+        command="command+shift+f"
+        title="shift + f"
+        bindRef={fetchRef}
+        action="click"
+      >
+        <Tooltip title="Fetch">
+          <span onClick={fetch} style={{ cursor: "pointer" }} ref={fetchRef}>
+            <Icon type="sync" spin={pendingFetch} />
           </span>
-        </Spin>
-      </Tooltip>
-      <Tooltip title="Push">
-        <Spin size="small" spinning={pendingPush}>
-          <span onClick={push} style={{ cursor: "pointer" }}>
-            <Icon type="arrow-up" />
-            <span>{diffLog.push.size}</span>
-          </span>
-        </Spin>
-      </Tooltip>
+        </Tooltip>
+      </HotKey>
+
+      <HotKey
+        command="command+shift+l"
+        title="shift + l"
+        bindRef={pullRef}
+        action="click"
+        top="100%"
+      >
+        <Tooltip title="Pull rebase">
+          <Spin size="small" spinning={pendingPull}>
+            <span onClick={pull} style={{ cursor: "pointer" }} ref={pullRef}>
+              <Icon type="arrow-down" />
+              <span>{diffLog.pull.size}</span>
+            </span>
+          </Spin>
+        </Tooltip>
+      </HotKey>
+
+      <HotKey
+        command="command+shift+s"
+        title="shift + s"
+        bindRef={pushRef}
+        action="click"
+      >
+        <Tooltip title="Push">
+          <Spin size="small" spinning={pendingPush}>
+            <span onClick={push} style={{ cursor: "pointer" }} ref={pushRef}>
+              <Icon type="arrow-up" />
+              <span>{diffLog.push.size}</span>
+            </span>
+          </Spin>
+        </Tooltip>
+      </HotKey>
     </Row>
   );
 };
