@@ -12,3 +12,6 @@ export * from "./changes";
 export * from "./rebase";
 export * from "./editor";
 export * from "./diff";
+export * from "./diff-log";
+export * from "./pull";
+export * from "./push";

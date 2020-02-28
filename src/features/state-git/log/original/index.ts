@@ -6,6 +6,7 @@ import {
   merge,
 } from "effector";
 import { Commit, LogOptions, log as logGit } from "lib/api-git";
+import { pipeToPromise } from "lib/pipe-to-promise";
 
 import { $runCommandOptions } from "../../config";
 import { createCommit } from "../events";
@@ -24,7 +25,11 @@ export const addChunkLog = createEvent<{
 
 export const log = createEffect<LogOptions, void>({
   handler: async (options) => {
-    logGit(options).next((chunk, index) => addChunkLog({ chunk, index }));
+    const logPipe = logGit(options).next((chunk, index) =>
+      addChunkLog({ chunk, index }),
+    );
+
+    await pipeToPromise(logPipe);
   },
 });
 
