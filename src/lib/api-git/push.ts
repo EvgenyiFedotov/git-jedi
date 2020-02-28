@@ -3,6 +3,7 @@ import { runCommandGit, RunCommandOptions } from "lib/run-command";
 export interface PushOptions extends RunCommandOptions {
   setUpstream?: boolean;
   repositoryRefSpec?: string[];
+  force?: boolean;
 }
 
 export const push = (options: PushOptions = {}) => {
@@ -12,7 +13,11 @@ export const push = (options: PushOptions = {}) => {
 };
 
 function createArgs(options: PushOptions = {}) {
-  const { setUpstream, repositoryRefSpec = [] } = options;
+  const { setUpstream, repositoryRefSpec = [], force } = options;
 
-  return [setUpstream ? "-u" : "", ...repositoryRefSpec];
+  return [
+    setUpstream ? "-u" : "",
+    force ? "--force" : "",
+    ...repositoryRefSpec,
+  ];
 }
