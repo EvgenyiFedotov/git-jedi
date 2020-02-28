@@ -18,6 +18,16 @@ export const pipeToPromise = <V>(pipe: Pipe<V, number>) => {
   });
 };
 
-export const reduceConcatMap = <K, T>(value: Map<K, T>[]): Map<K, T> => {
+export const concatMap = <K, T>(value: Map<K, T>[]): Map<K, T> => {
   return value.reduce((memo, chunk) => new Map([...memo, ...chunk]), new Map());
+};
+
+export const concatObject = <T extends object>(value: T[]): T => {
+  return value.reduce<T>(
+    (memo, chunk) => ({
+      ...memo,
+      ...chunk,
+    }),
+    {} as T,
+  );
 };
