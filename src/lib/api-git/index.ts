@@ -24,3 +24,6 @@ export {
   DiffChunkHeaderMeta,
   DiffLine,
 } from "./diff";
+export { fetch, FetchOptions } from "./fetch";
+export { pull, PullOptions } from "./pull";
+export { push, PushOptions } from "./push";
