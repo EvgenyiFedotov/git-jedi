@@ -1,3 +1,5 @@
+// TODO move to ui
+
 import * as React from "react";
 import { Tag, message, Divider, Icon } from "antd";
 import { blue, cyan, grey } from "@ant-design/colors";
@@ -15,7 +17,16 @@ export const getColorStringCommit = (
   return commitCalc.isMerged ? "cyan" : "blue";
 };
 
-export const getColorCommit = (commitCalc: CommitCalc): string | undefined => {
+export const getColorCommit = (
+  commitCalc: CommitCalc,
+  _: { isPush: boolean } = { isPush: false },
+): string | undefined => {
+  const { isPush } = _;
+
+  if (isPush) {
+    return grey[0];
+  }
+
   return commitCalc.isMerged ? cyan.primary : blue.primary;
 };
 
