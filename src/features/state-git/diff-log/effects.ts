@@ -1,6 +1,6 @@
 import { log as logGit, LogOptions, Commit, fetch } from "lib/api-git";
 import { createEffect } from "effector";
-import { pipeToPromise, reduceConcatMap } from "lib/pipe-to-promise";
+import { pipeToPromise, concatMap } from "lib/pipe-to-promise";
 
 export const diffLog = createEffect<
   { options: LogOptions; currentBranch: string },
@@ -15,7 +15,7 @@ export const diffLog = createEffect<
     //   }),
     // );
 
-    const pull = reduceConcatMap(
+    const pull = concatMap(
       await pipeToPromise(
         logGit({
           ...options,
@@ -24,7 +24,7 @@ export const diffLog = createEffect<
       ),
     );
 
-    const push = reduceConcatMap(
+    const push = concatMap(
       await pipeToPromise(
         logGit({
           ...options,
