@@ -1,8 +1,11 @@
 import { sample, forward } from "effector";
+import { addCommand, createCommand } from "features/commands";
 
 import { push as pushEffect } from "./effects";
 import { push as pushEvent, pushEnd } from "./events";
 import { $runCommandOptions } from "../config";
+
+addCommand(createCommand("push", () => pushEvent({})));
 
 sample({
   source: $runCommandOptions,

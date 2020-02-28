@@ -13,6 +13,10 @@ import {
 } from "features/state-git";
 import { useStore } from "effector-react";
 
+import { createCommand, addCommand } from "features/commands";
+
+const commandFetch = createCommand("fetch", () => fetchGit());
+
 export const DiffCommits: React.FC = () => {
   const diffLog = useStore($diffLog);
   const pendingFetch = useStore($pendingFetch);
@@ -30,6 +34,10 @@ export const DiffCommits: React.FC = () => {
       }),
     [currentBranch],
   );
+
+  React.useEffect(() => {
+    addCommand(commandFetch);
+  }, []);
 
   return (
     <Row>
