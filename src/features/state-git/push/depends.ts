@@ -6,6 +6,7 @@ import { push as pushEvent, pushEnd } from "./events";
 import { $runCommandOptions } from "../config";
 
 addCommand(createCommand("push", () => pushEvent({})));
+addCommand(createCommand("push:force", () => pushEvent({ force: true })));
 
 sample({
   source: $runCommandOptions,
