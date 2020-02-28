@@ -1,10 +1,11 @@
-import { sample, guard, forward } from "effector";
+import { sample, guard, forward, merge } from "effector";
 
 import {
   searchCommand,
   selectCommand,
   focusInput,
   changeTextCommand,
+  blurInput,
 } from "./events";
 import { $commands, $filteredCommands, Command } from "./stores";
 import { runCommand } from "./effects";
@@ -49,4 +50,9 @@ sample({
 forward({
   from: runCommand.finally,
   to: changeTextCommand.prepend((_: any) => ""),
+});
+
+forward({
+  from: merge([runCommand.finally, blurInput]).map(() => []),
+  to: $filteredCommands,
 });

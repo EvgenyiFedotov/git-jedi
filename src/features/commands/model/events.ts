@@ -7,3 +7,4 @@ export const searchCommand = createEvent<string>();
 export const selectCommand = createEvent<string>();
 export const focusInput = createEvent<void>();
 export const changeTextCommand = createEvent<string>();
+export const blurInput = createEvent<void>();

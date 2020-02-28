@@ -7,4 +7,5 @@ export {
   selectCommand,
   focusInput,
   changeTextCommand,
+  blurInput,
 } from "./events";

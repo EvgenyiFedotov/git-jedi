@@ -5,14 +5,13 @@ import { HotKey } from "features/hot-key";
 
 import {
   $filteredCommands,
-  addCommand,
   searchCommand,
   selectCommand,
   focusInput,
   $textCommand,
   changeTextCommand,
+  blurInput,
 } from "./model";
-import { createCommand } from "./create-command";
 
 export const Commands: React.FC = () => {
   const filteredCommands = useStore($filteredCommands);
@@ -43,6 +42,7 @@ export const Commands: React.FC = () => {
   }, []);
 
   const focus = React.useCallback(() => focusInput(), []);
+  const blur = React.useCallback(() => blurInput(), []);
 
   const ref = React.useRef<AutoComplete>(null);
 
@@ -58,10 +58,12 @@ export const Commands: React.FC = () => {
         onSearch={searchCommand}
         onSelect={select}
         onFocus={focus}
+        onBlur={blur}
         ref={ref}
         value={textCommand}
         onChange={change}
         placeholder="command"
+        open={!!options.length}
       >
         {options}
       </AutoComplete>
