@@ -6,15 +6,16 @@ import { Path } from "features/path";
 import { CurrentBrunch } from "features/current-branch";
 import { CreateBranch } from "features/create-branch";
 import { Row, css } from "ui";
+import { DiffCommits } from "features/diff-commits";
 
 export const Header: React.FC = () => {
   return (
     <Container>
       <Path />
       <Row>
+        <DiffCommits />
         <CreateBranch />
         <CurrentBrunch />
-        <Icon type="bars" />
       </Row>
     </Container>
   );
