@@ -32,7 +32,6 @@ export function HotKey<T extends { click?: () => void; focus?: () => void }>(
         if (action === "focus" && bindRef.current.focus) {
           bindRef.current.focus();
         } else if (action === "click" && bindRef.current.click) {
-          console.log(bindRef.current, bindRef.current.click);
           bindRef.current.click();
         }
       }
