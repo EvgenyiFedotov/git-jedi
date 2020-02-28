@@ -1,6 +1,8 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface LogOptions extends RunCommandOptions {}
+export interface LogOptions extends RunCommandOptions {
+  range?: string;
+}
 export interface Commit {
   hash: string;
   parentHash: string[];
@@ -20,8 +22,11 @@ export const log = (options: LogOptions = {}) => {
 };
 
 function createArgs(options: LogOptions): string[] {
+  const { range = "" } = options;
+
   const pretty = `--pretty=format:${COMMIT_BEGIN}%n${logCommitFormat}`;
-  return [pretty];
+
+  return [pretty, range].filter(Boolean);
 }
 
 function toCommitBlocks(stdout: string): string[] {
