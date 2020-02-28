@@ -7,6 +7,7 @@ import { CreateBranch } from "features/create-branch";
 import { Row, css } from "ui";
 import { DiffCommits } from "features/diff-commits";
 import { Commands } from "features/commands";
+import { Config as GitConfig } from "features/git-config";
 
 export const Header: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ export const Header: React.FC = () => {
         <DiffCommits />
         <CreateBranch />
         <CurrentBrunch />
+        <GitConfig />
       </Row>
     </Container>
   );
