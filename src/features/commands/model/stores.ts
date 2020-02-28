@@ -1,6 +1,6 @@
-import { createStore } from "effector";
+import { createStore, restore } from "effector";
 
-import { addCommand } from "./events";
+import { addCommand, changeTextCommand } from "./events";
 
 export interface Command {
   id: string;
@@ -23,3 +23,5 @@ $commands.on(addCommand, (store, command) => {
 });
 
 export const $filteredCommands = createStore<Command[]>([]);
+
+export const $textCommand = restore(changeTextCommand, "");

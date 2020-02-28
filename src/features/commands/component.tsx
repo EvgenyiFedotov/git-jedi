@@ -1,19 +1,22 @@
 import * as React from "react";
 import { AutoComplete } from "antd";
 import { useStore } from "effector-react";
+import { HotKey } from "features/hot-key";
 
 import {
-  $commands,
   $filteredCommands,
   addCommand,
   searchCommand,
   selectCommand,
   focusInput,
+  $textCommand,
+  changeTextCommand,
 } from "./model";
 import { createCommand } from "./create-command";
 
 export const Commands: React.FC = () => {
   const filteredCommands = useStore($filteredCommands);
+  const textCommand = useStore($textCommand);
   const options = filteredCommands.reduce<React.ReactElement[]>(
     (memo, value) => {
       memo.push(
@@ -32,23 +35,35 @@ export const Commands: React.FC = () => {
     }
   }, []);
 
-  const focus = React.useCallback(() => focusInput(), []);
-
-  React.useEffect(() => {
-    addCommand(createCommand("command#1", () => console.log("RUN COMMAND #1")));
-    addCommand(createCommand("command#2", () => {}));
-    addCommand(createCommand("command#3", () => {}));
-    addCommand(createCommand("command#4", () => {}));
+  const change = React.useCallback((value: any) => {
+    // TODO antd doesn't return type SelectValue
+    if (typeof value === "string") {
+      changeTextCommand(value);
+    }
   }, []);
 
+  const focus = React.useCallback(() => focusInput(), []);
+
+  const ref = React.useRef<AutoComplete>(null);
+
   return (
-    <AutoComplete
-      size="small"
-      onSearch={searchCommand}
-      onSelect={select}
-      onFocus={focus}
+    <HotKey
+      command="command+shift+p"
+      title="shift+p"
+      bindRef={ref}
+      action="focus"
     >
-      {options}
-    </AutoComplete>
+      <AutoComplete
+        size="small"
+        onSearch={searchCommand}
+        onSelect={select}
+        onFocus={focus}
+        ref={ref}
+        value={textCommand}
+        onChange={change}
+      >
+        {options}
+      </AutoComplete>
+    </HotKey>
   );
 };

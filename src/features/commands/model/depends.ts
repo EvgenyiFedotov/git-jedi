@@ -1,6 +1,11 @@
-import { sample, guard } from "effector";
+import { sample, guard, forward } from "effector";
 
-import { searchCommand, selectCommand, focusInput } from "./events";
+import {
+  searchCommand,
+  selectCommand,
+  focusInput,
+  changeTextCommand,
+} from "./events";
 import { $commands, $filteredCommands, Command } from "./stores";
 import { runCommand } from "./effects";
 
@@ -39,4 +44,9 @@ sample({
   clock: focusInput,
   fn: ({ ref }) => Array.from(ref.values()),
   target: $filteredCommands,
+});
+
+forward({
+  from: runCommand.finally,
+  to: changeTextCommand.prepend((_: any) => ""),
 });
