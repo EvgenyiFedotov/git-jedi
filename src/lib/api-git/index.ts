@@ -13,7 +13,7 @@ export { revParse, RevParseOptions } from "./rev-parse";
 export { stash, StashOptions } from "./stash";
 export { status, StatusOptions, StatusFile, ChangeLine } from "./status";
 export { rebase, RebaseOptions } from "./rebase";
-export { config, ConfigOptions } from "./config";
+export { config, ConfigOptions, Config } from "./config";
 export {
   diff,
   DiffOptions,
