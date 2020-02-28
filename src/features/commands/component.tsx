@@ -61,6 +61,7 @@ export const Commands: React.FC = () => {
         ref={ref}
         value={textCommand}
         onChange={change}
+        placeholder="command"
       >
         {options}
       </AutoComplete>
