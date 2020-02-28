@@ -1,4 +1,4 @@
-import { sample, combine, guard, merge } from "effector";
+import { sample, combine, guard, merge, forward } from "effector";
 
 import { $runCommandOptions } from "../config";
 import { $currentBranch } from "../current-branch";
@@ -7,6 +7,7 @@ import { updateDiffLog } from "./events";
 import { pullEnd } from "../pull";
 import { pushEnd } from "../push";
 import { logUpdated } from "../log";
+import { fetchEnd } from "../events";
 
 const $diffCommitsParams = combine(
   [$runCommandOptions, $currentBranch],
@@ -21,8 +22,6 @@ const updatingDiffLog = sample({
   clock: merge([updateDiffLog, pullEnd, pushEnd, logUpdated]),
 });
 
-logUpdated.watch(() => console.log("logUpdated"));
-
 guard({
   source: updatingDiffLog,
   filter: ({ currentBranch }) => !!currentBranch,
@@ -33,4 +32,9 @@ guard({
   source: $diffCommitsParams,
   filter: ({ currentBranch }) => !!currentBranch,
   target: diffLog,
+});
+
+forward({
+  from: fetchEnd,
+  to: updateDiffLog,
 });

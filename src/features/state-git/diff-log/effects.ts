@@ -7,12 +7,13 @@ export const diffLog = createEffect<
   { pull: Map<string, Commit>; push: Map<string, Commit> }
 >({
   handler: async ({ options, currentBranch }) => {
-    await pipeToPromise(
-      fetch({
-        commandOptions: options.commandOptions,
-        spawnOptions: options.spawnOptions,
-      }),
-    );
+    // TODO run sametimes
+    // await pipeToPromise(
+    //   fetch({
+    //     commandOptions: options.commandOptions,
+    //     spawnOptions: options.spawnOptions,
+    //   }),
+    // );
 
     const pull = reduceConcatMap(
       await pipeToPromise(

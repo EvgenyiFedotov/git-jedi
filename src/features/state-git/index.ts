@@ -1,3 +1,5 @@
+import "./depends";
+
 export * from "./config";
 export * from "./log";
 export * from "./events";
@@ -15,3 +17,4 @@ export * from "./diff";
 export * from "./diff-log";
 export * from "./pull";
 export * from "./push";
+export * from "./stores";

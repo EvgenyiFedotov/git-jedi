@@ -13,6 +13,7 @@ import { createCommit } from "../events";
 import { commit } from "../effects";
 import { checkout } from "../../current-branch";
 import { rebaseEnd } from "../../rebase";
+import { pullEnd } from "../../pull";
 
 export { Commit } from "lib/api-git";
 
@@ -45,7 +46,13 @@ sample({
 
 sample({
   source: $runCommandOptions,
-  clock: merge([$runCommandOptions, commit.done, checkout.done, rebaseEnd]),
+  clock: merge([
+    $runCommandOptions,
+    commit.done,
+    checkout.done,
+    rebaseEnd,
+    pullEnd,
+  ]),
   target: log,
 });
 
