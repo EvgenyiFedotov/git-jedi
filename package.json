@@ -1,25 +1,64 @@
 {
   "name": "git-chat",
-  "version": "0.0.0",
-  "main": "index.js",
+  "version": "0.1.0",
   "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "pack-git-editor": "yarn pkg ./app/git-editor.js --out-path ./app",
+    "build": "webpack --config ./webpack.config.js",
+    "start": "yarn build && yarn pack-git-editor && electron ./app/main.js",
+    "watch": "yarn build --watch",
+    "pack-app": "yarn electron-packager ./app git-jedi",
+    "pack-app-full": "yarn build && yarn pack-git-editor && yarn pack-app"
+  },
   "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@types/antd": "^1.0.0",
+    "@types/diff": "^4.0.2",
+    "@types/express": "^4.17.2",
+    "@types/mousetrap": "^1.6.3",
+    "@types/object-hash": "^1.3.1",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
+    "@types/styled-components": "^4.4.2",
+    "@types/uuid": "^3.4.7",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-import": "^1.13.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "css-loader": "^3.4.2",
     "electron": "^7.1.7",
+    "electron-packager": "^14.2.1",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.1.2",
     "html-webpack-plugin": "^3.2.0",
+    "less-loader": "^5.0.0",
+    "pkg": "^4.4.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "typescript": "^3.7.4"
-  },
-  "scripts": {
-    "build": "webpack --config ./webpack.config.js",
-    "start": "yarn build && electron ./dist/electron.js",
-    "start-react": "yarn build --watch"
-  },
-  "dependencies": {
+    "style-loader": "^1.1.2",
     "ts-loader": "^6.2.1",
+    "tslint": "^6.0.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-react": "^4.2.0",
+    "typescript": "^3.7.4",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "antd": "^3.26.7",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "diff": "^4.0.2",
+    "effector": "^20.9.1",
+    "effector-react": "^20.6.0",
+    "express": "^4.17.1",
+    "mousetrap": "^1.6.3",
+    "object-hash": "^2.0.2",
+    "styled-components": "^4.4.1",
+    "uuid": "^7.0.0"
+  },
+  "pkg": {
+    "assets": "node_modules/**/*"
   }
 }
