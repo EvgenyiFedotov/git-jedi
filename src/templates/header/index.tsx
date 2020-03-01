@@ -8,6 +8,7 @@ import { Row, css } from "ui";
 import { DiffCommits } from "features/diff-commits";
 import { Commands } from "features/commands";
 import { Config as GitConfig } from "features/git-config";
+import { RemoteAdd } from "features/remote-add";
 
 export const Header: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ export const Header: React.FC = () => {
         <CreateBranch />
         <CurrentBrunch />
         <GitConfig />
+        <RemoteAdd />
       </Row>
     </Container>
   );
