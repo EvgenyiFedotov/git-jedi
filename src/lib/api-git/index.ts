@@ -27,3 +27,4 @@ export {
 export { fetch, FetchOptions } from "./fetch";
 export { pull, PullOptions } from "./pull";
 export { push, PushOptions } from "./push";
+export { remote, RemoteAddOptions } from "./remote";
