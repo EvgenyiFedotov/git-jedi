@@ -1,4 +1,4 @@
-import { Pipe } from "lib/pipe-v2";
+import { Pipe, ResolverStoreItem } from "lib/pipe-v2";
 import { v4 as uuid } from "uuid";
 
 import { PipeValue } from "./run-command-pipe";
@@ -6,7 +6,7 @@ import { PipeValue } from "./run-command-pipe";
 export const commandPipeToPromise = (pipe: Pipe<PipeValue>) => {
   const listenerId = uuid();
 
-  return new Promise((resolve, reject) => {
+  return new Promise<ResolverStoreItem<string>[]>((resolve, reject) => {
     pipe.listen((value, action) => {
       if (action === "close") {
         if (value === 0) {
