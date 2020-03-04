@@ -5,6 +5,11 @@ type Callback<Value, Result> = (
   action?: string,
 ) => Result | Pipe<Result> | Promise<Result | Pipe<Result>>;
 
+interface ResolverStoreItem {
+  value: any;
+  action?: string;
+}
+
 export interface Pipe<Value> {
   listen: <Result>(
     callback: Callback<Value, Result>,
@@ -15,7 +20,7 @@ export interface Pipe<Value> {
     key?: string,
   ) => Pipe<Result>;
   resolve: (value: Value, action?: string) => Promise<Map<string, any>>;
-  resolvedStore: () => Map<string, any[]>;
+  resolvedStore: () => Map<string, ResolverStoreItem[]>;
 }
 
 const isPipe = <Value>(x: any): x is Pipe<Value> => {
@@ -34,7 +39,7 @@ export const createPipe = <Value>(options: CreatePipeOptions = {}) => {
     (value: Value, action?: string) => any
   > = new Map();
   const pipes: Map<string, Pipe<any>> = new Map();
-  const resolvedStore: Map<string, any[]> = new Map();
+  const resolvedStore: Map<string, ResolverStoreItem[]> = new Map();
 
   const result: Pipe<Value> = {
     listen: (callback, key: string = uuid()) => {
@@ -68,9 +73,9 @@ export const createPipe = <Value>(options: CreatePipeOptions = {}) => {
         resolveResult.set(key, result);
 
         if (resolvedStore.has(key)) {
-          resolvedStore.get(key)?.push(result);
+          resolvedStore.get(key)?.push({ action, value: result });
         } else {
-          resolvedStore.set(key, [result]);
+          resolvedStore.set(key, [{ action, value: result }]);
         }
 
         if (pipe) {

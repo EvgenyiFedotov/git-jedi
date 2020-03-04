@@ -121,7 +121,7 @@ test("resolvedStore", async () => {
   await pipe.resolve("asd");
   await pipe.resolve("qwe");
 
-  expect(pipe.resolvedStore().get("listener")).toEqual(["qwe-qwe"]);
+  expect(pipe.resolvedStore().get("listener")).toEqual([{ value: "qwe-qwe" }]);
 });
 
 test("resolvedStore with save", async () => {
@@ -131,6 +131,11 @@ test("resolvedStore with save", async () => {
 
   await pipe.resolve("asd");
   await pipe.resolve("qwe");
+  await pipe.resolve("0", "close");
 
-  expect(pipe.resolvedStore().get("listener")).toEqual(["asd-asd", "qwe-qwe"]);
+  expect(pipe.resolvedStore().get("listener")).toEqual([
+    { value: "asd-asd" },
+    { value: "qwe-qwe" },
+    { value: "0-0", action: "close" },
+  ]);
 });
