@@ -5,7 +5,7 @@ export interface RemoteAddOptions extends RunCommandOptions {
   url: string;
 }
 
-export const add = (options: RemoteAddOptions) => {
+export const remoteAdd = (options: RemoteAddOptions) => {
   const args = createArgsAdd(options);
 
   return runCommandGit("remote", ["add", ...args], options);
