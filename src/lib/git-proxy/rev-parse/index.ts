@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "lib/run-command-v2";
+import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
 export interface RevParseOptions extends RunCommandOptions {
   mode?: "branch" | "commitHash";

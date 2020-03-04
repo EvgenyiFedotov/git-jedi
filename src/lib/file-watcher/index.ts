@@ -43,7 +43,8 @@ export const createFileWatcher = (
     } else {
       if (isExisFilePrev) {
         pipe.resolve({ action: "deleted", data: Buffer.alloc(0) });
-        pipe.close();
+        // TODO Use new pipe, change close
+        // pipe.close();
         isExisFilePrev = false;
       }
     }

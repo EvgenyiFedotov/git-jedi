@@ -1,69 +1,96 @@
-export interface Pipe<Value, EndValue = any> {
-  next: <Result>(
-    callback: (value: Value, icr: number) => Result | Pipe<Result>,
-  ) => Pipe<Result, EndValue>;
-  resolve: (value: Value) => void;
+import { v4 as uuid } from "uuid";
 
-  end: (
-    callback: (value: EndValue | undefined, icr: number) => void,
-  ) => Pipe<Value, EndValue>;
-  close: (value?: EndValue) => void;
+type Callback<Value, Result> = (
+  value: Value,
+  action?: string,
+) => Result | Pipe<Result> | Promise<Result | Pipe<Result>>;
 
-  destroy: () => void;
+export interface ResolverStoreItem<Value = any> {
+  value: Value;
+  action?: string;
 }
 
-const isPipe = <Value, EndValue>(x: any): x is Pipe<Value, EndValue> => {
-  return typeof x === "object" && !!x.next && !!x.destroy;
+export interface Pipe<Value> {
+  listen: <Result>(
+    callback: Callback<Value, Result>,
+    key?: string,
+  ) => Pipe<Value>;
+  next: <Result>(
+    callback: Callback<Value, Result>,
+    key?: string,
+  ) => Pipe<Result>;
+  resolve: (value: Value, action?: string) => Promise<Map<string, any>>;
+  resolvedStore: () => Map<string, ResolverStoreItem[]>;
+}
+
+const isPipe = <Value>(x: any): x is Pipe<Value> => {
+  return typeof x === "object" && !!x.next && !!x.resolve;
 };
 
-export const createPipe = <Value, EndValue = any>() => {
-  let nextCallbacks: ((value: Value, icr: number) => any)[] = [];
-  let endCallbacks: ((value: EndValue | undefined, icr: number) => void)[] = [];
-  let pipes: Pipe<any, any>[] = [];
-  let indexCallResolve = 0;
+export interface CreatePipeOptions {
+  saveResolveResult?: boolean;
+}
 
-  const result: Pipe<Value, EndValue> = {
-    next: <Result>(
-      callback: (value: Value, icr: number) => Result | Pipe<Result>,
-    ) => {
-      const pipe = createPipe<Result, EndValue>();
+export const createPipe = <Value>(options: CreatePipeOptions = {}) => {
+  const { saveResolveResult = false } = options;
 
-      nextCallbacks.push(callback);
-      pipes.push(pipe);
+  const callbacks: Map<
+    string,
+    (value: Value, action?: string) => any
+  > = new Map();
+  const pipes: Map<string, Pipe<any>> = new Map();
+  const resolvedStore: Map<string, ResolverStoreItem[]> = new Map();
 
-      return pipe;
-    },
-    resolve: (value: Value) => {
-      nextCallbacks.forEach((callback, index) => {
-        const result = callback(value, indexCallResolve);
-
-        if (isPipe(result)) {
-          result.next(pipes[index].resolve);
-        } else {
-          pipes[index].resolve(result);
-        }
-      });
-      indexCallResolve += 1;
-    },
-
-    end: (callback: (value: EndValue | undefined, icr: number) => void) => {
-      endCallbacks.push(callback);
+  const result: Pipe<Value> = {
+    listen: (callback, key: string = uuid()) => {
+      callbacks.set(key, callback);
 
       return result;
     },
-    close: (value?: EndValue) => {
-      endCallbacks.forEach((callback) => callback(value, indexCallResolve));
-      pipes.forEach((pipe) => pipe.close(value));
-      indexCallResolve = 0;
+
+    next: <Result>(callback: Callback<Value, Result>, key: string = uuid()) => {
+      const pipe = createPipe<Result>();
+
+      result.listen(callback, key);
+      pipes.set(key, pipe);
+
+      return pipe;
     },
 
-    destroy: () => {
-      pipes.forEach((pipe) => pipe.destroy());
-      nextCallbacks = [];
-      endCallbacks = [];
-      pipes = [];
-      indexCallResolve = 0;
+    resolve: async (value: Value, action?: string) => {
+      const callbackArr = Array.from(callbacks);
+      const resolveResult: Map<string, any> = new Map();
+
+      if (!saveResolveResult) {
+        resolvedStore.clear();
+      }
+
+      for (let index = 0; index < callbackArr.length; index += 1) {
+        const [key, callback] = callbackArr[index];
+        const result = await callback(value, action);
+        const pipe = pipes.get(key);
+
+        resolveResult.set(key, result);
+
+        if (resolvedStore.has(key)) {
+          resolvedStore.get(key)?.push({ action, value: result });
+        } else {
+          resolvedStore.set(key, [{ action, value: result }]);
+        }
+
+        if (pipe) {
+          if (isPipe(result)) {
+            result.next(pipe.resolve, key);
+          } else {
+            pipe.resolve(result, action);
+          }
+        }
+      }
+
+      return resolveResult;
     },
+
+    resolvedStore: () => resolvedStore,
   };
 
   return result;

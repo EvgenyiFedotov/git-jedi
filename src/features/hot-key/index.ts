@@ -1,1 +1,0 @@
-export { HotKey } from "./component";

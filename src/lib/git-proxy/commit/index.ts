@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "lib/run-command-v2";
+import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
 export interface CommitOptions extends RunCommandOptions {
   message: string;

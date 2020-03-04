@@ -1,6 +1,6 @@
 import { createEffect } from "effector";
-import { ResolverStoreItem } from "lib/pipe-v2";
-import { commandPipeToPromise } from "lib/run-command-v2";
+import { ResolverStoreItem } from "lib/pipe";
+import { commandPipeToPromise } from "lib/run-command";
 
 import { add, AddOptions } from "lib/git-proxy/add";
 import { checkout, CheckoutOptions } from "lib/git-proxy/checkout";

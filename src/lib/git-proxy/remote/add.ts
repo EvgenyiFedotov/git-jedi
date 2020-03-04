@@ -1,4 +1,4 @@
-import { runCommandGit, RunCommandOptions } from "lib/run-command-v2";
+import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
 export interface RemoteAddOptions extends RunCommandOptions {
   name: string;
