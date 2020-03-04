@@ -2,10 +2,6 @@ import { createPipe, Pipe } from "lib/pipe-v2";
 
 import { RunCommandOptions, isOptions, runCommand } from "./run-command";
 
-// export type PipeValue =
-//   | { type: "data"; value: string }
-//   | { type: "close"; value: number };
-
 export type PipeValue = string | number;
 
 export function runCommandPipe(
