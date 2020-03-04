@@ -5,8 +5,8 @@ type Callback<Value, Result> = (
   action?: string,
 ) => Result | Pipe<Result> | Promise<Result | Pipe<Result>>;
 
-interface ResolverStoreItem {
-  value: any;
+export interface ResolverStoreItem<Value = any> {
+  value: Value;
   action?: string;
 }
 
