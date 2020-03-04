@@ -5,11 +5,6 @@ export interface ConfigOptions extends RunCommandOptions {
   value?: [string] | [string, string];
 }
 
-export interface Config {
-  "core.editor"?: string;
-  [nameProp: string]: string | undefined;
-}
-
 export const config = (options: ConfigOptions = {}) => {
   const args = createArgs(options);
 
