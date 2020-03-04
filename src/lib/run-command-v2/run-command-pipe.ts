@@ -2,9 +2,11 @@ import { createPipe, Pipe } from "lib/pipe-v2";
 
 import { RunCommandOptions, isOptions, runCommand } from "./run-command";
 
-export type PipeValue =
-  | { type: "data"; value: string }
-  | { type: "close"; value: number };
+// export type PipeValue =
+//   | { type: "data"; value: string }
+//   | { type: "close"; value: number };
+
+export type PipeValue = string | number;
 
 export function runCommandPipe(
   command: string,
@@ -30,8 +32,10 @@ export function runCommandPipe(
   const runningCommand = runCommand(command, args, options);
   const pipe = createPipe<PipeValue>({ saveResolveResult: true });
 
-  runningCommand.data((value) => pipe.resolve({ type: "data", value }));
-  runningCommand.close((value) => pipe.resolve({ type: "close", value }));
+  pipe.listen((value) => value, "stream");
+
+  runningCommand.data((value) => pipe.resolve(value, "data"));
+  runningCommand.close((value) => pipe.resolve(value, "close"));
 
   return pipe;
 }
