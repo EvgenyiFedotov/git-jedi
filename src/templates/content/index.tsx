@@ -8,8 +8,7 @@ export const Content: React.FC = () => {
 
 const Container = styled(Column)`
   height: 100%;
-`;
+  padding: 40px 8px 24px 8px;
 
-const ContainerTab = styled.div`
-  margin-top: 8px;
+  height: 5000px;
 `;

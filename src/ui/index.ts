@@ -21,3 +21,10 @@ export const Column = styled.div`
     margin-bottom: 8px;
   }
 `;
+
+export const LinkBlock = styled.div`
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;

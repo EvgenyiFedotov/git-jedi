@@ -1,24 +1,22 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Cwd } from "features/cwd";
 import { Row } from "ui";
-import { Input } from "antd";
+import { CurrentBranch } from "features/current-branch";
 
-export const Header: React.FC = () => {
+export const Footer: React.FC = () => {
   return (
     <Container>
-      <Cwd />
-      <Input size="small" placeholder="command" />
+      <CurrentBranch />
     </Container>
   );
 };
 
 const Container = styled(Row)`
   position: fixed;
-  top: 0px;
+  bottom: 0px;
   left: 0px;
   width: 100%;
-  height: 40px;
+  height: 24px;
   padding: 8px;
   background-color: white;
   flex-wrap: nowrap;

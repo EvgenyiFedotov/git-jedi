@@ -5,14 +5,19 @@ import { Row } from "antd";
 
 import { Header } from "templates/header";
 import { Content } from "templates/content";
+import { Settings } from "features/settings";
+import { Footer } from "templates/footer";
 
 export const App = () => {
   return (
     <>
       <GlobalStyle />
       <Container>
-        <Header />
-        <Content />
+        <Settings>
+          <Header />
+          <Content />
+          <Footer />
+        </Settings>
       </Container>
     </>
   );
