@@ -28,4 +28,5 @@ export const Container = styled(Row)`
   flex: none;
   flex-direction: column;
   width: 100%;
+  height: 100%;
 `;
