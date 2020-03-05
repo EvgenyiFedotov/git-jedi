@@ -1,3 +1,4 @@
 import "./depends";
 
-export { init } from "./events";
+export { getCurrentBranch } from "./events";
+export { $currentBranch } from "./stores";

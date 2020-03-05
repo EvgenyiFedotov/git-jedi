@@ -1,3 +1,4 @@
-import { createRevParse } from "lib/added-effector/create-git-proxy-effect";
+import { createGitProxyEffect } from "lib/added-effector/create-git-proxy-effect";
+import { revParse as revParseGit } from "lib/git-proxy/rev-parse";
 
-export const revParse = createRevParse();
+export const revParse = createGitProxyEffect(revParseGit);

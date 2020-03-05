@@ -1,3 +1,11 @@
-import { createEvent } from "effector";
+import { createRunCommandEvent } from "features/command-options";
+import { RevParseParams } from "lib/git-proxy/rev-parse";
 
-export const init = createEvent<void>();
+import { revParse } from "./effects";
+
+export const getCurrentBranch = createRunCommandEvent<RevParseParams>(
+  revParse,
+  () => ({
+    mode: "branch",
+  }),
+);

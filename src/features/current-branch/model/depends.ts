@@ -1,18 +1,12 @@
-import { sample } from "effector";
-import { $commandOptions } from "features/command-options";
-import { RevParseOptions } from "lib/git-proxy/rev-parse";
+import { guard } from "effector";
 
-import { init } from "./events";
-import { revParse } from "./effects";
+import { $currentBranch } from "./stores";
+import { getCurrentBranch } from "./events";
 
-sample({
-  source: $commandOptions,
-  clock: init,
-  fn: (commandOptions): RevParseOptions => ({
-    commandOptions,
+guard({
+  source: $currentBranch,
+  filter: (value) => value === "HEAD",
+  target: getCurrentBranch.prepend((_: any) => ({
     mode: "commitHash",
-  }),
-  target: revParse,
+  })),
 });
-
-revParse.done.watch(console.log);

@@ -1,13 +1,27 @@
 import * as React from "react";
 import styled from "styled-components";
 import { LinkBlock } from "ui";
+import { useStore } from "effector-react";
+import { Spin } from "antd";
 
-import { init } from "../model";
+import { getCurrentBranch, $currentBranch } from "../model";
 
 export const CurrentBranch: React.FC = () => {
-  React.useEffect(() => init(), []);
+  const currentBranch = useStore($currentBranch);
 
-  return <Container>CurrentBranch</Container>;
+  const update = React.useCallback(() => {
+    getCurrentBranch();
+  }, []);
+
+  React.useEffect(() => {
+    getCurrentBranch();
+  }, []);
+
+  return (
+    <Spin size="small" spinning={!currentBranch}>
+      <Container onClick={update}>{currentBranch}</Container>
+    </Spin>
+  );
 };
 
 export const Container = styled(LinkBlock)`
