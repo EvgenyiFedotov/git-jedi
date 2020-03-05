@@ -11,6 +11,6 @@ export {
   RunCommandLogItem,
   runCommand,
 } from "./run-command";
-export { runCommandPipe } from "./run-command-pipe";
+export { runCommandPipe, PipeValue } from "./run-command-pipe";
 export { runCommandGit } from "./run-command-git";
 export { commandPipeToPromise } from "./command-pipe-to-promise";
