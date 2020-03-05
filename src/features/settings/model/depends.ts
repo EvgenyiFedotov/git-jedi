@@ -1,21 +1,16 @@
-import { forward, guard, sample, merge } from "effector";
+import { forward, guard, sample } from "effector";
 
-import { init, selectCwd } from "./events";
+import { init, selectCwd, changedCwd } from "./events";
 import {
   readSettings,
   writeSettings,
   selectCwd as selectCwdEffect,
 } from "./effects";
-import { $settings } from "./stores";
+import { $cwd, $settings } from "./stores";
 
 const setupDefaultSettings = guard({
   source: readSettings.done,
   filter: ({ result }) => !result,
-});
-
-const setupCwd = guard({
-  source: $settings,
-  filter: ({ cwd }) => !cwd,
 });
 
 forward({
@@ -29,10 +24,16 @@ sample({
   target: writeSettings,
 });
 
+guard({
+  source: readSettings.done,
+  filter: ({ result }) => !!result && !result.cwd,
+  target: selectCwd.prepend((_: any) => {}),
+});
+
 sample({
-  source: $settings,
-  clock: merge([selectCwd, setupCwd]),
-  fn: ({ cwd }) => cwd || "/",
+  source: $cwd,
+  clock: selectCwd,
+  fn: (cwd) => cwd || "/",
   target: selectCwdEffect,
 });
 
@@ -41,4 +42,7 @@ forward({
   to: writeSettings,
 });
 
-setupDefaultSettings.watch(() => console.log("setupDefaultSettings"));
+forward({
+  from: $cwd,
+  to: changedCwd,
+});
