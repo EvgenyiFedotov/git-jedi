@@ -1,18 +1,21 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface ConfigOptions extends RunCommandOptions {
+export interface ConfigParams {
   list?: boolean;
   value?: [string] | [string, string];
 }
 
-export const config = (options: ConfigOptions = {}) => {
-  const args = createArgs(options);
+export const config = (
+  params: ConfigParams = {},
+  options?: RunCommandOptions,
+) => {
+  const args = createArgs(params);
 
   return runCommandGit("config", args, options);
 };
 
-function createArgs(options: ConfigOptions = {}): string[] {
-  const { list, value } = options;
+function createArgs(params: ConfigParams = {}): string[] {
+  const { list, value } = params;
 
   if (list) {
     return ["-l"];

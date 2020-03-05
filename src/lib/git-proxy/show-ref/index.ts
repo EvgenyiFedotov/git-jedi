@@ -1,13 +1,16 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface ShowRefOptions extends RunCommandOptions {}
+export interface ShowRefParams {}
 
-export const showRef = (options: RunCommandOptions = {}) => {
-  const args = createArgs(options);
+export const showRef = (
+  params: ShowRefParams = {},
+  options: RunCommandOptions = {},
+) => {
+  const args = createArgs(params);
 
   return runCommandGit("show-ref", args, options);
 };
 
-function createArgs(options: RunCommandOptions = {}): string[] {
+function createArgs(params: RunCommandOptions = {}): string[] {
   return ["--head", "--dereference"];
 }

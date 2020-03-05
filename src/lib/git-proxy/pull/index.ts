@@ -1,17 +1,17 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface PullOptions extends RunCommandOptions {
+export interface PullParams {
   rebase?: boolean;
 }
 
-export const pull = (options: PullOptions = {}) => {
-  const args = createArgs(options).filter(Boolean);
+export const pull = (params: PullParams = {}, options?: RunCommandOptions) => {
+  const args = createArgs(params).filter(Boolean);
 
   return runCommandGit("pull", args, options);
 };
 
-function createArgs(options: PullOptions = {}) {
-  const { rebase } = options;
+function createArgs(params: PullParams = {}) {
+  const { rebase } = params;
 
   return [rebase ? "--rebase" : ""];
 }

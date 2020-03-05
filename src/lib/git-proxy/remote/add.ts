@@ -1,18 +1,21 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface RemoteAddOptions extends RunCommandOptions {
+export interface RemoteAddParams {
   name: string;
   url: string;
 }
 
-export const remoteAdd = (options: RemoteAddOptions) => {
-  const args = createArgsAdd(options);
+export const remoteAdd = (
+  params: RemoteAddParams,
+  options?: RunCommandOptions,
+) => {
+  const args = createArgsAdd(params);
 
   return runCommandGit("remote", ["add", ...args], options);
 };
 
-function createArgsAdd(options: RemoteAddOptions) {
-  const { name, url } = options;
+function createArgsAdd(params: RemoteAddParams) {
+  const { name, url } = params;
 
   return [name, url];
 }

@@ -1,17 +1,20 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface FetchOptions extends RunCommandOptions {
+export interface FetchParams {
   prune?: boolean;
 }
 
-export const fetch = (options: FetchOptions = {}) => {
-  const args = createArgs(options).filter(Boolean);
+export const fetch = (
+  params: FetchParams = {},
+  options?: RunCommandOptions,
+) => {
+  const args = createArgs(params).filter(Boolean);
 
   return runCommandGit("fetch", args, options);
 };
 
-function createArgs(options: FetchOptions = {}) {
-  const { prune } = options;
+function createArgs(params: FetchParams = {}) {
+  const { prune } = params;
 
   return [prune ? "-p" : ""];
 }

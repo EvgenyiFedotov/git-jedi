@@ -1,13 +1,16 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface StatusOptions extends RunCommandOptions {}
+export interface StatusParams {}
 
-export const status = (options: StatusOptions = {}) => {
-  const args = createArgs(options);
+export const status = (
+  params: StatusParams = {},
+  options?: RunCommandOptions,
+) => {
+  const args = createArgs(params);
 
   return runCommandGit("status", args, options);
 };
 
-function createArgs(options: StatusOptions = {}): string[] {
+function createArgs(params: StatusParams = {}): string[] {
   return ["-s", "--untracked-files=all"];
 }

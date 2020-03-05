@@ -1,19 +1,19 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface DiffOptions extends RunCommandOptions {
+export interface DiffParams {
   commits?: string[];
   paths?: string[];
   cached?: boolean;
 }
 
-export const diff = (options: DiffOptions = {}) => {
-  const args = createArgs(options);
+export const diff = (params: DiffParams = {}, options?: RunCommandOptions) => {
+  const args = createArgs(params);
 
   return runCommandGit("diff", args, options);
 };
 
-function createArgs(options: DiffOptions = {}) {
-  const { commits = [], paths = [], cached = false } = options;
+function createArgs(params: DiffParams = {}) {
+  const { commits = [], paths = [], cached = false } = params;
 
   return [
     "--diff-algorithm=patience",

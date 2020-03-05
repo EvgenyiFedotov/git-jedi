@@ -1,16 +1,16 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface CommitOptions extends RunCommandOptions {
+export interface CommitParams {
   message: string;
 }
 
-export const commit = (options: CommitOptions) => {
-  const args = createArgs(options);
+export const commit = (params: CommitParams, options?: RunCommandOptions) => {
+  const args = createArgs(params);
 
   return runCommandGit("commit", args, options);
 };
 
-function createArgs(options: CommitOptions): string[] {
-  const { message } = options;
+function createArgs(params: CommitParams): string[] {
+  const { message } = params;
   return ["-m", message];
 }

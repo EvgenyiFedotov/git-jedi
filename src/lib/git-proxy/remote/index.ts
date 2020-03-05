@@ -1,1 +1,1 @@
-export { remoteAdd, RemoteAddOptions } from "./add";
+export { remoteAdd, RemoteAddParams } from "./add";

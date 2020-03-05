@@ -1,13 +1,13 @@
 import { runCommandGit, RunCommandOptions } from "lib/run-command";
 
-export interface InitOptions extends RunCommandOptions {}
+export interface InitOptions {}
 
-export const init = (options: InitOptions = {}) => {
-  const args = createArgs(options);
+export const init = (params: InitOptions = {}, options?: RunCommandOptions) => {
+  const args = createArgs(params);
 
   return runCommandGit("init", args, options);
 };
 
-function createArgs(options: InitOptions = {}) {
+function createArgs(params: InitOptions = {}) {
   return [];
 }
