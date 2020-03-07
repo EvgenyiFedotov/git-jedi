@@ -1,20 +1,20 @@
 import { createStore, combine } from "effector";
+import { createPendingStore } from "lib/added-effector/create-pending-store";
 
-import { readSettings, selectCwd } from "./effects";
+import { readSettings } from "./effects";
+import { HotKey } from "./events";
 
 export interface Settings {
   cwd: string | null;
+  hotKeys: HotKey[];
 }
 
-export const $cwd = createStore<string | null>(null);
+export const $cwd = createStore<Settings["cwd"]>(null);
 
-$cwd.on(readSettings.done, (store, { result }) =>
-  result ? result.cwd || store || null : store,
-);
+export const $hotKeys = createStore<Settings["hotKeys"]>([
+  { type: "command", targetId: "changePathRepo", command: "command+shift+o" },
+]);
 
-$cwd.on(
-  selectCwd.done,
-  (store, { result }) => result.filePaths[0] || store || null,
-);
+export const $settings = combine({ cwd: $cwd, hotKeys: $hotKeys });
 
-export const $settings = combine({ cwd: $cwd });
+export const $readSettings = createPendingStore(readSettings);

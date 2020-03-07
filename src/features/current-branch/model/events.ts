@@ -1,4 +1,4 @@
-import { createRunCommandEvent } from "features/command-options";
+import { createRunCommandEvent } from "features/run-command-options";
 import { RevParseParams } from "lib/git-proxy/rev-parse";
 
 import { revParse } from "./effects";

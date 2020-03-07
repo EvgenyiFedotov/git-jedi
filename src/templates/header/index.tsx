@@ -1,14 +1,14 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Cwd } from "features/cwd";
 import { Row } from "ui";
-import { Input } from "antd";
+import { CommandsInput } from "features/commands";
+import { PathRepo } from "features/path-repo";
 
 export const Header: React.FC = () => {
   return (
     <Container>
-      <Cwd />
-      <Input size="small" placeholder="command" />
+      <PathRepo />
+      <CommandsInput />
     </Container>
   );
 };

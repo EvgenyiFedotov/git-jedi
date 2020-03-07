@@ -1,4 +1,4 @@
-import { guard, forward } from "effector";
+import { guard } from "effector";
 import { changedCwd } from "features/settings";
 
 import { $currentBranch } from "./stores";
@@ -12,7 +12,8 @@ guard({
   })),
 });
 
-forward({
-  from: changedCwd.map(() => {}),
-  to: getCurrentBranch,
+guard({
+  source: changedCwd,
+  filter: (cwd) => !!cwd,
+  target: getCurrentBranch.prepend((_: any) => {}),
 });

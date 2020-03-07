@@ -1,10 +1,10 @@
 import { combine } from "effector";
 import { RunCommandOptions } from "lib/run-command";
-import { $settings } from "features/settings";
+import { $cwd } from "features/settings";
 
 export const $commandOptions = combine(
-  [$settings],
-  ([{ cwd }]): RunCommandOptions => ({
+  [$cwd],
+  ([cwd]): RunCommandOptions => ({
     spawnOptions: { cwd: cwd || "/" },
     commandOptions: {
       onBefore: ({ command, args = [] }) =>

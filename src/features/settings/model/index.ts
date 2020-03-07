@@ -1,4 +1,4 @@
 import "./depends";
 
-export { $settings, $cwd } from "./stores";
-export { init, selectCwd, changedCwd } from "./events";
+export { $settings, $cwd, $readSettings, $hotKeys } from "./stores";
+export { init, selectCwd, changedCwd, HotKey } from "./events";

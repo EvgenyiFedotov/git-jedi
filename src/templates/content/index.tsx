@@ -1,9 +1,15 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Column } from "ui";
+import { CommandsList } from "features/commands";
 
 export const Content: React.FC = () => {
-  return <Container>Content</Container>;
+  return (
+    <Container>
+      <div>Content</div>
+      <CommandsList />
+    </Container>
+  );
 };
 
 const Container = styled(Column)`
