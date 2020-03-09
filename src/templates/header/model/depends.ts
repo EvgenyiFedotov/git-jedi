@@ -1,6 +1,6 @@
 import { forward } from "effector";
 
-import { changeBranch, Mode, insertCommand } from "./events";
+import { changeBranch, Mode, insertCommand, createBranch } from "./events";
 import { $mode } from "./stores";
 
 forward({
@@ -10,5 +10,10 @@ forward({
 
 forward({
   from: insertCommand.map<Mode>(() => "command"),
+  to: $mode,
+});
+
+forward({
+  from: createBranch.map<Mode>(() => "create-branch"),
   to: $mode,
 });

@@ -15,11 +15,12 @@ interface Props<Option> {
   onSelect?: (option: Option) => void;
   onBlur?: () => void;
   onEsc?: (ref: Ref) => void;
+  onEnter?: (ref: Ref) => void;
   autoFocus?: boolean;
 }
 
 export function Autocomplete<Option>(props: Props<Option>) {
-  const { onSelect = () => {}, onEsc = () => {} } = props;
+  const { onSelect = () => {}, onEsc = () => {}, onEnter = () => {} } = props;
 
   const select = React.useCallback((_, option) => onSelect(option as Option), [
     onSelect,
@@ -40,6 +41,20 @@ export function Autocomplete<Option>(props: Props<Option>) {
       };
     }
   }, [ref, onEsc]);
+
+  React.useEffect(() => {
+    const current = ref.current;
+
+    if (current) {
+      const instance = mousetrap(findDOMNode(current) as Element);
+
+      instance.bind("enter", () => onEnter(current));
+
+      return () => {
+        instance.unbind("enter");
+      };
+    }
+  }, [ref, onEnter]);
 
   // TODO bug in types antd
   return (

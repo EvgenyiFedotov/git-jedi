@@ -6,6 +6,7 @@ import { PathRepo } from "features/path-repo";
 import { BranchInput } from "features/branches";
 import { Branch } from "lib/branch";
 import { useStore } from "effector-react";
+import { CreateBranchInput } from "features/create-branch";
 
 import { $mode, insertCommand } from "../model";
 
@@ -25,6 +26,9 @@ export const Header: React.FC = () => {
       <Branch if={mode === "branch"}>
         <BranchInput onBlur={toCommand} onEsc={toCommand} />
       </Branch>
+      <Branch if={mode === "create-branch"}>
+        <CreateBranchInput onBlur={toCommand} onEsc={toCommand} />
+      </Branch>
     </Container>
   );
 };
@@ -33,6 +37,7 @@ const Container = styled(Row)`
   position: fixed;
   top: 0px;
   left: 0px;
+  z-index: 10000;
   width: 100%;
   height: 40px;
   padding: 8px;

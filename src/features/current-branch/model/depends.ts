@@ -1,6 +1,8 @@
-import { guard, forward } from "effector";
+import { guard, forward, merge } from "effector";
 import { changedCwd } from "features/settings";
 import { checkoutedBranch } from "features/branches";
+// TODO Think about sturct model with depends
+import { createdBranch } from "features/create-branch/model/events";
 
 import { $currentBranch } from "./stores";
 import { getCurrentBranch } from "./events";
@@ -20,6 +22,6 @@ guard({
 });
 
 forward({
-  from: checkoutedBranch,
+  from: merge([checkoutedBranch, createdBranch]),
   to: getCurrentBranch,
 });

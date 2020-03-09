@@ -18,7 +18,7 @@ export const BranchList: React.FC = () => {
     getBranchList();
   }, []);
 
-  return <List>{list}</List>;
+  return <List size="small">{list}</List>;
 };
 
 const Branch: React.FC<{ branch: Branch }> = ({ branch }) => {

@@ -1,5 +1,6 @@
 import { sample, forward, merge } from "effector";
 import { changedCwd } from "features/settings";
+import { createdBranch } from "features/create-branch/model/events";
 
 import { $branchList, $options, $value } from "./stores";
 import {
@@ -53,6 +54,6 @@ forward({
 });
 
 forward({
-  from: merge([checkoutedBranch, changedCwd]).map(() => ({})),
+  from: merge([checkoutedBranch, changedCwd, createdBranch]).map(() => ({})),
   to: getBranchList,
 });
