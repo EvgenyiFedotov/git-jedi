@@ -8,6 +8,8 @@ import { Content } from "templates/content";
 import { Settings } from "features/settings";
 import { Footer } from "templates/footer";
 
+import "./model";
+
 export const App = () => {
   return (
     <>

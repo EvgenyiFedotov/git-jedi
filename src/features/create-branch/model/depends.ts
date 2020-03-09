@@ -1,5 +1,4 @@
 import { sample, forward } from "effector";
-import { $currentBranch } from "features/current-branch";
 
 import {
   changeValue,
@@ -8,13 +7,16 @@ import {
   createdBranch,
   selectOptionByEnter,
 } from "./events";
-import { $options, $value } from "./stores";
+import { $options, $value, $currentBranch } from "./stores";
 import { createBranch as createBranchEffect } from "./effect";
 
 sample({
   source: $currentBranch,
   clock: changeValue,
-  fn: (currentBranch, value) => [{ value: `${value}/${currentBranch}` }],
+  fn: (currentBranch, value) =>
+    value
+      ? [{ value: currentBranch ? `${value}/${currentBranch}` : value }]
+      : [],
   target: $options,
 });
 

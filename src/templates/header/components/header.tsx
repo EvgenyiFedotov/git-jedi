@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { Row } from "ui";
 import { CommandsInput } from "features/commands";
-import { PathRepo } from "features/path-repo";
+import { PathRepo } from "features/settings";
 import { BranchInput } from "features/branches";
 import { Branch } from "lib/branch";
 import { useStore } from "effector-react";

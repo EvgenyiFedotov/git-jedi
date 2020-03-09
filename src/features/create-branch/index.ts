@@ -1,2 +1,2 @@
 export { CreateBranchInput } from "./components";
-export { createdBranch } from "./model";
+export { createdBranch, changeCurrentBranch } from "./model";

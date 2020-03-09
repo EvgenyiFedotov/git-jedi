@@ -1,9 +1,7 @@
-import { sample, forward, combine } from "effector";
-import { $hotKeys } from "features/settings";
+import { sample, forward } from "effector";
 
 import { changeSearch, Option, selectOption } from "./events";
 import { $commands, $options, $value } from "./stores";
-import { linkCommandWithHotkeys } from "./effects";
 
 sample({
   source: $commands,
@@ -31,11 +29,3 @@ forward({
 });
 
 selectOption.watch(({ event }) => event());
-
-forward({
-  from: combine([$commands, $hotKeys], ([{ ref: commands }, hotKeys]) => ({
-    commands,
-    hotKeys,
-  })),
-  to: linkCommandWithHotkeys,
-});

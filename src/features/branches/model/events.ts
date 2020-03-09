@@ -1,4 +1,4 @@
-import { createRunCommandEvent } from "features/run-command-options";
+import { createRunCommandEvent } from "features/settings";
 import { createEvent } from "effector";
 
 import {
@@ -23,3 +23,4 @@ export const selectOption = createEvent<Option>();
 export const changeValue = createEvent<string>();
 export const checkoutBranch = createRunCommandEvent(checkoutBranchEffect);
 export const checkoutedBranch = createEvent<void>();
+export const updateBranchList = createEvent<void>();

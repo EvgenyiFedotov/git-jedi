@@ -9,5 +9,6 @@ export {
   selectOption,
   checkoutBranch,
   checkoutedBranch,
+  updateBranchList,
 } from "./events";
 export { $branchList, $options, $value } from "./stores";

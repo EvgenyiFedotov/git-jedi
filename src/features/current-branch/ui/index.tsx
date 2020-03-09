@@ -4,17 +4,17 @@ import { LinkBlock } from "ui";
 import { useStore } from "effector-react";
 import { Spin } from "antd";
 
-import { getCurrentBranch, $currentBranch } from "../model";
+import { updateCurrentBranch, $currentBranch } from "../model";
 
 export const CurrentBranch: React.FC = () => {
   const currentBranch = useStore($currentBranch);
 
   const update = React.useCallback(() => {
-    getCurrentBranch();
+    updateCurrentBranch();
   }, []);
 
   React.useEffect(() => {
-    getCurrentBranch();
+    updateCurrentBranch();
   }, []);
 
   return (

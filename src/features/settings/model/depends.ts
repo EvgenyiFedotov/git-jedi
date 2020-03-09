@@ -1,6 +1,6 @@
 import { forward, guard, sample } from "effector";
 
-import { init, selectCwd, changedCwd } from "./events";
+import { init, selectCwd, changedCwd, changePathRepo } from "./events";
 import {
   readSettings,
   writeSettings,
@@ -76,4 +76,9 @@ sample({
   clock: readSettings.done,
   fn: (store, { result }) => (result ? result.hotKeys || store || null : store),
   target: $hotKeys,
+});
+
+forward({
+  from: changePathRepo,
+  to: selectCwd,
 });

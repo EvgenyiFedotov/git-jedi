@@ -1,2 +1,2 @@
 export { CommandsInput, CommandsList } from "./components";
-export { createCommand } from "./model";
+export { createCommand, Command, $commands } from "./model";
