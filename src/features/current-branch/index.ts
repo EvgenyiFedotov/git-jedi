@@ -1,2 +1,2 @@
-export { CurrentBranch } from "./ui";
+export { CurrentBranch } from "./components";
 export { $currentBranch, updateCurrentBranch } from "./model";
