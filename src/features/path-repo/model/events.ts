@@ -1,6 +1,6 @@
 import { createCommand } from "features/commands";
 
 export const changePathRepo = createCommand(
-  "Change path repo",
+  "change path repo",
   "changePathRepo",
 );

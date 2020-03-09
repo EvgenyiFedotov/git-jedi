@@ -30,6 +30,7 @@ export const CommandsInput: React.FC = () => {
       onSelect={select}
       value={value}
       onChange={changeValue}
+      autoFocus={true}
     />
   );
 };
