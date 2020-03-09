@@ -1,5 +1,6 @@
-import { guard } from "effector";
+import { guard, forward } from "effector";
 import { changedCwd } from "features/settings";
+import { checkoutedBranch } from "features/branches";
 
 import { $currentBranch } from "./stores";
 import { getCurrentBranch } from "./events";
@@ -16,4 +17,9 @@ guard({
   source: changedCwd,
   filter: (cwd) => !!cwd,
   target: getCurrentBranch.prepend((_: any) => {}),
+});
+
+forward({
+  from: checkoutedBranch,
+  to: getCurrentBranch,
 });

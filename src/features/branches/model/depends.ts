@@ -1,7 +1,15 @@
 import { sample, forward, merge } from "effector";
+import { changedCwd } from "features/settings";
 
 import { $branchList, $options, $value } from "./stores";
-import { changeSearch, selectOption } from "./events";
+import {
+  changeSearch,
+  selectOption,
+  checkoutedBranch,
+  checkoutBranch as checkoutBranchEvent,
+  getBranchList,
+} from "./events";
+import { checkoutBranch as checkoutBranchEffect } from "./effects";
 
 sample({
   source: $branchList,
@@ -32,4 +40,19 @@ sample({
 forward({
   from: selectOption.map(() => ""),
   to: $value,
+});
+
+forward({
+  from: selectOption.map(({ name }) => ({ branch: name })),
+  to: checkoutBranchEvent,
+});
+
+forward({
+  from: checkoutBranchEffect.done.map(() => {}),
+  to: checkoutedBranch,
+});
+
+forward({
+  from: merge([checkoutedBranch, changedCwd]).map(() => ({})),
+  to: getBranchList,
 });

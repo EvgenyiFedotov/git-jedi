@@ -4,6 +4,8 @@ import styled from "styled-components";
 import mousetrap from "mousetrap";
 import { findDOMNode } from "react-dom";
 
+type Ref = antd.Select<any>;
+
 interface Props<Option> {
   options?: Option[];
   value?: string;
@@ -11,8 +13,8 @@ interface Props<Option> {
   onSearch?: (search: string) => void;
   onChange?: (value: string) => void;
   onSelect?: (option: Option) => void;
-  onBlur?: React.FocusEventHandler<HTMLElement>;
-  onEsc?: () => void;
+  onBlur?: () => void;
+  onEsc?: (ref: Ref) => void;
   autoFocus?: boolean;
 }
 
@@ -23,13 +25,15 @@ export function Autocomplete<Option>(props: Props<Option>) {
     onSelect,
   ]);
 
-  const ref = React.useRef<antd.Select<any>>(null);
+  const ref = React.useRef<Ref>(null);
 
   React.useEffect(() => {
-    if (ref.current) {
-      const instance = mousetrap(findDOMNode(ref.current) as Element);
+    const current = ref.current;
 
-      instance.bind("esc", () => onEsc());
+    if (current) {
+      const instance = mousetrap(findDOMNode(current) as Element);
+
+      instance.bind("esc", () => onEsc(current));
 
       return () => {
         instance.unbind("esc");

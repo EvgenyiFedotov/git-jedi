@@ -9,6 +9,13 @@ export const $commandOptions = combine(
     commandOptions: {
       onBefore: ({ command, args = [] }) =>
         console.log([command, ...args].join(" ")),
+      onClose: (code, { log }) => {
+        if (code) {
+          const strlog = log.map(({ data }) => data).join("\n");
+
+          console.info(strlog);
+        }
+      },
     },
   }),
 );

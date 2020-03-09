@@ -12,7 +12,7 @@ import {
 } from "../model";
 
 export const BranchInput: React.FC<{
-  onBlur?: React.FocusEventHandler<HTMLElement>;
+  onBlur?: () => void;
   onEsc?: () => void;
 }> = ({ onBlur, onEsc = () => {} }) => {
   const options = useStore($options);

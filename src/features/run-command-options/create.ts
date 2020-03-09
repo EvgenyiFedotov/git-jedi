@@ -8,7 +8,7 @@ type GetParams<P> = () => P;
 
 export const createRunCommandEvent = <P extends object>(
   target: Effect<Params<P>, ResolverStoreItem<string>[], Error>,
-  getParams: GetParams<P>,
+  getParams?: GetParams<P>,
 ) => {
   const event = createEvent<P | void>();
 
@@ -18,7 +18,7 @@ export const createRunCommandEvent = <P extends object>(
     fn: (options, paramsEvent): Params<P> => ({
       options,
       params: {
-        ...getParams(),
+        ...(getParams ? getParams() : ({} as P)),
         ...paramsEvent,
       },
     }),
