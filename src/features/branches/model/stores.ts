@@ -20,8 +20,6 @@ $branchList.on(getBranchList.done, (_, { result }) => {
     .reduce((memo, list) => [...memo, ...list], [])
     .filter(({ name, refName }) => name !== refName);
 
-  console.log(branches);
-
   const ref = branches.reduce<Map<string, Branch>>((memo, branch) => {
     const nameArr = branch.name.split("/");
 
@@ -36,7 +34,7 @@ $branchList.on(getBranchList.done, (_, { result }) => {
       const branchMemo = memo.get(name);
 
       if (branchMemo && branchMemo.remoteName === remoteName) {
-        branchMemo.remote = toBranch(branch);
+        // branchMemo.remote = true;
       } else {
         memo.set(branch.name, toBranch(branch));
       }
@@ -63,5 +61,6 @@ function toBranch(branch: BranchGit): Branch {
     objectType: branch.objectType,
     push: branch.push,
     remoteName: branch.remoteName,
+    isRemote: branch.name.split("/").length > 1,
   };
 }

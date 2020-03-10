@@ -25,3 +25,14 @@ export const removeBranch = createGitProxyEffect<{ branch: string }>(
     return runCommandPipe("git", ["branch", "-D", branch], options);
   },
 );
+
+export const publishBranch = createGitProxyEffect<{
+  remote: string;
+  branch: string;
+}>(({ remote, branch }, options) => {
+  return runCommandPipe("git", ["push", "-u", remote, branch], options);
+});
+
+export const pushCurrentBranch = createGitProxyEffect((_, options) => {
+  return runCommandPipe("git", ["push"], options);
+});

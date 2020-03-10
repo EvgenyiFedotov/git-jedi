@@ -7,11 +7,10 @@ export {
   changeSearch,
   changeValue,
   selectOption,
-  checkoutBranch,
   checkoutedBranch,
   updateBranchList,
-  removeBranch,
   removeBranchByBranch,
   checkoutBranchByBranch,
+  publishBranchByBranch,
 } from "./events";
 export { $branchList, $options, $value } from "./stores";

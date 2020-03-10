@@ -52,7 +52,7 @@ forward({
 
 guard({
   source: events.removeBranchByBranch,
-  filter: ({ remote, push }) => !!remote || (!remote && !push),
+  filter: ({ isRemote }) => !isRemote,
   target: events.removeBranch.prepend(({ name }: events.Branch) => ({
     branch: name,
   })),
@@ -60,14 +60,21 @@ guard({
 
 const removeRemote = guard({
   source: events.removeBranchByBranch,
-  filter: ({ remote }) => !remote,
+  filter: ({ isRemote }) => isRemote,
 });
 
 // TODO add remove remote branch
 removeRemote.watch((branch) => console.log("remove-remote:", branch));
 
-// function nameWithoutRemote(name: string): string {
-//   const [remote, ...nameArr] = name.split("/");
+forward({
+  from: events.publishBranchByBranch.map(({ name }) => ({
+    remote: "origin",
+    branch: name,
+  })),
+  to: events.publishBranch,
+});
 
-//   return nameArr.join("/");
-// }
+forward({
+  from: events.push,
+  to: events.pushCurrentBranch,
+});
