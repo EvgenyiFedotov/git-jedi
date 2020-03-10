@@ -1,21 +1,14 @@
-import { sample, forward, merge } from "effector";
+import { sample, forward, merge, guard } from "effector";
 
 import { $branchList, $options, $value } from "./stores";
-import {
-  changeSearch,
-  selectOption,
-  checkoutedBranch,
-  checkoutBranch as checkoutBranchEvent,
-  updateBranchList,
-  getBranchList,
-} from "./events";
-import { checkoutBranch as checkoutBranchEffect } from "./effects";
+import * as events from "./events";
+import * as effects from "./effects";
 
 sample({
   source: $branchList,
-  clock: changeSearch,
-  fn: (branchList, search) =>
-    branchList
+  clock: events.changeSearch,
+  fn: ({ ref: branchList }, search) =>
+    Array.from(branchList.values())
       .filter(({ name }) =>
         search ? !!name.toLocaleLowerCase().match(search) : true,
       )
@@ -28,9 +21,9 @@ sample({
 
 sample({
   source: $branchList,
-  clock: merge([selectOption, $branchList]),
-  fn: (branchList) =>
-    branchList.map((branch) => ({
+  clock: merge([events.selectOption, $branchList]),
+  fn: ({ ref: branchList }) =>
+    Array.from(branchList.values()).map((branch) => ({
       ...branch,
       value: branch.name,
     })),
@@ -38,21 +31,43 @@ sample({
 });
 
 forward({
-  from: selectOption.map(() => ""),
+  from: events.selectOption.map(() => ""),
   to: $value,
 });
 
 forward({
-  from: selectOption.map(({ name }) => ({ branch: name })),
-  to: checkoutBranchEvent,
+  from: events.selectOption.map(({ name }) => ({ branch: name })),
+  to: events.checkoutBranch,
 });
 
 forward({
-  from: checkoutBranchEffect.done.map(() => {}),
-  to: checkoutedBranch,
+  from: effects.checkoutBranch.done.map(() => {}),
+  to: events.checkoutedBranch,
 });
 
 forward({
-  from: updateBranchList,
-  to: getBranchList,
+  from: merge([events.updateBranchList, effects.removeBranch.done]),
+  to: events.getBranchList,
 });
+
+guard({
+  source: events.removeBranchByBranch,
+  filter: ({ remote, push }) => !!remote || (!remote && !push),
+  target: events.removeBranch.prepend(({ name }: events.Branch) => ({
+    branch: name,
+  })),
+});
+
+const removeRemote = guard({
+  source: events.removeBranchByBranch,
+  filter: ({ remote }) => !remote,
+});
+
+// TODO add remove remote branch
+removeRemote.watch((branch) => console.log("remove-remote:", branch));
+
+// function nameWithoutRemote(name: string): string {
+//   const [remote, ...nameArr] = name.split("/");
+
+//   return nameArr.join("/");
+// }

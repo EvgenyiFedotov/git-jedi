@@ -4,7 +4,7 @@ import { ResolverStoreItem } from "lib/pipe";
 
 import { $commandOptions } from "./stores";
 
-type GetParams<P> = () => P;
+type GetParams<P> = (value: P | void) => P;
 
 export const createRunCommandEvent = <P extends object>(
   target: Effect<Params<P>, ResolverStoreItem<string>[], Error>,
@@ -18,7 +18,7 @@ export const createRunCommandEvent = <P extends object>(
     fn: (options, paramsEvent): Params<P> => ({
       options,
       params: {
-        ...(getParams ? getParams() : ({} as P)),
+        ...(getParams ? getParams(paramsEvent) : ({} as P)),
         ...paramsEvent,
       },
     }),

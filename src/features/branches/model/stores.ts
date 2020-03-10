@@ -3,11 +3,13 @@ import { createStore, restore } from "effector";
 import { getBranchList } from "./effects";
 import { Branch, Option, BranchGit, changeValue } from "./events";
 
-export const $branchList = createStore<Branch[]>([]);
+export const $branchList = createStore<{ ref: Map<string, Branch> }>({
+  ref: new Map(),
+});
 
 $branchList.on(getBranchList.done, (_, { result }) => {
   if (!(result instanceof Array)) {
-    return [];
+    return { ref: new Map() };
   }
 
   const branches = result
@@ -18,16 +20,48 @@ $branchList.on(getBranchList.done, (_, { result }) => {
     .reduce((memo, list) => [...memo, ...list], [])
     .filter(({ name, refName }) => name !== refName);
 
-  return branches.map<Branch>((branch) => ({
+  console.log(branches);
+
+  const ref = branches.reduce<Map<string, Branch>>((memo, branch) => {
+    const nameArr = branch.name.split("/");
+
+    if (nameArr.length > 1) {
+      const [remoteName, ...nameOther] = nameArr;
+      const name = nameOther.join("/");
+
+      if (name === "HEAD") {
+        return memo;
+      }
+
+      const branchMemo = memo.get(name);
+
+      if (branchMemo && branchMemo.remoteName === remoteName) {
+        branchMemo.remote = toBranch(branch);
+      } else {
+        memo.set(branch.name, toBranch(branch));
+      }
+    } else {
+      memo.set(branch.name, toBranch(branch));
+    }
+
+    return memo;
+  }, new Map());
+
+  return { ref };
+});
+
+export const $options = createStore<Option[]>([]);
+
+export const $value = restore(changeValue, "");
+
+function toBranch(branch: BranchGit): Branch {
+  return {
     head: branch.head === "*",
     name: branch.name,
     refName: branch.refName,
     objectName: branch.objectName,
     objectType: branch.objectType,
     push: branch.push,
-  }));
-});
-
-export const $options = createStore<Option[]>([]);
-
-export const $value = restore(changeValue, "");
+    remoteName: branch.remoteName,
+  };
+}
