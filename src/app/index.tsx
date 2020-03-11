@@ -3,12 +3,10 @@ import { GlobalStyle } from "./global-style";
 import styled from "styled-components";
 import { Row } from "antd";
 
-import { Header } from "templates/header";
-import { Content } from "templates/content";
-import { Settings } from "features/settings";
-import { Footer } from "templates/footer";
-
-import "./model";
+import "features/v2/commands";
+import { Settings } from "features/v2/settings";
+import { Header } from "templates/v2/header";
+import { Footer } from "templates/v2/footer";
 
 export const App = () => {
   return (
@@ -17,7 +15,6 @@ export const App = () => {
       <Container>
         <Settings>
           <Header />
-          <Content />
           <Footer />
         </Settings>
       </Container>
