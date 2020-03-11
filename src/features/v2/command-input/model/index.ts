@@ -1,8 +1,12 @@
-import { createStore, restore, createEvent } from "effector";
+import { createStore, restore, createEvent, Event } from "effector";
 
-import { Command } from "features/v2/commands/model";
-
-export type Option = Command & { value: string };
+export type Option = {
+  id: string;
+  title: string;
+  event: Event<void>;
+  hotKey?: { instance: MousetrapInstance; command: string };
+  value: string;
+};
 
 export const changeSearch = createEvent<string>();
 export const selectOption = createEvent<Option>();

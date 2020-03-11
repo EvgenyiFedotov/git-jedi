@@ -1,17 +1,21 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Row } from "ui";
+import { RowBase } from "ui";
 import { PathRepo } from "features/v2/path-repo";
+import { Divider } from "antd";
+import { CurrentBranch } from "features/v2/current-branch";
 
 export const Footer: React.FC = () => {
   return (
     <Container>
       <PathRepo />
+      <Divider type="vertical" />
+      <CurrentBranch />
     </Container>
   );
 };
 
-const Container = styled(Row)`
+const Container = styled(RowBase)`
   position: fixed;
   bottom: 0px;
   left: 0px;

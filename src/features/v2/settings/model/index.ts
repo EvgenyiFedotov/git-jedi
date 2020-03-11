@@ -1,8 +1,20 @@
-import { createStore, combine, createEffect, createEvent } from "effector";
+import {
+  createStore,
+  combine,
+  createEffect,
+  createEvent,
+  sample,
+  Event,
+  Effect,
+} from "effector";
 import { createPendingStore } from "lib/added-effector/create-pending-store";
 import { existsSync, writeFileSync, readFileSync } from "fs";
 import { PATH_SETTINGS } from "app/const";
 import { RunCommandOptions } from "lib/run-command";
+import {
+  EffectParams,
+  EffectResult,
+} from "lib/added-effector/create-pipe-promise-effect";
 
 export type HotKey = {
   type: "command";
@@ -55,3 +67,29 @@ export const $runCommandOptions = $cwd.map(
     },
   }),
 );
+
+export const createDependRunCommandOptions = <P = void>(_: {
+  event: Event<P>;
+  effect?: Effect<EffectParams<P>, EffectResult>;
+}) => {
+  if (_.effect) {
+    return sample({
+      source: $runCommandOptions,
+      clock: _.event,
+      fn: (options, params) => ({
+        params,
+        options,
+      }),
+      target: _.effect,
+    });
+  }
+
+  return sample({
+    source: $runCommandOptions,
+    clock: _.event,
+    fn: (options, params) => ({
+      params,
+      options,
+    }),
+  });
+};

@@ -2,6 +2,7 @@ import * as React from "react";
 import { useStore } from "effector-react";
 import { Spin } from "antd";
 
+import { InitContainer } from "./init-container";
 import { init, $cwd, $pendingReadSettings } from "../model";
 import { DefaultSetup } from "./default-setup";
 
@@ -16,8 +17,12 @@ export const Settings: React.FC = ({ children }) => {
   }
 
   if (!cwd) {
-    return <DefaultSetup />;
+    return (
+      <InitContainer>
+        <DefaultSetup />
+      </InitContainer>
+    );
   }
 
-  return <>{children}</>;
+  return <InitContainer>{children}</InitContainer>;
 };

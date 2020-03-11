@@ -1,12 +1,14 @@
 import styled from "styled-components";
 
-export const Row = styled.div`
+export const RowBase = styled.div`
   display: flex;
   flex: none;
   align-items: center;
   flex-wrap: wrap;
   min-height: 24px;
+`;
 
+export const Row = styled(RowBase)`
   & > *:not(:last-child) {
     margin-right: 8px;
   }
