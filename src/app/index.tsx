@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Row } from "antd";
 
 import { Settings } from "features/v2/settings";
+import { Init } from "features/v2/init";
 import { Header } from "templates/v2/header";
 import { Footer } from "templates/v2/footer";
 import { Content } from "templates/v2/content";
@@ -14,9 +15,11 @@ export const App = () => {
       <GlobalStyle />
       <Container>
         <Settings>
-          <Header />
-          <Content />
-          <Footer />
+          <Init>
+            <Header />
+            <Content />
+            <Footer />
+          </Init>
         </Settings>
       </Container>
     </>

@@ -1,3 +1,3 @@
 import "./model/depends";
 
-export { loadBranches } from "./model";
+export { loadBranches, $branches } from "./model";

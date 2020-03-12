@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { SetupPathRepo } from "features/v2/path-repo";
 
-export const DefaultSetup: React.FC = () => {
+export const Setup: React.FC = () => {
   return (
     <Container>
       <SetupPathRepo />
