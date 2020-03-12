@@ -9,6 +9,7 @@ import { Header } from "templates/v2/header";
 import { Footer } from "templates/v2/footer";
 import { Content } from "templates/v2/content";
 import { DrawerBranchList } from "features/v2/drawer-branch-list";
+import { DrawerStatus } from "features/v2/drawer-status";
 
 export const App = () => {
   return (
@@ -20,6 +21,7 @@ export const App = () => {
           <Content />
           <Footer />
           <DrawerBranchList />
+          <DrawerStatus />
         </Init>
       </Container>
     </>

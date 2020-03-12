@@ -7,6 +7,7 @@ import { Button, Spin } from "antd";
 import mousetrap from "mousetrap";
 import { selectPathRepo } from "features/v2/path-repo";
 import { initSettings, $pendingReadSettings } from "features/v2/settings";
+import { getStatusS } from "features/v2/status";
 
 export const Init: React.FC = ({ children }) => {
   const pendingReadSettings = useStore($pendingReadSettings);
@@ -20,12 +21,8 @@ export const Init: React.FC = ({ children }) => {
   return <Setup>{children}</Setup>;
 };
 
-export const Setup: React.FC = ({ children }) => {
+const Setup: React.FC = ({ children }) => {
   const cwd = useStore($cwd);
-
-  React.useEffect(() => {
-    loadBranches();
-  }, []);
 
   if (!cwd) {
     return (
@@ -34,6 +31,15 @@ export const Setup: React.FC = ({ children }) => {
       </Container>
     );
   }
+
+  return <AfterSetup>{children}</AfterSetup>;
+};
+
+const AfterSetup: React.FC = ({ children }) => {
+  React.useEffect(() => {
+    loadBranches();
+    getStatusS();
+  }, []);
 
   return <>{children}</>;
 };
