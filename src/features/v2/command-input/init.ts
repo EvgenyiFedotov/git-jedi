@@ -1,7 +1,7 @@
 import { forward, sample, combine } from "effector";
 import { $commands } from "features/v2/commands/model";
 
-import { selectOption, $value, Option, $options } from ".";
+import { selectOption, $value, Option, $options } from "./model";
 
 sample({
   source: combine([$commands, $value]),

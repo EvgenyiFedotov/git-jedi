@@ -3,13 +3,13 @@ import { showSelectCwdDialog } from "features/v2/path-repo/model";
 
 import {
   readSettings,
-  init,
+  initSettings,
   $settings,
   writeSettings,
   $cwd,
   changedCwd,
   $hotKeys,
-} from ".";
+} from "./model";
 
 const setupDefaultSettings = guard({
   source: readSettings.done,
@@ -17,7 +17,7 @@ const setupDefaultSettings = guard({
 });
 
 forward({
-  from: init,
+  from: initSettings,
   to: readSettings,
 });
 

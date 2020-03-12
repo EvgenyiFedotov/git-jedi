@@ -2,12 +2,12 @@ import * as React from "react";
 import { useStore } from "effector-react";
 import { Spin } from "antd";
 
-import { init, $pendingReadSettings } from "../model";
+import { initSettings, $pendingReadSettings } from "./model";
 
 export const Settings: React.FC = ({ children }) => {
   const pendingReadSettings = useStore($pendingReadSettings);
 
-  React.useEffect(() => init(), []);
+  React.useEffect(() => initSettings(), []);
 
   if (pendingReadSettings !== false) {
     return <Spin />;

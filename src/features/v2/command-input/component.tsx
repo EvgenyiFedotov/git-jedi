@@ -8,7 +8,7 @@ import {
   selectOption,
   $value,
   changeValue,
-} from "../model";
+} from "./model";
 
 export const CommandInput: React.FC = () => {
   const options = useStore($options);

@@ -9,7 +9,7 @@ import {
   changeSearch,
   changeValue,
   selectOption,
-} from "../model";
+} from "./model";
 
 export const ChangeBranchInput: React.FC<{
   onBlur?: () => void;

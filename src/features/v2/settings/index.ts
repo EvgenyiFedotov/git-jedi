@@ -1,4 +1,2 @@
-import "./model/depends";
-
-export { Settings } from "./components/settings";
-export { $cwd } from "./model";
+// export { Settings } from "./component";
+export { $cwd, $pendingReadSettings, initSettings } from "./model";

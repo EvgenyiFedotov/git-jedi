@@ -2,7 +2,7 @@ import { createEffect, combine, forward } from "effector";
 import { HotKey, $hotKeys } from "features/v2/settings/model";
 import mousetrap from "mousetrap";
 
-import { $commands, addCommand, Command } from ".";
+import { $commands, addCommand, Command } from "./model";
 
 const linkCommandWithHotkeys = createEffect<
   { commands: Map<string, Command>; hotKeys: HotKey[] },

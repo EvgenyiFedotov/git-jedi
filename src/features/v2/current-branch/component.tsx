@@ -5,7 +5,7 @@ import { useStore } from "effector-react";
 import { Spin } from "antd";
 import { BranchesOutlined } from "@ant-design/icons";
 
-import { updateCurrentBranch, $currentBranch } from "../model";
+import { updateCurrentBranch, $currentBranch } from "./model";
 
 export const CurrentBranch: React.FC = () => {
   const currentBranch = useStore($currentBranch);

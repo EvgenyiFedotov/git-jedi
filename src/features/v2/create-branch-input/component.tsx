@@ -8,7 +8,7 @@ import {
   $options,
   selectOption,
   selectOptionByEnter,
-} from "../model";
+} from "./model";
 
 export const CreateBranchInput: React.FC<{
   onBlur?: () => void;

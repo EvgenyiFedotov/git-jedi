@@ -2,7 +2,13 @@ import { merge } from "effector";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
 import { gitCreateBranch } from "features/v2/create-branch-input/model";
 
-import { $branches, gitBranches, BranchGit, Branch, loadBranches } from ".";
+import {
+  $branches,
+  gitBranches,
+  BranchGit,
+  Branch,
+  loadBranches,
+} from "./model";
 
 createDependRunCommandOptions({
   event: merge([loadBranches, gitCreateBranch.done]).map(() => {}),
@@ -51,6 +57,8 @@ $branches.on(gitBranches.done, (_, { result }) => {
 });
 
 function toBranch(branch: BranchGit): Branch {
+  const [firstChunkName] = branch.name.split("/");
+
   return {
     head: branch.head === "*",
     name: branch.name,
@@ -59,6 +67,6 @@ function toBranch(branch: BranchGit): Branch {
     objectType: branch.objectType,
     push: branch.push,
     remoteName: branch.remoteName,
-    isRemote: branch.name.split("/").length > 1,
+    isRemote: firstChunkName === "origin", // TODO use remote names
   };
 }

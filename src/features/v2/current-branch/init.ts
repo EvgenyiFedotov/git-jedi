@@ -9,7 +9,7 @@ import {
   gitCurrentBranchHash,
   updateCurrentBranch,
   updateCurrentBranchByHash,
-} from ".";
+} from "./model";
 
 createDependRunCommandOptions({
   event: merge([

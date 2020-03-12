@@ -1,4 +1,2 @@
-import "./model/depends";
-
-export { PathRepo } from "./components/path-repo";
-export { SetupPathRepo } from "./components/setup-path-repo";
+export { PathRepo } from "./component";
+export { selectPathRepo } from "./model";

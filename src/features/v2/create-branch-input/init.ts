@@ -9,7 +9,7 @@ import {
   $value,
   selectOptionByEnter,
   gitCreateBranch,
-} from ".";
+} from "./model";
 
 sample({
   source: $currentBranch,

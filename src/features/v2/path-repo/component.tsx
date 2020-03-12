@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useStore } from "effector-react";
 import { LinkBlock } from "ui";
 
-import { $pathRepo, selectPathRepo } from "../model";
+import { $pathRepo, selectPathRepo } from "./model";
 
 export const PathRepo: React.FC = () => {
   const pathRepo = useStore($pathRepo);

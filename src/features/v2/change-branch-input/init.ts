@@ -2,7 +2,7 @@ import { sample, combine, forward, merge } from "effector";
 import { $branches } from "features/v2/branches/model";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
 
-import { $value, $options, selectOption, gitCheckout } from "../model";
+import { $value, $options, selectOption, gitCheckout } from "./model";
 
 sample({
   source: combine([$branches, $value]),

@@ -1,3 +1,1 @@
-import "./model/depends";
-
-export { CreateBranchInput } from "./components/create-branch-input";
+export { CreateBranchInput } from "./component";

@@ -41,7 +41,7 @@ export const writeSettings = createEffect<Settings, void>({
   },
 });
 
-export const init = createEvent<void>();
+export const initSettings = createEvent<void>();
 export const changedCwd = createEvent<string | null>();
 
 export const $cwd = createStore<Settings["cwd"]>(null);

@@ -2,7 +2,7 @@ import { sample, guard, forward } from "effector";
 import { $cwd, readSettings } from "features/v2/settings/model";
 import { createCommand } from "features/v2/commands/model";
 
-import { showSelectCwdDialog, selectPathRepo, $pathRepo } from ".";
+import { showSelectCwdDialog, selectPathRepo, $pathRepo } from "./model";
 
 const commandChangePathRepo = createCommand(
   "change path repo",
