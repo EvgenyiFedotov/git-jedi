@@ -7,5 +7,6 @@ import "features/v2/current-branch/init";
 import "features/v2/path-repo/init";
 import "features/v2/settings/init";
 import "features/v2/drawer-branch-list/init";
+import "features/v2/remove-branch-input/init";
 
 export { Init } from "./component";

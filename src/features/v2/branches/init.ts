@@ -1,6 +1,8 @@
 import { merge } from "effector";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
 import { gitCreateBranch } from "features/v2/create-branch-input/model";
+import { gitRemoveBranchD } from "features/v2/remove-branch-input/model";
+import { gitCheckout } from "features/v2/change-branch-input/model";
 
 import {
   $branches,
@@ -11,7 +13,12 @@ import {
 } from "./model";
 
 createDependRunCommandOptions({
-  event: merge([loadBranches, gitCreateBranch.done]).map(() => {}),
+  event: merge([
+    loadBranches,
+    gitCreateBranch.done,
+    gitRemoveBranchD.done,
+    gitCheckout.done,
+  ]).map(() => {}),
   effect: gitBranches,
 });
 
