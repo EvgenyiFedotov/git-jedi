@@ -8,6 +8,7 @@ import { Init } from "features/v2/init";
 import { Header } from "templates/v2/header";
 import { Footer } from "templates/v2/footer";
 import { Content } from "templates/v2/content";
+import { DrawerBranchList } from "features/v2/drawer-branch-list";
 
 export const App = () => {
   return (
@@ -18,6 +19,7 @@ export const App = () => {
           <Header />
           <Content />
           <Footer />
+          <DrawerBranchList />
         </Init>
       </Container>
     </>

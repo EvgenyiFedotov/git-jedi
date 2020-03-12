@@ -1,1 +1,1 @@
-export { BranchList } from "./components/branch-list";
+export { BranchList } from "./component";

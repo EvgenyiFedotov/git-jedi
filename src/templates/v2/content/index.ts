@@ -1,1 +1,1 @@
-export { Content } from "./components/content";
+export { Content } from "./component";

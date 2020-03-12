@@ -1,1 +1,1 @@
-export {};
+export { createCommand } from "./model";

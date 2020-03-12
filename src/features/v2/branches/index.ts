@@ -1,1 +1,1 @@
-export { loadBranches, $branches } from "./model";
+export { loadBranches, $branches, Branch } from "./model";

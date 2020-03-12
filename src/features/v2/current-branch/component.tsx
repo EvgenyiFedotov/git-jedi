@@ -4,14 +4,15 @@ import { LinkBlock } from "ui";
 import { useStore } from "effector-react";
 import { Spin } from "antd";
 import { BranchesOutlined } from "@ant-design/icons";
+import { openBranchList } from "features/v2/drawer-branch-list"; // TODO ???
 
 import { updateCurrentBranch, $currentBranch } from "./model";
 
 export const CurrentBranch: React.FC = () => {
   const currentBranch = useStore($currentBranch);
 
-  const update = React.useCallback(() => {
-    updateCurrentBranch();
+  const click = React.useCallback(() => {
+    openBranchList();
   }, []);
 
   React.useEffect(() => {
@@ -20,7 +21,7 @@ export const CurrentBranch: React.FC = () => {
 
   return (
     <Spin size="small" spinning={!currentBranch}>
-      <Container onClick={update}>
+      <Container onClick={click}>
         <BranchesOutlined />
         {currentBranch}
       </Container>
