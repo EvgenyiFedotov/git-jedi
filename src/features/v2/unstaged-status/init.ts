@@ -5,19 +5,10 @@ import { $unstagedStatus } from "./model";
 
 forward({
   from: $status.map((status) =>
-    status
-      .filter(
-        (statusFile) =>
-          (statusFile.stage === statusFile.unstage &&
-            statusFile.unstage === "?") ||
-          statusFile.stage === " ",
-      )
-      .map((statusFile) => {
-        statusFile.unstage =
-          statusFile.unstage === "?" ? "U" : statusFile.unstage;
-
-        return statusFile;
-      }),
+    status.filter(
+      ({ stage, unstage }) =>
+        (stage === unstage && unstage === "?") || stage === " ",
+    ),
   ),
   to: $unstagedStatus,
 });

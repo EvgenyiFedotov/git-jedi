@@ -13,10 +13,10 @@ export const Footer: React.FC = () => {
         <PathRepo />
         <Divider type="vertical" />
         <CurrentBranch />
-      </RowBase>
-      <RowBase>
+        <Divider type="vertical" />
         <CountChanges />
       </RowBase>
+      <RowBase></RowBase>
     </Container>
   );
 };

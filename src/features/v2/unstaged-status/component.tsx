@@ -1,8 +1,11 @@
 import * as React from "react";
 import { useStore } from "effector-react";
-import { Row, Column } from "ui";
+import { Row, Column, StatusFileAction, ButtonIcon } from "ui";
+import { RollbackOutlined, PlusOutlined } from "@ant-design/icons";
+import { Tooltip, List } from "antd";
+import { toStatusFileAction, toColor } from "lib/status-file-action";
+import { ListItem } from "ui/antd";
 import styled from "styled-components";
-import { blue } from "@ant-design/colors";
 
 import { $unstagedStatus, StatusFile } from "./model";
 
@@ -13,22 +16,64 @@ export const UnstagedStatus: React.FC = () => {
     <StatusFile key={statusFile.path} statusFile={statusFile} />
   ));
 
-  return <Column>{list}</Column>;
-};
-
-const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
   return (
-    <Row>
-      <StatusFileAction color={blue.primary}>
-        {statusFile.unstage}
-      </StatusFileAction>
-      <div>{statusFile.path}</div>
-    </Row>
+    <Column>
+      <Header />
+      <List size="small">{list}</List>
+    </Column>
   );
 };
 
-const StatusFileAction = styled.div<{ color?: string }>`
-  font-family: monospace;
-  font-size: 15px;
-  color: ${({ color }) => color};
+const Header: React.FC = () => {
+  return (
+    <HeaderContainer>
+      <b>Unstaged changes</b>
+      <Row>
+        <Tooltip title="discard all">
+          <ButtonIcon>
+            <RollbackOutlined />
+          </ButtonIcon>
+        </Tooltip>
+        <Tooltip title="stage all">
+          <ButtonIcon>
+            <PlusOutlined />
+          </ButtonIcon>
+        </Tooltip>
+      </Row>
+    </HeaderContainer>
+  );
+};
+
+const HeaderContainer = styled(Row)`
+  justify-content: space-between;
+  padding: 0 8px;
 `;
+
+const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
+  return (
+    <ListItem>
+      <Row>
+        <Row>
+          <Tooltip title={toStatusFileAction(statusFile.unstage)}>
+            <StatusFileAction color={toColor(statusFile.unstage)}>
+              {statusFile.unstage}
+            </StatusFileAction>
+          </Tooltip>
+          <span>{statusFile.path}</span>
+        </Row>
+        <Row>
+          <Tooltip title="discard">
+            <ButtonIcon>
+              <RollbackOutlined />
+            </ButtonIcon>
+          </Tooltip>
+          <Tooltip title="stage">
+            <ButtonIcon>
+              <PlusOutlined />
+            </ButtonIcon>
+          </Tooltip>
+        </Row>
+      </Row>
+    </ListItem>
+  );
+};

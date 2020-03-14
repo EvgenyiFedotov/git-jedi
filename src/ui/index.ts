@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { blue } from "@ant-design/colors";
 
 export const RowBase = styled.div`
   display: flex;
@@ -29,4 +30,23 @@ export const LinkBlock = styled.div`
     text-decoration: underline;
     cursor: pointer;
   }
+`;
+
+export const StatusFileRow = styled(Row)`
+  width: 100%;
+  justify-content: space-between;
+  cursor: default;
+
+  &:hover {
+    background-color: ${blue[0]};
+  }
+`;
+
+export const StatusFileAction = styled.div<{ color?: string }>`
+  font-family: "Andale Mono", monospace;
+  color: ${({ color }) => color};
+`;
+
+export const ButtonIcon = styled.div`
+  cursor: pointer;
 `;

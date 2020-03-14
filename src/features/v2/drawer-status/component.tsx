@@ -12,11 +12,12 @@ export const DrawerStatus: React.FC = () => {
 
   return (
     <Drawer
-      title="Status"
+      title="Changes"
       closable={false}
       visible={showStatus}
       onClose={() => closeStatus()}
       placement="right"
+      width="460px"
     >
       <Column>
         <UnstagedStatus />

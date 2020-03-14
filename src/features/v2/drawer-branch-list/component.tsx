@@ -15,6 +15,7 @@ export const DrawerBranchList: React.FC = () => {
       visible={showBranchList}
       onClose={() => closeBranchList()}
       placement="right"
+      width="460px"
     >
       <BranchList />
     </Drawer>
