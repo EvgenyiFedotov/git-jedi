@@ -8,10 +8,19 @@ import { ListItem } from "ui/antd";
 import { List } from "antd";
 import styled from "styled-components";
 
-import { $stagedStatus, StatusFile } from "./model";
+import {
+  $stagedStatus,
+  StatusFile,
+  unstageChanges,
+  unstageAllChanges,
+} from "./model";
 
 export const StagedStatus: React.FC = () => {
   const stagedStatus = useStore($stagedStatus);
+
+  if (!stagedStatus.length) {
+    return null;
+  }
 
   const list = stagedStatus.map((statusFile) => (
     <StatusFile key={statusFile.path} statusFile={statusFile} />
@@ -20,17 +29,19 @@ export const StagedStatus: React.FC = () => {
   return (
     <Column>
       <Header />
-      <List>{list}</List>
+      <List size="small">{list}</List>
     </Column>
   );
 };
 
 const Header: React.FC = () => {
+  const unstage = React.useCallback(() => unstageAllChanges(), []);
+
   return (
     <HeaderContainer>
       <b>Staged changes</b>
-      <Tooltip title="unstage all">
-        <ButtonIcon>
+      <Tooltip title="unstage all" mouseEnterDelay={1.5}>
+        <ButtonIcon onClick={unstage}>
           <MinusOutlined />
         </ButtonIcon>
       </Tooltip>
@@ -44,6 +55,10 @@ const HeaderContainer = styled(Row)`
 `;
 
 const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
+  const unstage = React.useCallback(() => unstageChanges(statusFile), [
+    statusFile,
+  ]);
+
   return (
     <ListItem>
       <Row>
@@ -56,8 +71,8 @@ const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
           <span>{statusFile.path}</span>
         </Row>
         <Row>
-          <Tooltip title="unstage">
-            <ButtonIcon>
+          <Tooltip title="unstage" mouseEnterDelay={1.5}>
+            <ButtonIcon onClick={unstage}>
               <MinusOutlined />
             </ButtonIcon>
           </Tooltip>

@@ -10,7 +10,7 @@ export const commandPipeToPromise = (pipe: Pipe<PipeValue>) => {
     pipe.listen((value, action) => {
       if (action === "close") {
         if (value === 0) {
-          resolve(pipe.resolvedStore().get(listenerId));
+          resolve(pipe.resolvedStore().get(listenerId) || []);
         } else {
           reject(value);
         }

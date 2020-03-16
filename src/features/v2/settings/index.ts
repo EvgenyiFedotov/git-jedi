@@ -1,2 +1,6 @@
-// export { Settings } from "./component";
-export { $cwd, $pendingReadSettings, initSettings } from "./model";
+export {
+  $cwd,
+  $pendingReadSettings,
+  initSettings,
+  createDependRunCommandOptions,
+} from "./model";

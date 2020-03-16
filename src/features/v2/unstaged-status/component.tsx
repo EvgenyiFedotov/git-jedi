@@ -1,16 +1,33 @@
 import * as React from "react";
 import { useStore } from "effector-react";
 import { Row, Column, StatusFileAction, ButtonIcon } from "ui";
-import { RollbackOutlined, PlusOutlined } from "@ant-design/icons";
-import { Tooltip, List } from "antd";
+import {
+  RollbackOutlined,
+  PlusOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
+import { Tooltip, List, Popconfirm } from "antd";
 import { toStatusFileAction, toColor } from "lib/status-file-action";
 import { ListItem } from "ui/antd";
 import styled from "styled-components";
+import { Branch } from "lib/branch";
 
-import { $unstagedStatus, StatusFile } from "./model";
+import {
+  $unstagedStatus,
+  StatusFile,
+  discardChanges,
+  stageChanges,
+  $discardingChanges,
+  discardAllChanges,
+  stageAllChanges,
+} from "./model";
 
 export const UnstagedStatus: React.FC = () => {
   const unstagedStatus = useStore($unstagedStatus);
+
+  if (!unstagedStatus.length) {
+    return null;
+  }
 
   const list = unstagedStatus.map((statusFile) => (
     <StatusFile key={statusFile.path} statusFile={statusFile} />
@@ -25,17 +42,28 @@ export const UnstagedStatus: React.FC = () => {
 };
 
 const Header: React.FC = () => {
+  const discard = React.useCallback(() => discardAllChanges(), []);
+  const stage = React.useCallback(() => stageAllChanges(), []);
+
   return (
     <HeaderContainer>
       <b>Unstaged changes</b>
       <Row>
-        <Tooltip title="discard all">
-          <ButtonIcon>
-            <RollbackOutlined />
-          </ButtonIcon>
-        </Tooltip>
-        <Tooltip title="stage all">
-          <ButtonIcon>
+        <Popconfirm
+          placement="topRight"
+          title="Are you sure?"
+          onConfirm={discard}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Tooltip title="discard all" mouseEnterDelay={1.5}>
+            <ButtonIcon>
+              <RollbackOutlined />
+            </ButtonIcon>
+          </Tooltip>
+        </Popconfirm>
+        <Tooltip title="stage all" mouseEnterDelay={1.5}>
+          <ButtonIcon onClick={stage}>
             <PlusOutlined />
           </ButtonIcon>
         </Tooltip>
@@ -50,30 +78,55 @@ const HeaderContainer = styled(Row)`
 `;
 
 const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
+  const discard = React.useCallback(() => discardChanges(statusFile), [
+    statusFile,
+  ]);
+  const stage = React.useCallback(() => stageChanges(statusFile), [statusFile]);
+
   return (
     <ListItem>
       <Row>
         <Row>
-          <Tooltip title={toStatusFileAction(statusFile.unstage)}>
-            <StatusFileAction color={toColor(statusFile.unstage)}>
-              {statusFile.unstage}
-            </StatusFileAction>
-          </Tooltip>
+          <StatusFileState statusFile={statusFile} />
           <span>{statusFile.path}</span>
         </Row>
         <Row>
-          <Tooltip title="discard">
-            <ButtonIcon>
-              <RollbackOutlined />
-            </ButtonIcon>
-          </Tooltip>
-          <Tooltip title="stage">
-            <ButtonIcon>
+          <Popconfirm
+            placement="topRight"
+            title="Are you sure?"
+            onConfirm={discard}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="discard" mouseEnterDelay={1.5}>
+              <ButtonIcon>
+                <RollbackOutlined />
+              </ButtonIcon>
+            </Tooltip>
+          </Popconfirm>
+          <Tooltip title="stage" mouseEnterDelay={1.5}>
+            <ButtonIcon onClick={stage}>
               <PlusOutlined />
             </ButtonIcon>
           </Tooltip>
         </Row>
       </Row>
     </ListItem>
+  );
+};
+
+const StatusFileState: React.FC<{ statusFile: StatusFile }> = ({
+  statusFile,
+}) => {
+  const { unstage, path } = statusFile;
+  const isDiscarding = useStore($discardingChanges).ref.has(path);
+
+  return (
+    <Branch if={isDiscarding}>
+      <LoadingOutlined />
+      <Tooltip title={toStatusFileAction(unstage)}>
+        <StatusFileAction color={toColor(unstage)}>{unstage}</StatusFileAction>
+      </Tooltip>
+    </Branch>
   );
 };
