@@ -34,7 +34,9 @@ export const UnstagedStatus: React.FC = () => {
   const list = Array.from(unstagedStatus.values()).map((statusFile) => (
     <React.Fragment key={statusFile.path}>
       <StatusFile statusFile={statusFile} />
-      {statusFile.diff ? <DiffFile diffFile={statusFile.diff} /> : null}
+      {statusFile.diff ? (
+        <DiffFile diffFile={statusFile.diff} status="unstage" />
+      ) : null}
     </React.Fragment>
   ));
 

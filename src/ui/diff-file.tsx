@@ -3,17 +3,18 @@ import { RowBase, Column } from "ui";
 import styled from "styled-components";
 import { cyan, red, grey, geekblue } from "@ant-design/colors";
 import { Branch } from "lib/branch";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
 import * as diff from "lib/diff";
 
-export const DiffFile: React.FC<{ diffFile: diff.DiffFile }> = ({
-  diffFile,
-}) => {
+export const DiffFile: React.FC<{
+  diffFile: diff.DiffFile;
+  status: "stage" | "unstage";
+}> = ({ diffFile, status }) => {
   return (
     <DiffFileContainer>
       {diffFile.chunks.map((diffChunk) => (
-        <DiffChunk key={diffChunk.id} diffChunk={diffChunk} />
+        <DiffChunk key={diffChunk.id} diffChunk={diffChunk} status={status} />
       ))}
     </DiffFileContainer>
   );
@@ -23,11 +24,14 @@ const DiffFileContainer = styled(Column)`
   width: 100%;
 `;
 
-const DiffChunk: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
+const DiffChunk: React.FC<{
+  diffChunk: diff.DiffChunk;
+  status: "stage" | "unstage";
+}> = ({ diffChunk, status }) => {
   return (
     <DiffChunkContainer>
       <Buttons diffChunk={diffChunk} />
-      <NumLines diffChunk={diffChunk} />
+      <NumLines diffChunk={diffChunk} status={status} />
       <Lines diffChunk={diffChunk} />
     </DiffChunkContainer>
   );
@@ -62,7 +66,10 @@ const HeaderTr = styled.tr`
   background-color: ${geekblue[0]};
 `;
 
-const NumLines: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
+const NumLines: React.FC<{
+  diffChunk: diff.DiffChunk;
+  status: "stage" | "unstage";
+}> = ({ diffChunk, status }) => {
   const { scopeLines } = diffChunk;
 
   return (
@@ -71,35 +78,68 @@ const NumLines: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
         <HeaderTr>
           <td></td>
           <td>
-            <Tooltip title="stage chunk">
-              <ButtonPlus>
-                <PlusOutlined />
-              </ButtonPlus>
-            </Tooltip>
+            <Branch if={status === "stage"}>
+              <Tooltip title="unstage chunk">
+                <ButtonPlus>
+                  <MinusOutlined />
+                </ButtonPlus>
+              </Tooltip>
+              <Tooltip title="stage chunk">
+                <ButtonPlus>
+                  <PlusOutlined />
+                </ButtonPlus>
+              </Tooltip>
+            </Branch>
           </td>
         </HeaderTr>
         {scopeLines.map((scopeLine) => (
           <tr key={scopeLine.id}>
-            <td>
-              <Branch if={!!scopeLine.removedNumLine}>
-                <>{scopeLine.removedNumLine}</>
-                <Tooltip title="stage line">
-                  <ButtonPlus>
-                    <PlusOutlined />
-                  </ButtonPlus>
-                </Tooltip>
-              </Branch>
-            </td>
-            <td>
-              <Branch if={!!scopeLine.addedNumLine}>
-                <>{scopeLine.addedNumLine}</>
-                <Tooltip title="stage line">
-                  <ButtonPlus>
-                    <PlusOutlined />
-                  </ButtonPlus>
-                </Tooltip>
-              </Branch>
-            </td>
+            <Branch if={status === "stage"}>
+              <>
+                <td>
+                  <Branch if={!!scopeLine.removedNumLine}>
+                    <>{scopeLine.removedNumLine}</>
+                    <Tooltip title="unstage line">
+                      <ButtonPlus>
+                        <MinusOutlined />
+                      </ButtonPlus>
+                    </Tooltip>
+                  </Branch>
+                </td>
+                <td>
+                  <Branch if={!!scopeLine.addedNumLine}>
+                    <>{scopeLine.addedNumLine}</>
+                    <Tooltip title="unstage line">
+                      <ButtonPlus>
+                        <MinusOutlined />
+                      </ButtonPlus>
+                    </Tooltip>
+                  </Branch>
+                </td>
+              </>
+              <>
+                <td>
+                  <Branch if={!!scopeLine.removedNumLine}>
+                    <>{scopeLine.removedNumLine}</>
+                    <Tooltip title="stage line">
+                      <ButtonPlus>
+                        <PlusOutlined />
+                      </ButtonPlus>
+                    </Tooltip>
+                  </Branch>
+                </td>
+                <td>
+                  <Branch if={!!scopeLine.addedNumLine}>
+                    <>{scopeLine.addedNumLine}</>
+                    <Tooltip title="stage line">
+                      <ButtonPlus>
+                        <PlusOutlined />
+                      </ButtonPlus>
+                    </Tooltip>
+                  </Branch>
+                </td>
+              </>
+            </Branch>
           </tr>
         ))}
       </tbody>

@@ -7,23 +7,30 @@ import { MinusOutlined } from "@ant-design/icons";
 import { ListItem } from "ui/antd";
 import { List } from "antd";
 import styled from "styled-components";
+import { DiffFile } from "ui/diff-file";
 
 import {
   $stagedStatus,
   StatusFile,
   unstageChanges,
   unstageAllChanges,
+  getDiff,
 } from "./model";
 
 export const StagedStatus: React.FC = () => {
-  const stagedStatus = useStore($stagedStatus);
+  const { ref: stagedStatus } = useStore($stagedStatus);
 
-  if (!stagedStatus.length) {
+  if (!stagedStatus.size) {
     return null;
   }
 
-  const list = stagedStatus.map((statusFile) => (
-    <StatusFile key={statusFile.path} statusFile={statusFile} />
+  const list = Array.from(stagedStatus.values()).map((statusFile) => (
+    <React.Fragment key={statusFile.path}>
+      <StatusFile statusFile={statusFile} />
+      {statusFile.diff ? (
+        <DiffFile diffFile={statusFile.diff} status="stage" />
+      ) : null}
+    </React.Fragment>
   ));
 
   return (
@@ -58,9 +65,10 @@ const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
   const unstage = React.useCallback(() => unstageChanges(statusFile), [
     statusFile,
   ]);
+  const diff = React.useCallback(() => getDiff(statusFile.path), [statusFile]);
 
   return (
-    <ListItem>
+    <ListItem onClick={diff}>
       <Row>
         <Row>
           <Tooltip title={toStatusFileAction(statusFile.stage)}>

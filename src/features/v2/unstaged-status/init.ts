@@ -109,12 +109,12 @@ const statusFileByGetDiff = sample({
 const addDiff = guard({
   source: statusFileByGetDiff,
   filter: (statusFile) => !!statusFile && statusFile.diff === null,
-}).map((statusFile) => statusFile.path);
+});
 
 const removeDiff = guard({
   source: statusFileByGetDiff,
   filter: (statusFile) => !!statusFile && statusFile.diff !== null,
-}).map((statusFile) => statusFile.path);
+});
 
 createDependRunCommandOptions({
   event: addDiff,
@@ -138,7 +138,7 @@ $unstagedStatus.on(diff.done, (store, { result }) => {
 
   return store;
 });
-$unstagedStatus.on(removeDiff, (store, path) => {
+$unstagedStatus.on(removeDiff, (store, { path }) => {
   const statusFile = store.ref.get(path);
 
   if (statusFile) {
