@@ -1,28 +1,29 @@
 import * as React from "react";
-import { Row, RowBase, Column } from "ui";
-import * as diffModel from "features/v2/diff/model";
+import { RowBase, Column } from "ui";
 import styled from "styled-components";
 import { cyan, red, grey, geekblue } from "@ant-design/colors";
 import { Branch } from "lib/branch";
 import { PlusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
-import { Change } from "diff";
+import * as diff from "lib/diff";
 
-export const DiffFile: React.FC<{ diffFile: diffModel.DiffFile }> = ({
+export const DiffFile: React.FC<{ diffFile: diff.DiffFile }> = ({
   diffFile,
 }) => {
   return (
-    <Column>
+    <DiffFileContainer>
       {diffFile.chunks.map((diffChunk) => (
         <DiffChunk key={diffChunk.id} diffChunk={diffChunk} />
       ))}
-    </Column>
+    </DiffFileContainer>
   );
 };
 
-const DiffChunk: React.FC<{ diffChunk: diffModel.DiffChunk }> = ({
-  diffChunk,
-}) => {
+const DiffFileContainer = styled(Column)`
+  width: 100%;
+`;
+
+const DiffChunk: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
   return (
     <DiffChunkContainer>
       <Buttons diffChunk={diffChunk} />
@@ -39,7 +40,7 @@ const DiffChunkContainer = styled(RowBase)`
   align-items: flex-start;
 `;
 
-const Buttons: React.FC<{ diffChunk: diffModel.DiffChunk }> = () => {
+const Buttons: React.FC<{ diffChunk: diff.DiffChunk }> = () => {
   return <DiffTable></DiffTable>;
 };
 
@@ -61,9 +62,7 @@ const HeaderTr = styled.tr`
   background-color: ${geekblue[0]};
 `;
 
-const NumLines: React.FC<{ diffChunk: diffModel.DiffChunk }> = ({
-  diffChunk,
-}) => {
+const NumLines: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
   const { scopeLines } = diffChunk;
 
   return (
@@ -123,7 +122,7 @@ const NumLinesTable = styled(DiffTable)`
   }
 `;
 
-const Lines: React.FC<{ diffChunk: diffModel.DiffChunk }> = ({ diffChunk }) => {
+const Lines: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
   const { header, scopeLines } = diffChunk;
 
   const lines = scopeLines.map((scopeLine) => (
@@ -148,11 +147,14 @@ const Lines: React.FC<{ diffChunk: diffModel.DiffChunk }> = ({ diffChunk }) => {
 
 const LinesContainer = styled.div`
   overflow-x: auto;
+  width: 100%;
+
+  & > table {
+    width: 100%;
+  }
 `;
 
-const LineTd: React.FC<{ scopeLine: diffModel.ScopeLine }> = ({
-  scopeLine,
-}) => {
+const LineTd: React.FC<{ scopeLine: diff.ScopeLine }> = ({ scopeLine }) => {
   const content = React.useMemo(() => {
     if (scopeLine.diff) {
       if (scopeLine.removedNumLine !== null) {
@@ -192,15 +194,15 @@ const LineTd: React.FC<{ scopeLine: diffModel.ScopeLine }> = ({
   );
 };
 
-const LineTdContainer = styled.td<{ scopeLine: diffModel.ScopeLine }>`
+const LineTdContainer = styled.td<{ scopeLine: diff.ScopeLine }>`
   background-color: ${({ scopeLine }) => getColorLine(scopeLine)[0]};
 `;
 
-const LineChunk = styled.span<{ scopeLine: diffModel.ScopeLine }>`
+const LineChunk = styled.span<{ scopeLine: diff.ScopeLine }>`
   background-color: ${({ scopeLine }) => getColorLine(scopeLine)[1]};
 `;
 
-function getColorLine({ removedNumLine, addedNumLine }: diffModel.ScopeLine) {
+function getColorLine({ removedNumLine, addedNumLine }: diff.ScopeLine) {
   if (removedNumLine !== null && addedNumLine !== null) {
     return [];
   } else if (removedNumLine !== null) {

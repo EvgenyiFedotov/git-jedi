@@ -1,4 +1,4 @@
-import { blue, volcano } from "@ant-design/colors";
+import { blue, volcano, grey, green } from "@ant-design/colors";
 
 export type StatusFileAction =
   | "unmodified"
@@ -39,9 +39,13 @@ export function toStatusFileAction(action: string): StatusFileAction {
 
 export function toColor(action: string): string | undefined {
   switch (action) {
-    case "M":
+    case "D":
       return volcano.primary;
-    default:
+    case "M":
       return blue.primary;
+    case "A":
+      return green.primary;
+    default:
+      return grey[3];
   }
 }

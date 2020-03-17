@@ -1,6 +1,7 @@
-import { forward, sample } from "effector";
+import { guard, sample } from "effector";
 import { $status } from "features/v2/status";
 import { createDependRunCommandOptions } from "features/v2/settings";
+import { parseResult } from "lib/diff";
 
 import {
   $unstagedStatus,
@@ -11,17 +12,25 @@ import {
   $discardingChanges,
   discardAllChanges,
   stageAllChanges,
+  getDiff,
+  diff,
 } from "./model";
 
-forward({
-  from: $status.map((status) =>
-    status.filter(
+$unstagedStatus.on($status, (_, status) => ({
+  ref: status
+    .filter(
       ({ stage, unstage }) =>
         (stage === unstage && unstage === "?") || stage === " ",
-    ),
-  ),
-  to: $unstagedStatus,
-});
+    )
+    .reduce((memo, statusFile) => {
+      memo.set(statusFile.path, {
+        ...statusFile,
+        diff: null,
+      });
+
+      return memo;
+    }, new Map()),
+}));
 
 createDependRunCommandOptions({
   event: stageChanges.map(({ path }) => ({ paths: [path] })),
@@ -34,15 +43,9 @@ createDependRunCommandOptions({
 });
 
 createDependRunCommandOptions({
-  event: sample($unstagedStatus, stageAllChanges).map((status) =>
-    status.reduce<{ paths: string[] }>(
-      (memo, { path }) => {
-        memo.paths.push(path);
-        return memo;
-      },
-      { paths: [] },
-    ),
-  ),
+  event: sample($unstagedStatus, stageAllChanges).map((status) => ({
+    paths: Array.from(status.ref.keys()),
+  })),
   effect: stage,
 });
 
@@ -50,14 +53,9 @@ createDependRunCommandOptions({
   event: sample({
     source: $unstagedStatus,
     clock: discardAllChanges,
-    fn: (status) =>
-      status.reduce<{ paths: string[] }>(
-        (memo, { path }) => {
-          memo.paths.push(path);
-          return memo;
-        },
-        { paths: [] },
-      ),
+    fn: (status) => ({
+      paths: Array.from(status.ref.keys()),
+    }),
   }),
   effect: discard,
 });
@@ -87,8 +85,8 @@ $discardingChanges.on(discard.done, (store, { params: { params } }) => {
 $discardingChanges.on(
   sample($unstagedStatus, discardAllChanges),
   (store, status) => {
-    if (status.length) {
-      const ref = status.reduce((memo, statusFile) => {
+    if (status.ref.size) {
+      const ref = Array.from(status.ref.values()).reduce((memo, statusFile) => {
         memo.set(statusFile.path, statusFile);
 
         return memo;
@@ -100,3 +98,54 @@ $discardingChanges.on(
     return store;
   },
 );
+
+const statusFileByGetDiff = sample({
+  source: $unstagedStatus,
+  clock: getDiff,
+  fn: ({ ref }, path) =>
+    ref.get(path) || { path: "", stage: "", unstage: "", diff: null },
+});
+
+const addDiff = guard({
+  source: statusFileByGetDiff,
+  filter: (statusFile) => !!statusFile && statusFile.diff === null,
+}).map((statusFile) => statusFile.path);
+
+const removeDiff = guard({
+  source: statusFileByGetDiff,
+  filter: (statusFile) => !!statusFile && statusFile.diff !== null,
+}).map((statusFile) => statusFile.path);
+
+createDependRunCommandOptions({
+  event: addDiff,
+  effect: diff,
+});
+
+$unstagedStatus.on(diff.done, (store, { result }) => {
+  const diffFiles = parseResult(result);
+
+  if (diffFiles.length) {
+    diffFiles.forEach((diffFile) => {
+      const statusFile = store.ref.get(diffFile.path);
+
+      if (statusFile) {
+        statusFile.diff = diffFile;
+      }
+    });
+
+    return { ref: store.ref };
+  }
+
+  return store;
+});
+$unstagedStatus.on(removeDiff, (store, path) => {
+  const statusFile = store.ref.get(path);
+
+  if (statusFile) {
+    statusFile.diff = null;
+
+    return { ref: store.ref };
+  }
+
+  return store;
+});

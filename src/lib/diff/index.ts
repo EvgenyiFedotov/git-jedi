@@ -1,7 +1,44 @@
 import { diffWords } from "diff";
 import { v4 as uuid } from "uuid";
+import { EffectResult } from "lib/added-effector/create-pipe-promise-effect";
+import { Change } from "diff";
 
-import { DiffFile, DiffChunk, ScopeLine } from "./model";
+export type ScopeLineBy = {
+  numLine: number | null;
+  line: string | null;
+  changed: boolean;
+};
+export type ScopeLine = {
+  id: string;
+  action: null | "removed" | "added";
+  line: string;
+  removedNumLine: number | null;
+  addedNumLine: number | null;
+  diff: Change[] | null;
+};
+export type DiffChunk = {
+  id: string;
+  header: string;
+  lines: string[];
+  scopeLines: ScopeLine[];
+};
+export type DiffFile = {
+  path: string;
+  info: string;
+  chunks: DiffChunk[];
+};
+
+export function parseResult(result: EffectResult): DiffFile[] {
+  const data = result
+    .filter(({ action }) => action === "data")
+    .map(({ value }) => value)
+    .reduce<string[]>((memo, value) => [...memo, value], []);
+
+  return data
+    .map((value) => value.split("diff --git ").filter(Boolean))
+    .reduce<string[]>((memo, value) => [...memo, ...value], [])
+    .map(parseFile);
+}
 
 export function parseFile(value: string): DiffFile {
   const [info, ...chunks] = value.split("\n@@");

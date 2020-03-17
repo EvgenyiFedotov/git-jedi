@@ -1,29 +1,17 @@
 import { createDependRunCommandOptions } from "features/v2/settings/model";
 
 import { diff, getDiff, $diff } from "./model";
-import { parseFile } from "./parse";
+import { parseResult } from "lib/diff";
 
 createDependRunCommandOptions({
   event: getDiff,
   effect: diff,
 });
 
-$diff.on(diff.done, ({ ref }, { result }) => {
-  const data = result
-    .filter(({ action }) => action === "data")
-    .map(({ value }) => value)
-    .reduce<string[]>((memo, value) => [...memo, value], []);
+$diff.on(diff.done, ({ unstaged, staged }, { result }) => {
+  const files = parseResult(result);
 
-  const files = data
-    .map((value) => value.split("diff --git ").filter(Boolean))
-    .reduce<string[]>((memo, value) => [...memo, ...value], [])
-    .map(parseFile);
+  files.forEach((file) => unstaged.set(file.path, file));
 
-  files.forEach((file) => {
-    ref.set(file.path, file);
-  });
-
-  return { ref };
+  return { unstaged, staged };
 });
-
-$diff.watch(console.log);

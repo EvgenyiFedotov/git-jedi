@@ -11,7 +11,7 @@ import { toStatusFileAction, toColor } from "lib/status-file-action";
 import { ListItem } from "ui/antd";
 import styled from "styled-components";
 import { Branch } from "lib/branch";
-import { getDiff } from "features/v2/diff/model";
+import { DiffFile } from "ui/diff-file";
 
 import {
   $unstagedStatus,
@@ -21,17 +21,21 @@ import {
   $discardingChanges,
   discardAllChanges,
   stageAllChanges,
+  getDiff,
 } from "./model";
 
 export const UnstagedStatus: React.FC = () => {
-  const unstagedStatus = useStore($unstagedStatus);
+  const { ref: unstagedStatus } = useStore($unstagedStatus);
 
-  if (!unstagedStatus.length) {
+  if (!unstagedStatus.size) {
     return null;
   }
 
-  const list = unstagedStatus.map((statusFile) => (
-    <StatusFile key={statusFile.path} statusFile={statusFile} />
+  const list = Array.from(unstagedStatus.values()).map((statusFile) => (
+    <React.Fragment key={statusFile.path}>
+      <StatusFile statusFile={statusFile} />
+      {statusFile.diff ? <DiffFile diffFile={statusFile.diff} /> : null}
+    </React.Fragment>
   ));
 
   return (
@@ -93,10 +97,7 @@ const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
     },
     [statusFile],
   );
-  const diff = React.useCallback(
-    () => getDiff({ paths: [statusFile.path], refs: [] }),
-    [statusFile],
-  );
+  const diff = React.useCallback(() => getDiff(statusFile.path), [statusFile]);
 
   return (
     <ListItem onClick={diff}>

@@ -10,7 +10,7 @@ export type StatusFile = {
 };
 
 export const gitStatusS = createPipePromiseEffect((_, options) =>
-  runCommandGit("status", ["-s"], options),
+  runCommandGit("status", ["-s", "-u"], options),
 );
 
 export const getStatusS = createCommand("status", "status");
