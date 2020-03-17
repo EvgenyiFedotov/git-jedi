@@ -15,7 +15,7 @@ import {
 forward({
   from: $status.map((status) =>
     status
-      .filter(({ unstage }) => unstage === " ")
+      .filter(({ stage }) => stage !== " " && stage !== "?")
       .reduce(
         (memo, statusFile) => {
           memo.ref.set(statusFile.path, { ...statusFile, diff: null });

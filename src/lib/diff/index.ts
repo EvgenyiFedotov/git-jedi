@@ -3,24 +3,20 @@ import { v4 as uuid } from "uuid";
 import { EffectResult } from "lib/added-effector/create-pipe-promise-effect";
 import { Change } from "diff";
 
-export type ScopeLineBy = {
-  numLine: number | null;
-  line: string | null;
-  changed: boolean;
-};
-export type ScopeLine = {
+export type DiffLine = {
   id: string;
   action: null | "removed" | "added";
   line: string;
   removedNumLine: number | null;
   addedNumLine: number | null;
   diff: Change[] | null;
+  chunk: DiffChunk;
 };
 export type DiffChunk = {
   id: string;
   header: string;
-  lines: string[];
-  scopeLines: ScopeLine[];
+  lines: DiffLine[];
+  file: DiffFile;
 };
 export type DiffFile = {
   path: string;
@@ -44,21 +40,32 @@ export function parseFile(value: string): DiffFile {
   const [info, ...chunks] = value.split("\n@@");
   const [pathA] = info.split(" ");
 
-  return {
+  const diffFile: DiffFile = {
     path: pathA.slice(2),
     info: `diff --git ${info}`,
-    chunks: chunks.map(parseChunk),
+    chunks: [],
   };
+
+  diffFile.chunks = chunks.map((value) => parseChunk(value, diffFile));
+
+  return diffFile;
 }
 
-export function parseChunk(value: string): DiffChunk {
+export function parseChunk(value: string, file: DiffFile): DiffChunk {
   const [header, ...lines] = value.split("\n");
 
   lines.pop();
 
-  const scopeLines = buildScopeLines(lines, parseHeader(header));
+  const diffChunk: DiffChunk = {
+    id: uuid(),
+    header: `@@${header}`,
+    file,
+    lines: [],
+  };
 
-  return { id: uuid(), header: `@@${header}`, lines, scopeLines };
+  diffChunk.lines = buildScopeLines(lines, parseHeader(header), diffChunk);
+
+  return diffChunk;
 }
 
 type HeaderChunk = {
@@ -82,13 +89,14 @@ export function parseHeader(value: string): HeaderChunk {
 export function buildScopeLines(
   lines: string[],
   header: HeaderChunk,
-): ScopeLine[] {
+  chunk: DiffChunk,
+): DiffLine[] {
   let removedRow = header.removedRow;
   let addedRow = header.addedRow;
   let removedIndex = 0;
   let addedIndex = 0;
-  const scope: ScopeLine[] = [];
-  let stackLines: ScopeLine[] = [];
+  const scope: DiffLine[] = [];
+  let stackLines: DiffLine[] = [];
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -109,13 +117,14 @@ export function buildScopeLines(
       addedIndex += 1;
     }
 
-    const scopeLine: ScopeLine = {
+    const scopeLine: DiffLine = {
       id: uuid(),
       action,
       line: line.slice(1),
       removedNumLine,
       addedNumLine,
       diff: null,
+      chunk,
     };
 
     scope.push(scopeLine);

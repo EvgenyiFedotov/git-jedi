@@ -22,6 +22,8 @@ import {
   discardAllChanges,
   stageAllChanges,
   getDiff,
+  createPatchByChunk,
+  createPatchByLine,
 } from "./model";
 
 export const UnstagedStatus: React.FC = () => {
@@ -35,7 +37,12 @@ export const UnstagedStatus: React.FC = () => {
     <React.Fragment key={statusFile.path}>
       <StatusFile statusFile={statusFile} />
       {statusFile.diff ? (
-        <DiffFile diffFile={statusFile.diff} status="unstage" />
+        <DiffFile
+          diffFile={statusFile.diff}
+          status="unstage"
+          onClickChunk={createPatchByChunk}
+          onClickLine={createPatchByLine}
+        />
       ) : null}
     </React.Fragment>
   ));

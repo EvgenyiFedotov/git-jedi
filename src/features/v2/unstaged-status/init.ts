@@ -14,14 +14,13 @@ import {
   stageAllChanges,
   getDiff,
   diff,
+  createPatchByChunk,
+  createPatchByLine,
 } from "./model";
 
 $unstagedStatus.on($status, (_, status) => ({
   ref: status
-    .filter(
-      ({ stage, unstage }) =>
-        (stage === unstage && unstage === "?") || stage === " ",
-    )
+    .filter(({ unstage }) => unstage !== " ")
     .reduce((memo, statusFile) => {
       memo.set(statusFile.path, {
         ...statusFile,
@@ -148,4 +147,38 @@ $unstagedStatus.on(removeDiff, (store, { path }) => {
   }
 
   return store;
+});
+
+const patchByChunk = createPatchByChunk.map((diffChunk) => {
+  let result = diffChunk.file.info;
+
+  result += `\n${diffChunk.header}`;
+
+  diffChunk.lines.forEach(({ action, line }) => {
+    const strAction = action ? (action === "removed" ? "-" : "+") : " ";
+
+    result += `\n${strAction}${line}`;
+  });
+
+  return result;
+});
+
+const patchByLine = createPatchByLine.map((diffLine) => {
+  let result = diffLine.chunk.file.info;
+
+  result += `\n${diffLine.chunk.header}`;
+
+  diffLine.chunk.lines.forEach(({ id, action, line }) => {
+    if (action === null || id === diffLine.id || action === "removed") {
+      let strAction = " ";
+
+      if (id === diffLine.id) {
+        strAction = action ? (action === "removed" ? "-" : "+") : " ";
+      }
+
+      result += `\n${strAction}${line}`;
+    }
+  });
+
+  return result;
 });

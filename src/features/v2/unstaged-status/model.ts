@@ -5,7 +5,7 @@ import {
   EffectResult,
 } from "lib/added-effector/create-pipe-promise-effect";
 import { runCommandGit, commandPipeToPromise } from "lib/run-command";
-import { DiffFile } from "lib/diff";
+import { DiffFile, DiffChunk, DiffLine } from "lib/diff";
 
 export type StatusFile = {
   stage: string;
@@ -60,6 +60,8 @@ export const stageChanges = createEvent<StatusFile>();
 export const discardAllChanges = createEvent<void>();
 export const stageAllChanges = createEvent<void>();
 export const getDiff = createEvent<string>();
+export const createPatchByChunk = createEvent<DiffChunk>();
+export const createPatchByLine = createEvent<DiffLine>();
 
 export const $unstagedStatus = createStore<{ ref: Map<string, StatusFile> }>({
   ref: new Map(),

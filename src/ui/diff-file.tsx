@@ -10,11 +10,19 @@ import * as diff from "lib/diff";
 export const DiffFile: React.FC<{
   diffFile: diff.DiffFile;
   status: "stage" | "unstage";
-}> = ({ diffFile, status }) => {
+  onClickChunk?: (diffChunk: diff.DiffChunk) => void;
+  onClickLine?: (diffLine: diff.DiffLine) => void;
+}> = ({ diffFile, status, onClickChunk, onClickLine }) => {
   return (
     <DiffFileContainer>
       {diffFile.chunks.map((diffChunk) => (
-        <DiffChunk key={diffChunk.id} diffChunk={diffChunk} status={status} />
+        <DiffChunk
+          key={diffChunk.id}
+          diffChunk={diffChunk}
+          status={status}
+          onClickChunk={onClickChunk}
+          onClickLine={onClickLine}
+        />
       ))}
     </DiffFileContainer>
   );
@@ -27,11 +35,18 @@ const DiffFileContainer = styled(Column)`
 const DiffChunk: React.FC<{
   diffChunk: diff.DiffChunk;
   status: "stage" | "unstage";
-}> = ({ diffChunk, status }) => {
+  onClickChunk?: (diffChunk: diff.DiffChunk) => void;
+  onClickLine?: (diffLine: diff.DiffLine) => void;
+}> = ({ diffChunk, status, onClickChunk, onClickLine }) => {
   return (
     <DiffChunkContainer>
       <Buttons diffChunk={diffChunk} />
-      <NumLines diffChunk={diffChunk} status={status} />
+      <NumLines
+        diffChunk={diffChunk}
+        status={status}
+        onClickChunk={onClickChunk}
+        onClickLine={onClickLine}
+      />
       <Lines diffChunk={diffChunk} />
     </DiffChunkContainer>
   );
@@ -69,8 +84,15 @@ const HeaderTr = styled.tr`
 const NumLines: React.FC<{
   diffChunk: diff.DiffChunk;
   status: "stage" | "unstage";
-}> = ({ diffChunk, status }) => {
-  const { scopeLines } = diffChunk;
+  onClickChunk?: (diffChunk: diff.DiffChunk) => void;
+  onClickLine?: (diffLine: diff.DiffLine) => void;
+}> = ({
+  diffChunk,
+  status,
+  onClickChunk = () => {},
+  onClickLine = () => {},
+}) => {
+  const { lines: scopeLines } = diffChunk;
 
   return (
     <NumLinesTable>
@@ -79,13 +101,13 @@ const NumLines: React.FC<{
           <td></td>
           <td>
             <Branch if={status === "stage"}>
-              <Tooltip title="unstage chunk">
+              <Tooltip title="unstage chunk" mouseEnterDelay={1.5}>
                 <ButtonPlus>
                   <MinusOutlined />
                 </ButtonPlus>
               </Tooltip>
-              <Tooltip title="stage chunk">
-                <ButtonPlus>
+              <Tooltip title="stage chunk" mouseEnterDelay={1.5}>
+                <ButtonPlus onClick={() => onClickChunk(diffChunk)}>
                   <PlusOutlined />
                 </ButtonPlus>
               </Tooltip>
@@ -121,8 +143,8 @@ const NumLines: React.FC<{
                 <td>
                   <Branch if={!!scopeLine.removedNumLine}>
                     <>{scopeLine.removedNumLine}</>
-                    <Tooltip title="stage line">
-                      <ButtonPlus>
+                    <Tooltip title="stage line" mouseEnterDelay={1.5}>
+                      <ButtonPlus onClick={() => onClickLine(scopeLine)}>
                         <PlusOutlined />
                       </ButtonPlus>
                     </Tooltip>
@@ -131,8 +153,8 @@ const NumLines: React.FC<{
                 <td>
                   <Branch if={!!scopeLine.addedNumLine}>
                     <>{scopeLine.addedNumLine}</>
-                    <Tooltip title="stage line">
-                      <ButtonPlus>
+                    <Tooltip title="stage line" mouseEnterDelay={1.5}>
+                      <ButtonPlus onClick={() => onClickLine(scopeLine)}>
                         <PlusOutlined />
                       </ButtonPlus>
                     </Tooltip>
@@ -163,9 +185,9 @@ const NumLinesTable = styled(DiffTable)`
 `;
 
 const Lines: React.FC<{ diffChunk: diff.DiffChunk }> = ({ diffChunk }) => {
-  const { header, scopeLines } = diffChunk;
+  const { header } = diffChunk;
 
-  const lines = scopeLines.map((scopeLine) => (
+  const lines = diffChunk.lines.map((scopeLine) => (
     <LineTd key={scopeLine.id} scopeLine={scopeLine} />
   ));
 
@@ -194,7 +216,7 @@ const LinesContainer = styled.div`
   }
 `;
 
-const LineTd: React.FC<{ scopeLine: diff.ScopeLine }> = ({ scopeLine }) => {
+const LineTd: React.FC<{ scopeLine: diff.DiffLine }> = ({ scopeLine }) => {
   const content = React.useMemo(() => {
     if (scopeLine.diff) {
       if (scopeLine.removedNumLine !== null) {
@@ -234,15 +256,15 @@ const LineTd: React.FC<{ scopeLine: diff.ScopeLine }> = ({ scopeLine }) => {
   );
 };
 
-const LineTdContainer = styled.td<{ scopeLine: diff.ScopeLine }>`
+const LineTdContainer = styled.td<{ scopeLine: diff.DiffLine }>`
   background-color: ${({ scopeLine }) => getColorLine(scopeLine)[0]};
 `;
 
-const LineChunk = styled.span<{ scopeLine: diff.ScopeLine }>`
+const LineChunk = styled.span<{ scopeLine: diff.DiffLine }>`
   background-color: ${({ scopeLine }) => getColorLine(scopeLine)[1]};
 `;
 
-function getColorLine({ removedNumLine, addedNumLine }: diff.ScopeLine) {
+function getColorLine({ removedNumLine, addedNumLine }: diff.DiffLine) {
   if (removedNumLine !== null && addedNumLine !== null) {
     return [];
   } else if (removedNumLine !== null) {
