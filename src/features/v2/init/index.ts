@@ -12,5 +12,6 @@ import "features/v2/status/init";
 import "features/v2/drawer-status/init";
 import "features/v2/unstaged-status/init";
 import "features/v2/staged-status/init";
+import "features/v2/diff/init";
 
 export { Init } from "./component";

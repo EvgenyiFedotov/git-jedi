@@ -11,6 +11,7 @@ import { toStatusFileAction, toColor } from "lib/status-file-action";
 import { ListItem } from "ui/antd";
 import styled from "styled-components";
 import { Branch } from "lib/branch";
+import { getDiff } from "features/v2/diff/model";
 
 import {
   $unstagedStatus,
@@ -78,13 +79,27 @@ const HeaderContainer = styled(Row)`
 `;
 
 const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
-  const discard = React.useCallback(() => discardChanges(statusFile), [
-    statusFile,
-  ]);
-  const stage = React.useCallback(() => stageChanges(statusFile), [statusFile]);
+  const discard = React.useCallback(
+    (event) => {
+      event.stopPropagation();
+      discardChanges(statusFile);
+    },
+    [statusFile],
+  );
+  const stage = React.useCallback(
+    (event) => {
+      event.stopPropagation();
+      stageChanges(statusFile);
+    },
+    [statusFile],
+  );
+  const diff = React.useCallback(
+    () => getDiff({ paths: [statusFile.path], refs: [] }),
+    [statusFile],
+  );
 
   return (
-    <ListItem>
+    <ListItem onClick={diff}>
       <Row>
         <Row>
           <StatusFileState statusFile={statusFile} />

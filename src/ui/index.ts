@@ -43,7 +43,7 @@ export const StatusFileRow = styled(Row)`
 `;
 
 export const StatusFileAction = styled.div<{ color?: string }>`
-  font-family: "Andale Mono", monospace;
+  font-family: monospace;
   color: ${({ color }) => color};
 `;
 
