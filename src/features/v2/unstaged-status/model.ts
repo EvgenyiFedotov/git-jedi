@@ -6,6 +6,26 @@ import {
 } from "lib/added-effector/create-pipe-promise-effect";
 import { runCommandGit, commandPipeToPromise } from "lib/run-command";
 import { DiffFile, DiffChunk, DiffLine } from "lib/diff";
+import {
+  PATH_CACHE,
+  PATH_GIT_EDITOR_MESSAGE,
+  PATH_GIT_EDITOR,
+} from "app/const";
+import { createFileReadWriteJson } from "lib/v2/file-read-write-json";
+import { createFileWatcher } from "lib/v2/file-watcher";
+import { createFileConnector } from "lib/v2/file-connector";
+
+const cacheFile = createFileReadWriteJson<{
+  coreEditor: string;
+}>({ path: PATH_CACHE });
+
+const watcher = createFileWatcher({ path: PATH_GIT_EDITOR_MESSAGE });
+
+const connector = createFileConnector({ watcher, id: "ustaged-connector" });
+
+connector.watch(({ message }) => {
+  console.log(message);
+});
 
 export type StatusFile = {
   stage: string;
@@ -54,6 +74,30 @@ export const diff = createEffect<EffectParams<StatusFile>, EffectResult>({
     );
   },
 });
+
+export const stageByPatch = createPipePromiseEffect<{ patch: string }>(
+  async ({ patch }, options) => {
+    let cache = await cacheFile.read();
+
+    const { value: coreEditor } = (
+      await commandPipeToPromise(
+        runCommandGit("config", ["core.editor"], options),
+      )
+    )[0];
+
+    watcher.start();
+    cache.coreEditor = coreEditor;
+    await cacheFile.write(cache);
+
+    await commandPipeToPromise(
+      runCommandGit("config", ["core.editor", PATH_GIT_EDITOR || ""], options),
+    );
+
+    await commandPipeToPromise(runCommandGit("add", ["-e"], options));
+
+    return runCommandGit("status");
+  },
+);
 
 export const discardChanges = createEvent<StatusFile>();
 export const stageChanges = createEvent<StatusFile>();

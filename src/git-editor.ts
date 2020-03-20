@@ -1,16 +1,21 @@
-import { createFileWatcher } from "lib/file-watcher";
-import { createFileConnector } from "lib/file-connector";
 import path from "path";
+import { createFileWatcher } from "lib/v2/file-watcher";
+import { createFileConnector } from "lib/v2/file-connector";
 
 const args = process.argv;
-const watcher = createFileWatcher(`${path.dirname(args[0])}/REBASE_STATE`);
-const connector = createFileConnector({ fileWatcher: watcher, id: "editor" });
+const PATH_EDITOR_MESSAGE = `${path.dirname(args[0])}/GIT_EDITOR_MESSAGE`;
+
+let watcher = createFileWatcher({ path: PATH_EDITOR_MESSAGE });
+let connector = createFileConnector({ watcher, id: "editor" });
 
 async function main() {
+  watcher.start();
+
   await new Promise((resolve) => {
-    connector.send([...args, Math.random()]);
-    connector.onMessage(resolve);
+    connector.send({ paths: args, random: Math.random() });
+    connector.watch(resolve);
   });
+
   watcher.stop();
 }
 

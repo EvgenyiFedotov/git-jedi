@@ -18,15 +18,13 @@ export type FileWatcher = {
   stop: () => void;
 };
 
-export const createFileWatcher = async (
-  options: Options,
-): Promise<FileWatcher> => {
+export const createFileWatcher = (options: Options): FileWatcher => {
   const { path } = options;
   let { watch = false } = options;
 
-  let exist = await fsPromise.existFile(path);
-  let info = exist ? await fsPromise.lstat(path) : null;
-  let hash = exist ? (await readFileHash(path)).hash : null;
+  let exist = fs.existsSync(path);
+  let info = exist ? fs.lstatSync(path) : null;
+  let hash = exist ? readFileHashSync(path).hash : null;
   let pipe = createPipe<PipeValue>();
 
   const tick = async () => {

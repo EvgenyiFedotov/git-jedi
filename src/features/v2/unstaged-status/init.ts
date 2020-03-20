@@ -1,4 +1,4 @@
-import { guard, sample } from "effector";
+import { guard, sample, forward } from "effector";
 import { $status } from "features/v2/status";
 import { createDependRunCommandOptions } from "features/v2/settings";
 import { parseResult } from "lib/diff";
@@ -17,6 +17,7 @@ import {
   createPatchByChunk,
   createPatchByLine,
 } from "./model";
+import * as model from "./model";
 
 $unstagedStatus.on($status, (_, status) => ({
   ref: status
@@ -150,17 +151,22 @@ $unstagedStatus.on(removeDiff, (store, { path }) => {
 });
 
 const patchByChunk = createPatchByChunk.map((diffChunk) => {
-  let result = diffChunk.file.info;
+  let patch = diffChunk.file.info;
 
-  result += `\n${diffChunk.header}`;
+  patch += `\n${diffChunk.header}`;
 
   diffChunk.lines.forEach(({ action, line }) => {
     const strAction = action ? (action === "removed" ? "-" : "+") : " ";
 
-    result += `\n${strAction}${line}`;
+    patch += `\n${strAction}${line}`;
   });
 
-  return result;
+  return { patch };
+});
+
+createDependRunCommandOptions({
+  event: patchByChunk,
+  effect: model.stageByPatch,
 });
 
 const patchByLine = createPatchByLine.map((diffLine) => {
