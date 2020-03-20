@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { sha1 } from "object-hash";
 import { Pipe, createPipe } from "lib/pipe";
+import * as fsPromise from "lib/v2/fs-promise";
 
 export type Options = {
   path: string;
@@ -11,29 +12,34 @@ export type PipeValue = {
   file: Buffer;
 };
 export type FileWatcher = {
+  path: () => string;
   pipe: () => Pipe<PipeValue>;
   start: () => void;
   stop: () => void;
 };
 
-export const createFileWatcher = (options: Options): FileWatcher => {
+export const createFileWatcher = async (
+  options: Options,
+): Promise<FileWatcher> => {
   const { path } = options;
   let { watch = false } = options;
 
-  const exist = fs.existsSync(path);
-  let info = exist ? fs.lstatSync(path) : null;
-  let hash = exist ? readFileHashSync(path).hash : null;
+  let exist = await fsPromise.existFile(path);
+  let info = exist ? await fsPromise.lstat(path) : null;
+  let hash = exist ? (await readFileHash(path)).hash : null;
   let pipe = createPipe<PipeValue>();
 
-  const tick = () => {
-    if (fs.existsSync(path)) {
+  const tick = async () => {
+    exist = await fsPromise.existFile(path);
+
+    if (exist) {
       if (hash && info) {
-        const nextInfo = fs.lstatSync(path);
+        const nextInfo = await fsPromise.lstat(path);
 
         if (info.mtimeMs !== nextInfo.mtimeMs) {
           info = nextInfo;
 
-          const { hash: nextHash, file } = readFileHashSync(path);
+          const { hash: nextHash, file } = await readFileHash(path);
 
           if (hash !== nextHash) {
             hash = nextHash;
@@ -41,7 +47,7 @@ export const createFileWatcher = (options: Options): FileWatcher => {
           }
         }
       } else {
-        const { hash: nextHash, file } = readFileHashSync(path);
+        const { hash: nextHash, file } = await readFileHash(path);
 
         info = fs.lstatSync(path);
         hash = nextHash;
@@ -53,11 +59,13 @@ export const createFileWatcher = (options: Options): FileWatcher => {
     }
 
     if (watch) {
-      delay().then(() => process.nextTick(tick));
+      await delay();
+      process.nextTick(tick);
     }
   };
 
   const watcher: FileWatcher = {
+    path: () => path,
     pipe: () => pipe,
     start: () => {
       watch = true;
@@ -75,7 +83,13 @@ export const createFileWatcher = (options: Options): FileWatcher => {
   return watcher;
 };
 
-function readFileHashSync(path: string) {
+export async function readFileHash(path: string) {
+  const file = await fsPromise.readFile(path);
+
+  return { file, hash: sha1(file) };
+}
+
+export function readFileHashSync(path: string) {
   const file = fs.readFileSync(path);
 
   return { file, hash: sha1(file) };

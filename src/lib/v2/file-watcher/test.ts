@@ -1,11 +1,11 @@
 import { createFileWatcher, PipeValue } from "./index";
-import { readFileSync, writeFileSync, unlinkSync } from "fs";
+import { writeFileSync, unlinkSync } from "fs";
 import { v4 as uuid } from "uuid";
 
 const path = `${__dirname}/TEST`;
 
 test("file created", async () => {
-  const watcher = createFileWatcher({ path, watch: true });
+  const watcher = await createFileWatcher({ path, watch: true });
 
   const change = new Promise<PipeValue>((resolve) =>
     watcher.pipe().listen(resolve),
@@ -21,7 +21,7 @@ test("file created", async () => {
 });
 
 test("file changed", async () => {
-  const watcher = createFileWatcher({ path, watch: true });
+  const watcher = await createFileWatcher({ path, watch: true });
 
   const change = new Promise<PipeValue>((resolve) =>
     watcher.pipe().listen(resolve),
@@ -37,7 +37,7 @@ test("file changed", async () => {
 });
 
 test("file deleted", async () => {
-  const watcher = createFileWatcher({ path, watch: true });
+  const watcher = await createFileWatcher({ path, watch: true });
 
   const change = new Promise<PipeValue>((resolve) =>
     watcher.pipe().listen(resolve),
