@@ -15,24 +15,21 @@ import { createFileReadWriteJson } from "lib/v2/file-read-write-json";
 import { createFileWatcher } from "lib/v2/file-watcher";
 import { createFileConnector } from "lib/v2/file-connector";
 
-const cacheFile = createFileReadWriteJson<{
-  coreEditor: string;
-}>({ path: PATH_CACHE });
-
-const watcher = createFileWatcher({ path: PATH_GIT_EDITOR_MESSAGE });
-
-const connector = createFileConnector({ watcher, id: "ustaged-connector" });
-
-connector.watch(({ message }) => {
-  console.log(message);
-});
-
 export type StatusFile = {
   stage: string;
   unstage: string;
   path: string;
   diff: DiffFile | null;
 };
+
+export const cacheFile = createFileReadWriteJson<{
+  coreEditor: string;
+}>({ path: PATH_CACHE });
+export const watcher = createFileWatcher({ path: PATH_GIT_EDITOR_MESSAGE });
+export const connector = createFileConnector({
+  watcher,
+  id: "ustaged-connector",
+});
 
 export const discard = createPipePromiseEffect<{ paths: string[] }>(
   async ({ paths }, options) => {
@@ -74,38 +71,39 @@ export const diff = createEffect<EffectParams<StatusFile>, EffectResult>({
     );
   },
 });
+export const stageByPatch = createPipePromiseEffect(async (_, options) => {
+  let cache = await cacheFile.read();
 
-export const stageByPatch = createPipePromiseEffect<{ patch: string }>(
-  async ({ patch }, options) => {
-    let cache = await cacheFile.read();
+  const { value: coreEditor } = (
+    await commandPipeToPromise(
+      runCommandGit("config", ["core.editor"], options),
+    )
+  )[0];
 
-    const { value: coreEditor } = (
-      await commandPipeToPromise(
-        runCommandGit("config", ["core.editor"], options),
-      )
-    )[0];
+  watcher.start();
 
-    watcher.start();
+  if (!cache.coreEditor) {
     cache.coreEditor = coreEditor;
     await cacheFile.write(cache);
+  }
 
-    await commandPipeToPromise(
-      runCommandGit("config", ["core.editor", PATH_GIT_EDITOR || ""], options),
-    );
+  await commandPipeToPromise(
+    runCommandGit("config", ["core.editor", PATH_GIT_EDITOR || ""], options),
+  );
 
-    await commandPipeToPromise(runCommandGit("add", ["-e"], options));
-
-    return runCommandGit("status");
-  },
-);
+  return runCommandGit("add", ["-e"], options);
+});
 
 export const discardChanges = createEvent<StatusFile>();
 export const stageChanges = createEvent<StatusFile>();
 export const discardAllChanges = createEvent<void>();
 export const stageAllChanges = createEvent<void>();
 export const getDiff = createEvent<string>();
+export const showDiff = createEvent<string>();
+export const hideDiff = createEvent<string>();
 export const createPatchByChunk = createEvent<DiffChunk>();
 export const createPatchByLine = createEvent<DiffLine>();
+export const editAddEditPatch = createEvent<{ path: string }>();
 
 export const $unstagedStatus = createStore<{ ref: Map<string, StatusFile> }>({
   ref: new Map(),
@@ -113,3 +111,5 @@ export const $unstagedStatus = createStore<{ ref: Map<string, StatusFile> }>({
 export const $discardingChanges = createStore<{ ref: Map<string, StatusFile> }>(
   { ref: new Map() },
 );
+export const $patchByChunk = createStore<string>("");
+export const $patchByLine = createStore<string>("");

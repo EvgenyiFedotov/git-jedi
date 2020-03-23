@@ -57,11 +57,12 @@ export const $runCommandOptions = $cwd.map(
     commandOptions: {
       onBefore: ({ command, args = [] }) =>
         console.log([command, ...args].join(" ")),
-      onClose: (code, { log }) => {
+      onClose: (code, { log, ...other }) => {
         if (code) {
           const strlog = log.map(({ data }) => data).join("\n");
 
-          console.info(strlog);
+          console.error(strlog);
+          console.log(other);
         }
       },
     },

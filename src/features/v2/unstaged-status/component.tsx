@@ -21,10 +21,10 @@ import {
   $discardingChanges,
   discardAllChanges,
   stageAllChanges,
-  getDiff,
   createPatchByChunk,
   createPatchByLine,
 } from "./model";
+import * as model from "./model";
 
 export const UnstagedStatus: React.FC = () => {
   const { ref: unstagedStatus } = useStore($unstagedStatus);
@@ -106,7 +106,13 @@ const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
     },
     [statusFile],
   );
-  const diff = React.useCallback(() => getDiff(statusFile.path), [statusFile]);
+  const diff = React.useCallback(() => {
+    if (statusFile.diff) {
+      model.hideDiff(statusFile.path);
+    } else {
+      model.showDiff(statusFile.path);
+    }
+  }, [statusFile]);
 
   return (
     <ListItem onClick={diff}>
