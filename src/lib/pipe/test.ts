@@ -1,3 +1,4 @@
+import "lib/crypto-polyfill";
 import { createPipe, Pipe } from ".";
 
 test("listen", () => {
