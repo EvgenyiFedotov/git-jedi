@@ -9,16 +9,10 @@ import { List } from "antd";
 import styled from "styled-components";
 import { DiffFile } from "ui/diff-file";
 
-import {
-  $stagedStatus,
-  StatusFile,
-  unstageChanges,
-  unstageAllChanges,
-  getDiff,
-} from "./model";
+import * as model from "./model";
 
 export const StagedStatus: React.FC = () => {
-  const { ref: stagedStatus } = useStore($stagedStatus);
+  const { ref: stagedStatus } = useStore(model.$stagedStatus);
 
   if (!stagedStatus.size) {
     return null;
@@ -28,7 +22,12 @@ export const StagedStatus: React.FC = () => {
     <React.Fragment key={statusFile.path}>
       <StatusFile statusFile={statusFile} />
       {statusFile.diff ? (
-        <DiffFile diffFile={statusFile.diff} status="stage" />
+        <DiffFile
+          diffFile={statusFile.diff}
+          status="stage"
+          onClickChunk={model.createPatchByChunk}
+          onClickLine={model.createPatchByLine}
+        />
       ) : null}
     </React.Fragment>
   ));
@@ -42,7 +41,7 @@ export const StagedStatus: React.FC = () => {
 };
 
 const Header: React.FC = () => {
-  const unstage = React.useCallback(() => unstageAllChanges(), []);
+  const unstage = React.useCallback(() => model.unstageAllChanges(), []);
 
   return (
     <HeaderContainer>
@@ -61,11 +60,19 @@ const HeaderContainer = styled(Row)`
   padding: 0 8px;
 `;
 
-const StatusFile: React.FC<{ statusFile: StatusFile }> = ({ statusFile }) => {
-  const unstage = React.useCallback(() => unstageChanges(statusFile), [
+const StatusFile: React.FC<{ statusFile: model.StatusFile }> = ({
+  statusFile,
+}) => {
+  const unstage = React.useCallback(() => model.unstageChanges(statusFile), [
     statusFile,
   ]);
-  const diff = React.useCallback(() => getDiff(statusFile.path), [statusFile]);
+  const diff = React.useCallback(() => {
+    if (statusFile.diff) {
+      model.hideDiff(statusFile.path);
+    } else {
+      model.showDiff(statusFile.path);
+    }
+  }, [statusFile]);
 
   return (
     <ListItem onClick={diff}>

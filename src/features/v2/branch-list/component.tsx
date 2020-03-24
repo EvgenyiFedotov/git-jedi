@@ -1,5 +1,5 @@
 import * as React from "react";
-import { $branches, Branch } from "features/v2/branches";
+import { $branches, Branch } from "features/v2/branches/model";
 import { Row } from "ui";
 import { List, Tag } from "antd";
 import { useStore } from "effector-react";

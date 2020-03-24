@@ -4,7 +4,7 @@ import { LinkBlock } from "ui";
 import { useStore } from "effector-react";
 import { Spin } from "antd";
 import { BranchesOutlined } from "@ant-design/icons";
-import { openBranchList } from "features/v2/drawer-branch-list"; // TODO ???
+import { openBranchList } from "features/v2/drawer-branch-list/model";
 
 import { updateCurrentBranch, $currentBranch } from "./model";
 

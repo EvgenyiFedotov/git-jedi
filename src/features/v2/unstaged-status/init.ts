@@ -1,35 +1,22 @@
 import { sample, forward, merge, guard } from "effector";
 import { $status, getStatusS } from "features/v2/status/model";
 import { createDependRunCommandOptions } from "features/v2/settings";
-import { parseResult } from "lib/diff";
-import * as fs from "fs";
+import { parseResult, createPatchByChunk, createPatchByLine } from "lib/diff";
 
-import {
-  $unstagedStatus,
-  stageChanges,
-  stage,
-  discard,
-  discardChanges,
-  $discardingChanges,
-  discardAllChanges,
-  stageAllChanges,
-  diff,
-  createPatchByLine,
-} from "./model";
 import * as model from "./model";
 
 const updateDiffs = sample({
-  source: $unstagedStatus,
+  source: model.$unstagedStatus,
   clock: $status,
   fn: (unstagedStatus) =>
-    Array.from(unstagedStatus.ref.values())
-      .filter(({ diff }) => !!diff)
-      .map(({ path }) => path),
+    Array.from(unstagedStatus.ref.values()).filter(({ diff }) => !!diff),
 });
 
-updateDiffs.watch((paths) => paths.forEach((path) => model.getDiff(path)));
+updateDiffs.watch((unstagedStatus) => {
+  unstagedStatus.forEach((statusFile) => model.getDiff(statusFile));
+});
 
-$unstagedStatus.on($status, (store, status) => ({
+model.$unstagedStatus.on($status, (store, status) => ({
   ref: status
     .filter(({ unstage }) => unstage !== " ")
     .reduce((memo, statusFile) => {
@@ -45,34 +32,34 @@ $unstagedStatus.on($status, (store, status) => ({
 }));
 
 createDependRunCommandOptions({
-  event: stageChanges.map(({ path }) => ({ paths: [path] })),
-  effect: stage,
+  event: model.stageChanges.map(({ path }) => ({ paths: [path] })),
+  effect: model.stage,
 });
 
 createDependRunCommandOptions({
-  event: discardChanges.map(({ path }) => ({ paths: [path] })),
-  effect: discard,
+  event: model.discardChanges.map(({ path }) => ({ paths: [path] })),
+  effect: model.discard,
 });
 
 createDependRunCommandOptions({
-  event: sample($unstagedStatus, stageAllChanges).map((status) => ({
+  event: sample(model.$unstagedStatus, model.stageAllChanges).map((status) => ({
     paths: Array.from(status.ref.keys()),
   })),
-  effect: stage,
+  effect: model.stage,
 });
 
 createDependRunCommandOptions({
   event: sample({
-    source: $unstagedStatus,
-    clock: discardAllChanges,
+    source: model.$unstagedStatus,
+    clock: model.discardAllChanges,
     fn: (status) => ({
       paths: Array.from(status.ref.keys()),
     }),
   }),
-  effect: discard,
+  effect: model.discard,
 });
 
-$discardingChanges.on(discardChanges, (store, statusFile) => {
+model.$discardingChanges.on(model.discardChanges, (store, statusFile) => {
   const { path } = statusFile;
 
   if (store.ref.has(path) === false) {
@@ -83,19 +70,22 @@ $discardingChanges.on(discardChanges, (store, statusFile) => {
 
   return store;
 });
-$discardingChanges.on(discard.done, (store, { params: { params } }) => {
-  const [path] = params.paths;
+model.$discardingChanges.on(
+  model.discard.done,
+  (store, { params: { params } }) => {
+    const [path] = params.paths;
 
-  if (store.ref.has(path)) {
-    store.ref.delete(path);
+    if (store.ref.has(path)) {
+      store.ref.delete(path);
 
-    return { ref: store.ref };
-  }
+      return { ref: store.ref };
+    }
 
-  return store;
-});
-$discardingChanges.on(
-  sample($unstagedStatus, discardAllChanges),
+    return store;
+  },
+);
+model.$discardingChanges.on(
+  sample(model.$unstagedStatus, model.discardAllChanges),
   (store, status) => {
     if (status.ref.size) {
       const ref = Array.from(status.ref.values()).reduce((memo, statusFile) => {
@@ -113,7 +103,7 @@ $discardingChanges.on(
 
 const statusFileByGetDiff = sample({
   source: model.$unstagedStatus,
-  clock: merge([model.showDiff, model.getDiff]).map<string>((value) => value),
+  clock: model.showDiff,
   fn: ({ ref }, path) =>
     ref.get(path) || {
       path: "",
@@ -123,12 +113,22 @@ const statusFileByGetDiff = sample({
     },
 });
 
-createDependRunCommandOptions({
-  event: statusFileByGetDiff,
-  effect: diff,
+const addDiff = guard({
+  source: statusFileByGetDiff,
+  filter: (statusFile) => !!statusFile && statusFile.diff === null,
 });
 
-$unstagedStatus.on(diff.done, (store, { result }) => {
+forward({
+  from: addDiff,
+  to: model.getDiff,
+});
+
+createDependRunCommandOptions({
+  event: model.getDiff,
+  effect: model.diff,
+});
+
+model.$unstagedStatus.on(model.diff.done, (store, { result }) => {
   const diffFiles = parseResult(result);
 
   if (diffFiles.length) {
@@ -145,7 +145,7 @@ $unstagedStatus.on(diff.done, (store, { result }) => {
 
   return store;
 });
-$unstagedStatus.on(model.hideDiff, (store, path) => {
+model.$unstagedStatus.on(model.hideDiff, (store, path) => {
   const statusFile = store.ref.get(path);
 
   if (statusFile) {
@@ -157,97 +157,26 @@ $unstagedStatus.on(model.hideDiff, (store, path) => {
   return store;
 });
 
-model.connector.watch(({ message }) => {
-  const [, , path] = message.paths;
-
-  model.editAddEditPatch({ path });
-});
-
-forward({
-  from: model.createPatchByChunk.map((diffChunk) => {
-    let patch = diffChunk.file.info;
-
-    patch += `\n${diffChunk.header}`;
-
-    diffChunk.lines.forEach(({ action, line }) => {
-      const strAction = action ? (action === "removed" ? "-" : "+") : " ";
-
-      patch += `\n${strAction}${line}`;
-    });
-
-    patch += "\n";
-
-    return patch;
-  }),
-  to: model.$patchByChunk,
+createDependRunCommandOptions({
+  event: model.createPatchByChunk.map((diffChunk) => ({
+    patch: createPatchByChunk(diffChunk),
+  })),
+  effect: model.stageByPatchChunk,
 });
 
 createDependRunCommandOptions({
-  event: guard({
-    source: model.$patchByChunk,
-    filter: (patch) => !!patch,
-  }).map(() => {}),
-  effect: model.stageByPatch,
-});
-
-sample({
-  source: model.$patchByChunk,
-  clock: model.editAddEditPatch,
-  fn: (patch, { path }) => ({ patch, path }),
-}).watch(({ patch, path }) => {
-  fs.writeFile(path, patch, () => {
-    model.connector.send({ success: true });
-  });
+  event: model.createPatchByLine.map((diffLine) => ({
+    patch: createPatchByLine(diffLine),
+  })),
+  effect: model.stageByPatchLine,
 });
 
 forward({
-  from: createPatchByLine.map((diffLine) => {
-    let patch = diffLine.chunk.file.info;
-
-    patch += `\n${diffLine.chunk.header}`;
-
-    diffLine.chunk.lines.forEach(({ id, action, line }) => {
-      if (action === null || id === diffLine.id || action === "removed") {
-        let strAction = " ";
-
-        if (id === diffLine.id) {
-          strAction = action ? (action === "removed" ? "-" : "+") : " ";
-        }
-
-        patch += `\n${strAction}${line}`;
-      }
-    });
-
-    patch += "\n";
-
-    return patch;
-  }),
-  to: model.$patchByLine,
-});
-
-createDependRunCommandOptions({
-  event: guard({
-    source: model.$patchByLine,
-    filter: (patch) => !!patch,
-  }).map(() => {}),
-  effect: model.stageByPatch,
-});
-
-sample({
-  source: model.$patchByLine,
-  clock: model.editAddEditPatch,
-  fn: (patch, { path }) => ({ patch, path }),
-}).watch(({ patch, path }) => {
-  fs.writeFile(path, patch, () => {
-    model.connector.send({ success: true });
-  });
-});
-
-forward({
-  from: model.stageByPatch.done,
+  from: merge([
+    model.stage.done,
+    model.discard.done,
+    model.stageByPatchChunk.done,
+    model.stageByPatchLine.done,
+  ]),
   to: getStatusS,
 });
-
-model.$patchByChunk.on(model.stageByPatch.done, () => "");
-
-model.$patchByLine.on(model.stageByPatch.done, () => "");

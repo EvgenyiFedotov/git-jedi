@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BranchList } from "features/v2/branch-list";
+import { BranchList } from "features/v2/branch-list/component";
 import { Drawer } from "antd";
 import { useStore } from "effector-react";
 

@@ -6,14 +6,8 @@ import {
 } from "lib/added-effector/create-pipe-promise-effect";
 import { runCommandGit, commandPipeToPromise } from "lib/run-command";
 import { DiffFile, DiffChunk, DiffLine } from "lib/diff";
-import {
-  PATH_CACHE,
-  PATH_GIT_EDITOR_MESSAGE,
-  PATH_GIT_EDITOR,
-} from "app/const";
-import { createFileReadWriteJson } from "lib/v2/file-read-write-json";
-import { createFileWatcher } from "lib/v2/file-watcher";
-import { createFileConnector } from "lib/v2/file-connector";
+import * as consts from "app/const";
+import { createStageByPatch } from "lib/added-effector/stage-by-patch";
 
 export type StatusFile = {
   stage: string;
@@ -21,15 +15,6 @@ export type StatusFile = {
   path: string;
   diff: DiffFile | null;
 };
-
-export const cacheFile = createFileReadWriteJson<{
-  coreEditor: string;
-}>({ path: PATH_CACHE });
-export const watcher = createFileWatcher({ path: PATH_GIT_EDITOR_MESSAGE });
-export const connector = createFileConnector({
-  watcher,
-  id: "ustaged-connector",
-});
 
 export const discard = createPipePromiseEffect<{ paths: string[] }>(
   async ({ paths }, options) => {
@@ -71,34 +56,20 @@ export const diff = createEffect<EffectParams<StatusFile>, EffectResult>({
     );
   },
 });
-export const stageByPatch = createPipePromiseEffect(async (_, options) => {
-  let cache = await cacheFile.read();
-
-  const { value: coreEditor } = (
-    await commandPipeToPromise(
-      runCommandGit("config", ["core.editor"], options),
-    )
-  )[0];
-
-  watcher.start();
-
-  if (!cache.coreEditor) {
-    cache.coreEditor = coreEditor;
-    await cacheFile.write(cache);
-  }
-
-  await commandPipeToPromise(
-    runCommandGit("config", ["core.editor", PATH_GIT_EDITOR || ""], options),
-  );
-
-  return runCommandGit("add", ["-e"], options);
+export const stageByPatchChunk = createStageByPatch({
+  pathGitEditor: consts.PATH_GIT_EDITOR,
+  pathGitEditorMessage: consts.PATH_GIT_EDITOR_MESSAGE,
+});
+export const stageByPatchLine = createStageByPatch({
+  pathGitEditor: consts.PATH_GIT_EDITOR,
+  pathGitEditorMessage: consts.PATH_GIT_EDITOR_MESSAGE,
 });
 
 export const discardChanges = createEvent<StatusFile>();
 export const stageChanges = createEvent<StatusFile>();
 export const discardAllChanges = createEvent<void>();
 export const stageAllChanges = createEvent<void>();
-export const getDiff = createEvent<string>();
+export const getDiff = createEvent<StatusFile>();
 export const showDiff = createEvent<string>();
 export const hideDiff = createEvent<string>();
 export const createPatchByChunk = createEvent<DiffChunk>();
@@ -111,5 +82,3 @@ export const $unstagedStatus = createStore<{ ref: Map<string, StatusFile> }>({
 export const $discardingChanges = createStore<{ ref: Map<string, StatusFile> }>(
   { ref: new Map() },
 );
-export const $patchByChunk = createStore<string>("");
-export const $patchByLine = createStore<string>("");

@@ -102,7 +102,7 @@ const NumLines: React.FC<{
           <td>
             <Branch if={status === "stage"}>
               <Tooltip title="unstage chunk" mouseEnterDelay={1.5}>
-                <ButtonPlus>
+                <ButtonPlus onClick={() => onClickChunk(diffChunk)}>
                   <MinusOutlined />
                 </ButtonPlus>
               </Tooltip>
@@ -122,7 +122,7 @@ const NumLines: React.FC<{
                   <Branch if={!!scopeLine.removedNumLine}>
                     <>{scopeLine.removedNumLine}</>
                     <Tooltip title="unstage line">
-                      <ButtonPlus>
+                      <ButtonPlus onClick={() => onClickLine(scopeLine)}>
                         <MinusOutlined />
                       </ButtonPlus>
                     </Tooltip>
@@ -132,7 +132,7 @@ const NumLines: React.FC<{
                   <Branch if={!!scopeLine.addedNumLine}>
                     <>{scopeLine.addedNumLine}</>
                     <Tooltip title="unstage line">
-                      <ButtonPlus>
+                      <ButtonPlus onClick={() => onClickLine(scopeLine)}>
                         <MinusOutlined />
                       </ButtonPlus>
                     </Tooltip>

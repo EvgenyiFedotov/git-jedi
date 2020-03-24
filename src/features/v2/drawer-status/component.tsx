@@ -2,8 +2,8 @@ import * as React from "react";
 import { Drawer } from "antd";
 import { Column } from "ui";
 import { useStore } from "effector-react";
-import { UnstagedStatus } from "features/v2/unstaged-status";
-import { StagedStatus } from "features/v2/staged-status";
+import { UnstagedStatus } from "features/v2/unstaged-status/component";
+import { StagedStatus } from "features/v2/staged-status/component";
 import styled from "styled-components";
 
 import { $showStatus, closeStatus } from "./model";

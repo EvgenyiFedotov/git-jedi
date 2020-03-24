@@ -1,48 +1,59 @@
-import { forward, sample, guard } from "effector";
-import { $status } from "features/v2/status";
+import { forward, sample, guard, merge } from "effector";
+import { $status, getStatusS } from "features/v2/status";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
-import { parseResult } from "lib/diff";
+import { parseResult, createPatchByChunk, createPatchByLine } from "lib/diff";
 
-import {
-  $stagedStatus,
-  unstage,
-  unstageChanges,
-  unstageAllChanges,
-  getDiff,
-  diff,
-} from "./model";
+import * as model from "./model";
 
-forward({
-  from: $status.map((status) =>
-    status
+sample({
+  source: model.$stagedStatus,
+  clock: $status,
+  fn: (stagedStatus) =>
+    Array.from(stagedStatus.ref.values())
+      .filter(({ diff }) => !!diff)
+      .map(({ path }) => path),
+}).watch((paths) => {
+  paths.forEach((path) => model.getDiff(path));
+});
+
+sample({
+  source: model.$stagedStatus,
+  clock: $status,
+  fn: (stagedStatus, status) => {
+    return status
       .filter(({ stage }) => stage !== " " && stage !== "?")
       .reduce(
         (memo, statusFile) => {
-          memo.ref.set(statusFile.path, { ...statusFile, diff: null });
+          const stagedStatusFile = stagedStatus.ref.get(statusFile.path);
+
+          memo.ref.set(statusFile.path, {
+            ...statusFile,
+            diff: stagedStatusFile ? stagedStatusFile.diff : null,
+          });
 
           return memo;
         },
         { ref: new Map() },
-      ),
-  ),
-  to: $stagedStatus,
+      );
+  },
+  target: model.$stagedStatus,
 });
 
 createDependRunCommandOptions({
-  event: unstageChanges.map(({ path }) => ({ paths: [path] })),
-  effect: unstage,
+  event: model.unstageChanges.map(({ path }) => ({ paths: [path] })),
+  effect: model.unstage,
 });
 
 createDependRunCommandOptions({
-  event: sample($stagedStatus, unstageAllChanges).map((status) => ({
+  event: sample(model.$stagedStatus, model.unstageAllChanges).map((status) => ({
     paths: Array.from(status.ref.keys()),
   })),
-  effect: unstage,
+  effect: model.unstage,
 });
 
 const statusFileByGetDiff = sample({
-  source: $stagedStatus,
-  clock: getDiff,
+  source: model.$stagedStatus,
+  clock: model.showDiff,
   fn: ({ ref }, path) =>
     ref.get(path) || { path: "", stage: "", unstage: "", diff: null },
 });
@@ -52,41 +63,75 @@ const addDiff = guard({
   filter: (statusFile) => !!statusFile && statusFile.diff === null,
 }).map((statusFile) => statusFile.path);
 
-const removeDiff = guard({
-  source: statusFileByGetDiff,
-  filter: (statusFile) => !!statusFile && statusFile.diff !== null,
-}).map((statusFile) => statusFile.path);
+forward({
+  from: addDiff,
+  to: model.getDiff,
+});
 
 createDependRunCommandOptions({
-  event: addDiff,
-  effect: diff,
+  event: model.getDiff,
+  effect: model.diff,
 });
 
-$stagedStatus.on(diff.done, (store, { result }) => {
-  const diffFiles = parseResult(result);
-
-  if (diffFiles.length) {
-    diffFiles.forEach((diffFile) => {
-      const statusFile = store.ref.get(diffFile.path);
-
-      if (statusFile) {
-        statusFile.diff = diffFile;
-      }
-    });
-
-    return { ref: store.ref };
-  }
-
-  return store;
+forward({
+  from: merge([
+    model.unstage.done,
+    model.stageByPatchChunk.done,
+    model.stageByPatchLine.done,
+  ]),
+  to: getStatusS,
 });
-$stagedStatus.on(removeDiff, (store, path) => {
-  const statusFile = store.ref.get(path);
 
-  if (statusFile) {
-    statusFile.diff = null;
+createDependRunCommandOptions({
+  event: model.createPatchByChunk.map((diffChunk) => ({
+    patch: createPatchByChunk(diffChunk, true),
+  })),
+  effect: model.stageByPatchChunk,
+});
 
-    return { ref: store.ref };
-  }
+createDependRunCommandOptions({
+  event: model.createPatchByLine.map((diffLine) => ({
+    patch: createPatchByLine(diffLine, true),
+  })),
+  effect: model.stageByPatchLine,
+});
 
-  return store;
+sample({
+  source: model.$stagedStatus,
+  clock: model.diff.done,
+  fn: (store, { result }) => {
+    const diffFiles = parseResult(result);
+
+    if (diffFiles.length) {
+      diffFiles.forEach((diffFile) => {
+        const statusFile = store.ref.get(diffFile.path);
+
+        if (statusFile) {
+          statusFile.diff = diffFile;
+        }
+      });
+
+      return { ref: store.ref };
+    }
+
+    return store;
+  },
+  target: model.$stagedStatus,
+});
+
+sample({
+  source: model.$stagedStatus,
+  clock: model.hideDiff,
+  fn: (store, path) => {
+    const statusFile = store.ref.get(path);
+
+    if (statusFile) {
+      statusFile.diff = null;
+
+      return { ref: store.ref };
+    }
+
+    return store;
+  },
+  target: model.$stagedStatus,
 });

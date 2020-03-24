@@ -3,9 +3,10 @@ import { v4 as uuid } from "uuid";
 import { EffectResult } from "lib/added-effector/create-pipe-promise-effect";
 import { Change } from "diff";
 
+type DiffLineAction = null | "removed" | "added";
 export type DiffLine = {
   id: string;
-  action: null | "removed" | "added";
+  action: DiffLineAction;
   line: string;
   removedNumLine: number | null;
   addedNumLine: number | null;
@@ -155,4 +156,65 @@ function toLineAction(value: string) {
     default:
       return null;
   }
+}
+
+export function createPatchByChunk(
+  diifChunk: DiffChunk,
+  reverse: boolean = false,
+): string {
+  let patch = diifChunk.file.info;
+
+  patch += `\n${diifChunk.header}`;
+
+  diifChunk.lines.forEach(({ action, line }) => {
+    const strAction = actionToString(action, reverse);
+
+    patch += `\n${strAction}${line}`;
+  });
+
+  patch += "\n";
+
+  return patch;
+}
+
+export function createPatchByLine(
+  diffLine: DiffLine,
+  reverse: boolean = false,
+): string {
+  let patch = diffLine.chunk.file.info;
+
+  patch += `\n${diffLine.chunk.header}`;
+
+  diffLine.chunk.lines.forEach(({ id, action, line }) => {
+    const isAdd = reverse ? action === "added" : action === "removed";
+
+    if (action === null || id === diffLine.id || isAdd) {
+      let strAction = " ";
+
+      if (id === diffLine.id) {
+        strAction = actionToString(action, reverse);
+      }
+
+      patch += `\n${strAction}${line}`;
+    }
+  });
+
+  patch += "\n";
+
+  return patch;
+}
+
+function actionToString(
+  action: DiffLineAction,
+  reverse: boolean = false,
+): string {
+  if (action) {
+    if (reverse) {
+      return action === "removed" ? "+" : "-";
+    } else {
+      return action === "removed" ? "-" : "+";
+    }
+  }
+
+  return " ";
 }

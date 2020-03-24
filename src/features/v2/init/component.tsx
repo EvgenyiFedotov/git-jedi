@@ -1,5 +1,5 @@
 import * as React from "react";
-import { loadBranches } from "features/v2/branches";
+import { loadBranches } from "features/v2/branches/model";
 import { $cwd } from "features/v2/settings";
 import { useStore } from "effector-react";
 import styled from "styled-components";
