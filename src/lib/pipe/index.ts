@@ -1,29 +1,29 @@
 import { v4 as uuid } from "uuid";
 
-type Callback<Value, Result> = (
+type Callback<Value, Result, Actions = string> = (
   value: Value,
-  action?: string,
-) => Result | Pipe<Result> | Promise<Result | Pipe<Result>>;
+  action?: Actions,
+) => Result | Pipe<Result, Actions> | Promise<Result | Pipe<Result, Actions>>;
 
-export interface ResolverStoreItem<Value = any> {
+export interface ResolverStoreItem<Value = any, Actions = any> {
   value: Value;
-  action?: string;
+  action?: Actions;
 }
 
-export interface Pipe<Value> {
+export interface Pipe<Value, Actions = string> {
   listen: <Result>(
-    callback: Callback<Value, Result>,
+    callback: Callback<Value, Result, Actions>,
     key?: string,
-  ) => Pipe<Value>;
-  next: <Result>(
-    callback: Callback<Value, Result>,
+  ) => Pipe<Value, Actions>;
+  next: <Result, NextActions = string>(
+    callback: Callback<Value, Result, Actions>,
     key?: string,
-  ) => Pipe<Result>;
-  resolve: (value: Value, action?: string) => Promise<Map<string, any>>;
+  ) => Pipe<Result, NextActions>;
+  resolve: (value: Value, action?: Actions) => Promise<Map<string, any>>;
   resolvedStore: () => Map<string, ResolverStoreItem[]>;
 }
 
-const isPipe = <Value>(x: any): x is Pipe<Value> => {
+const isPipe = <Value, Actions>(x: any): x is Pipe<Value, Actions> => {
   return typeof x === "object" && !!x.next && !!x.resolve;
 };
 
@@ -31,25 +31,30 @@ export interface CreatePipeOptions {
   saveResolveResult?: boolean;
 }
 
-export const createPipe = <Value>(options: CreatePipeOptions = {}) => {
+export const createPipe = <Value, Actions = string>(
+  options: CreatePipeOptions = {},
+) => {
   const { saveResolveResult = false } = options;
 
   const callbacks: Map<
     string,
-    (value: Value, action?: string) => any
+    (value: Value, action?: Actions) => any
   > = new Map();
-  const pipes: Map<string, Pipe<any>> = new Map();
+  const pipes: Map<string, Pipe<any, any>> = new Map();
   const resolvedStore: Map<string, ResolverStoreItem[]> = new Map();
 
-  const result: Pipe<Value> = {
+  const result: Pipe<Value, Actions> = {
     listen: (callback, key: string = uuid()) => {
       callbacks.set(key, callback);
 
       return result;
     },
 
-    next: <Result>(callback: Callback<Value, Result>, key: string = uuid()) => {
-      const pipe = createPipe<Result>();
+    next: <Result, NextActions = string>(
+      callback: Callback<Value, Result, Actions>,
+      key: string = uuid(),
+    ) => {
+      const pipe = createPipe<Result, NextActions>();
 
       result.listen(callback, key);
       pipes.set(key, pipe);
@@ -57,7 +62,7 @@ export const createPipe = <Value>(options: CreatePipeOptions = {}) => {
       return pipe;
     },
 
-    resolve: async (value: Value, action?: string) => {
+    resolve: async (value: Value, action?: Actions) => {
       const callbackArr = Array.from(callbacks);
       const resolveResult: Map<string, any> = new Map();
 

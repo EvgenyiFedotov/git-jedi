@@ -36,6 +36,22 @@ test("resolve with action", async () => {
   expect(resultResolve2.get("key-action")).toEqual("asd-asd");
 });
 
+test("resolve with action by type", async () => {
+  const pipe = createPipe<string, "link" | "super-link">();
+
+  pipe.listen((value, action) => `${value}-${action}`, "key-action");
+
+  const resultResolve1 = await pipe.resolve("123");
+
+  expect(resultResolve1.has("key-action")).toBe(true);
+  expect(resultResolve1.get("key-action")).toEqual("123-undefined");
+
+  const resultResolve2 = await pipe.resolve("qwe", "link");
+
+  expect(resultResolve2.has("key-action")).toBe(true);
+  expect(resultResolve2.get("key-action")).toEqual("qwe-link");
+});
+
 test("next", async () => {
   const pipeRoot = createPipe<number>();
   let pupeSub1Result: string = "";
