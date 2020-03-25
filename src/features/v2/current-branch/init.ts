@@ -32,10 +32,10 @@ createDependRunCommandOptions({
 });
 
 $currentBranch.on(gitCurrentBranchName.done, (_, { result }) =>
-  toCurrentBranch(result[0].value),
+  toCurrentBranch(result[0].value as string),
 );
 $currentBranch.on(gitCurrentBranchHash.done, (_, { result }) =>
-  toCurrentBranch(result[0].value).slice(0, 8),
+  toCurrentBranch(result[0].value as string).slice(0, 8),
 );
 $currentBranch.on(
   merge([gitCurrentBranchName.fail, gitCurrentBranchHash.fail]),

@@ -1,13 +1,17 @@
 import { createStore, createEvent } from "effector";
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandPipe } from "lib/run-command";
+import { createCommandEffect } from "lib/added-effector/command-effect";
 
-export const gitCurrentBranchName = createPipePromiseEffect((_, options) =>
-  runCommandPipe("git", ["rev-parse", "--abbrev-ref", "HEAD"], options),
-);
-export const gitCurrentBranchHash = createPipePromiseEffect((_, options) =>
-  runCommandPipe("git", ["rev-parse", "--verify", "HEAD"], options),
-);
+export const gitCurrentBranchName = createCommandEffect("git", () => [
+  "rev-parse",
+  "--abbrev-ref",
+  "HEAD",
+]);
+
+export const gitCurrentBranchHash = createCommandEffect("git", () => [
+  "rev-parse",
+  "--verify",
+  "HEAD",
+]);
 
 export const updateCurrentBranch = createEvent<void>();
 export const updateCurrentBranchByHash = createEvent<void>();

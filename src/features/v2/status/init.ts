@@ -10,7 +10,7 @@ createDependRunCommandOptions({
 $status.on(gitStatusS.done, (_, { result }) =>
   result
     .filter(({ action }) => action === "data")
-    .map(({ value }) => value.split("\n"))
+    .map(({ value }) => (value as string).split("\n"))
     .reduce((memo, lines) => [...memo, ...lines], [])
     .filter(Boolean)
     .map((line) => ({

@@ -1,7 +1,6 @@
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandGit } from "lib/run-command";
-import { createEvent, createStore } from "effector";
+import { createStore } from "effector";
 import { createCommand } from "features/v2/commands";
+import { createCommandEffect } from "lib/added-effector/command-effect";
 
 export type StatusFile = {
   stage: string;
@@ -9,9 +8,11 @@ export type StatusFile = {
   path: string;
 };
 
-export const gitStatusS = createPipePromiseEffect((_, options) =>
-  runCommandGit("status", ["-s", "-u"], options),
-);
+export const gitStatusS = createCommandEffect("git", () => [
+  "status",
+  "-s",
+  "-u",
+]);
 
 export const getStatusS = createCommand("status", "status");
 

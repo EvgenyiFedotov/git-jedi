@@ -1,6 +1,5 @@
 import { createEvent, createStore, restore } from "effector";
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandPipe } from "lib/run-command";
+import { createCommandEffect } from "lib/added-effector/command-effect";
 
 export type Option = {
   head: boolean;
@@ -14,8 +13,9 @@ export type Option = {
   isRemote: boolean;
 };
 
-export const gitCheckout = createPipePromiseEffect<{ branch: string }>(
-  ({ branch }, options) => runCommandPipe("git", ["checkout", branch], options),
+export const gitCheckout = createCommandEffect<{ branch: string }>(
+  "git",
+  ({ branch }) => ["checkout", branch],
 );
 
 export const changeSearch = createEvent<string>();

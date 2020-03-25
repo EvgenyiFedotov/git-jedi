@@ -1,9 +1,8 @@
 import { createStore, createEvent } from "effector";
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandGit } from "lib/run-command";
 import { DiffFile, DiffChunk, DiffLine } from "lib/diff";
 import * as consts from "app/const";
 import { createStageByPatch } from "lib/added-effector/stage-by-patch";
+import { createCommandEffect } from "lib/added-effector/command-effect";
 
 export type StatusFile = {
   stage: string;
@@ -12,17 +11,19 @@ export type StatusFile = {
   diff: DiffFile | null;
 };
 
-export const unstage = createPipePromiseEffect<{ paths: string[] }>(
-  ({ paths }, options) =>
-    runCommandGit("reset", ["HEAD", "--", ...paths], options),
+export const unstage = createCommandEffect<{ paths: string[] }>(
+  "git",
+  ({ paths }) => ["reset", "HEAD", "--", ...paths],
 );
-export const diff = createPipePromiseEffect<string>((path, options) =>
-  runCommandGit(
-    "diff",
-    ["--diff-algorithm=patience", "--cached", "--", path],
-    options,
-  ),
-);
+
+export const diff = createCommandEffect<string>("git", (path) => [
+  "diff",
+  "--diff-algorithm=patience",
+  "--cached",
+  "--",
+  path,
+]);
+
 export const stageByPatchChunk = createStageByPatch({
   pathGitEditor: consts.PATH_GIT_EDITOR,
   pathGitEditorMessage: consts.PATH_GIT_EDITOR_MESSAGE,

@@ -11,10 +11,8 @@ import { createPendingStore } from "lib/added-effector/create-pending-store";
 import { existsSync, writeFileSync, readFileSync } from "fs";
 import { PATH_SETTINGS } from "app/const";
 import { RunCommandOptions } from "lib/run-command";
-import {
-  EffectParams,
-  EffectResult,
-} from "lib/added-effector/create-pipe-promise-effect";
+import { Params as EffectParams } from "lib/added-effector/command-effect";
+import { ResultPromise as EffectResult } from "lib/create-command";
 
 export type HotKey = {
   type: "command";

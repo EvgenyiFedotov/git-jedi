@@ -1,6 +1,6 @@
 import { diffWords } from "diff";
 import { v4 as uuid } from "uuid";
-import { EffectResult } from "lib/added-effector/create-pipe-promise-effect";
+import { ResultPromise } from "lib/create-command";
 import { Change } from "diff";
 
 type DiffLineAction = null | "removed" | "added";
@@ -25,11 +25,14 @@ export type DiffFile = {
   chunks: DiffChunk[];
 };
 
-export function parseResult(result: EffectResult): DiffFile[] {
-  const data = result
-    .filter(({ action }) => action === "data")
-    .map(({ value }) => value)
-    .reduce<string[]>((memo, value) => [...memo, value], []);
+export function parseResult(result: ResultPromise): DiffFile[] {
+  const data = result.reduce<string[]>((memo, { action, value }) => {
+    if (action === "data" && typeof value === "string") {
+      memo.push(value);
+    }
+
+    return memo;
+  }, []);
 
   return data
     .map((value) => value.split("diff --git ").filter(Boolean))

@@ -1,13 +1,9 @@
-import { createStore, createEvent, createEffect } from "effector";
-import {
-  createPipePromiseEffect,
-  EffectParams,
-  EffectResult,
-} from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandGit, commandPipeToPromise } from "lib/run-command";
+import { createStore, createEvent } from "effector";
 import { DiffFile, DiffChunk, DiffLine } from "lib/diff";
 import * as consts from "app/const";
 import { createStageByPatch } from "lib/added-effector/stage-by-patch";
+import { createCommandEffect } from "lib/added-effector/command-effect";
+import { createCommand } from "lib/create-command";
 
 export type StatusFile = {
   stage: string;
@@ -16,46 +12,55 @@ export type StatusFile = {
   diff: DiffFile | null;
 };
 
-export const discard = createPipePromiseEffect<{ paths: string[] }>(
-  async ({ paths }, options) => {
-    await commandPipeToPromise(
-      runCommandGit(
-        "stash",
-        ["push", "--keep-index", "--include-untracked", "--", ...paths],
-        options,
-      ),
-    );
-    return runCommandGit("stash", ["drop"], options);
+export const discard = createCommandEffect<{ paths: string[] }>({
+  command: async ({ params: { paths }, options }) => {
+    await createCommand(
+      "git",
+      ["stash", "push", "--keep-index", "--include-untracked", "--", ...paths],
+      options,
+    )
+      .run()
+      .promise();
+
+    return createCommand("git", ["stash", "drop"], options);
   },
+});
+
+export const stage = createCommandEffect<{ paths: string[] }>(
+  "git",
+  ({ paths }) => ["add", ...paths],
 );
-export const stage = createPipePromiseEffect<{ paths: string[] }>(
-  ({ paths }, options) => runCommandGit("add", paths, options),
-);
-export const diff = createEffect<EffectParams<StatusFile>, EffectResult>({
-  handler: async ({ params: { path, unstage }, options }) => {
+
+export const diff = createCommandEffect<StatusFile>({
+  command: async ({ params: { path, unstage }, options }) => {
     if (unstage === "?") {
-      await commandPipeToPromise(runCommandGit("add", [path], options));
+      await createCommand("git", ["add", path], options)
+        .run()
+        .promise();
 
-      const result = await commandPipeToPromise(
-        runCommandGit(
-          "diff",
-          ["--diff-algorithm=patience", "--cached", "--", path],
-          options,
-        ),
-      );
+      const result = await createCommand(
+        "git",
+        ["diff", "--diff-algorithm=patience", "--cached", "--", path],
+        options,
+      )
+        .run()
+        .promise();
 
-      await commandPipeToPromise(
-        runCommandGit("reset", ["HEAD", "--", path], options),
-      );
+      await createCommand("git", ["reset", "HEAD", "--", path], options)
+        .run()
+        .promise();
 
       return result;
     }
 
-    return await commandPipeToPromise(
-      runCommandGit("diff", ["--diff-algorithm=patience", "--", path], options),
+    return createCommand(
+      "git",
+      ["diff", "--diff-algorithm=patience", "--", path],
+      options,
     );
   },
 });
+
 export const stageByPatchChunk = createStageByPatch({
   pathGitEditor: consts.PATH_GIT_EDITOR,
   pathGitEditorMessage: consts.PATH_GIT_EDITOR_MESSAGE,

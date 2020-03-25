@@ -1,9 +1,9 @@
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandGit, commandPipeToPromise } from "lib/run-command";
 import { createFileWatcher } from "lib/v2/file-watcher";
 import { createFileConnector } from "lib/v2/file-connector";
 import * as ef from "effector";
 import * as fsPromise from "lib/v2/fs-promise";
+import { createCommandEffect } from "lib/added-effector/command-effect";
+import { createCommand } from "lib/create-command";
 
 export const createStageByPatch = (_: {
   pathGitEditor: string;
@@ -14,26 +14,45 @@ export const createStageByPatch = (_: {
   const watcher = createFileWatcher({ path: pathGitEditorMessage });
   const connector = createFileConnector({ watcher, id: "ustaged-connector" });
 
-  const stageByPatch = createPipePromiseEffect<{ patch: string }>(
-    async (_, options) => {
-      const configCoreEditor = await commandPipeToPromise(
-        runCommandGit("config", ["core.editor"], options),
-      );
-      const coreEditor = configCoreEditor[0].value.replace("\n", "");
+  const stageByPatch = createCommandEffect<{ patch: string }>({
+    command: async ({ options }) => {
+      const configCoreEditor = await createCommand(
+        "git",
+        ["config", "core.editor"],
+        options,
+      )
+        .run()
+        .promise();
+      const coreEditorValue = configCoreEditor[0].value;
+
+      const coreEditor =
+        typeof coreEditorValue === "string"
+          ? coreEditorValue.replace("\n", "")
+          : "";
 
       watcher.start();
 
-      await commandPipeToPromise(
-        runCommandGit("config", ["core.editor", pathGitEditor], options),
-      );
+      await createCommand(
+        "git",
+        ["config", "core.editor", pathGitEditor],
+        options,
+      )
+        .run()
+        .promise();
 
-      await commandPipeToPromise(runCommandGit("add", ["-e"], options));
+      await createCommand("git", ["add", "-e"], options)
+        .run()
+        .promise();
 
       watcher.stop();
 
-      return runCommandGit("config", ["core.editor", coreEditor], options);
+      return createCommand(
+        "git",
+        ["config", "core.editor", coreEditor],
+        options,
+      );
     },
-  );
+  });
 
   const edit = ef.createEvent<string>();
 

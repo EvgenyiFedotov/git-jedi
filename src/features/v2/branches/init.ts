@@ -30,7 +30,9 @@ $branches.on(gitBranches.done, (_, { result }) => {
   const branches = result
     .filter(({ action }) => action === "data")
     .map<BranchGit[]>(({ value }) =>
-      JSON.parse(`[${value.substr(0, value.length - 2)}]`),
+      JSON.parse(
+        `[${(value as string).substr(0, (value as string).length - 2)}]`,
+      ),
     )
     .reduce((memo, list) => [...memo, ...list], [])
     .filter(({ name, refName }) => name !== refName);

@@ -1,6 +1,5 @@
 import { createStore, createEvent } from "effector";
-import { runCommandPipe } from "lib/run-command";
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
+import { createCommandEffect } from "lib/added-effector/command-effect";
 
 export type BranchGit<H = string> = {
   head: H;
@@ -13,18 +12,12 @@ export type BranchGit<H = string> = {
 };
 export type Branch = BranchGit<boolean> & { isRemote: boolean };
 
-export const gitBranches = createPipePromiseEffect((_, options) =>
-  runCommandPipe(
-    "git",
-    [
-      "branch",
-      "-l",
-      "-a",
-      `--format={"remoteName": "%(upstream:remotename)", "name": "%(refname:lstrip=2)", "refName": "%(refname)", "push": "%(push)", "objectType": "%(objecttype)", "head": "%(HEAD)", "objectName": "%(objectname)"},`,
-    ],
-    options,
-  ),
-);
+export const gitBranches = createCommandEffect("git", () => [
+  "branch",
+  "-l",
+  "-a",
+  `--format={"remoteName": "%(upstream:remotename)", "name": "%(refname:lstrip=2)", "refName": "%(refname)", "push": "%(push)", "objectType": "%(objecttype)", "head": "%(HEAD)", "objectName": "%(objectname)"},`,
+]);
 
 export const loadBranches = createEvent<void>();
 

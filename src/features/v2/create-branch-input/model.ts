@@ -1,12 +1,11 @@
 import { createEvent, restore, createStore } from "effector";
-import { createPipePromiseEffect } from "lib/added-effector/create-pipe-promise-effect";
-import { runCommandPipe } from "lib/run-command";
+import { createCommandEffect } from "lib/added-effector/command-effect";
 
 export type Option = { value: string };
 
-export const gitCreateBranch = createPipePromiseEffect<{ branch: string }>(
-  ({ branch }, options) =>
-    runCommandPipe("git", ["checkout", "-b", branch], options),
+export const gitCreateBranch = createCommandEffect<{ branch: string }>(
+  "git",
+  ({ branch }) => ["checkout", "-b", branch],
 );
 
 export const changeValue = createEvent<string>();
