@@ -6,7 +6,11 @@ export type PipeValue = string | number;
 
 export type PipeActions = "data" | "close";
 
-export type ResultPromise = ResolverStoreItem<PipeValue, PipeActions>[];
+export type ResultPromise<V = PipeValue, A = PipeActions> = {
+  all: () => ResolverStoreItem<V, A>[];
+  data: () => string[];
+  close: () => number;
+};
 
 export type RunCommand = {
   pipe: () => Pipe<PipeValue, PipeActions>;
@@ -60,10 +64,30 @@ export function createCommand(
             if (value === 0) {
               const listenerResults = pipe.resolvedStore().get(listenerId);
 
+              const all = listenerResults
+                ? [...listenerResults, { value, action }]
+                : [];
+              const data = all.reduce<string[]>((memo, pipeValue) => {
+                if (
+                  pipeValue.action === "data" &&
+                  typeof pipeValue.value === "string"
+                ) {
+                  memo.push(pipeValue.value);
+                }
+
+                return memo;
+              }, []);
+
+              const result: ResultPromise = {
+                all: () => all,
+                data: () => data,
+                close: () => value,
+              };
+
               if (listenerResults) {
-                resolve([...listenerResults, { value, action }]);
+                resolve(result);
               } else {
-                resolve([]);
+                resolve(result);
               }
             } else {
               reject(value);

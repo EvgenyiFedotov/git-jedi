@@ -1,3 +1,4 @@
+import "lib/crypto-polyfill";
 import { createFileWatcher, PipeValue } from "./index";
 import { writeFileSync, unlinkSync } from "fs";
 import { v4 as uuid } from "uuid";

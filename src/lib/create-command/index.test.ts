@@ -2,7 +2,7 @@ import "lib/crypto-polyfill";
 
 import { createCommand } from ".";
 
-const cwd = "./src/lib/run-command-v2/tests/";
+const cwd = "./src/lib/create-command/";
 
 const commandOptions = {
   spawnOptions: { cwd },
@@ -16,6 +16,8 @@ test("pipe", async () => {
   const pipe = createCommand("bash", ["command.sh"], commandOptions)
     .run()
     .pipe();
+
+  pipe.listen((value) => value, "stream");
 
   await delay(400);
 
@@ -32,8 +34,10 @@ test("promise", async () => {
 
   const result = await promise;
 
-  expect(result).toEqual([
+  expect(result.all()).toEqual([
     { action: "data", value: "test\n" },
     { action: "close", value: 0 },
   ]);
+  expect(result.data()).toEqual(["test\n"]);
+  expect(result.close()).toEqual(0);
 });
