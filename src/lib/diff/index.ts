@@ -26,15 +26,8 @@ export type DiffFile = {
 };
 
 export function parseResult(result: ResultPromise): DiffFile[] {
-  const data = result.reduce<string[]>((memo, { action, value }) => {
-    if (action === "data" && typeof value === "string") {
-      memo.push(value);
-    }
-
-    return memo;
-  }, []);
-
-  return data
+  return result
+    .data()
     .map((value) => value.split("diff --git ").filter(Boolean))
     .reduce<string[]>((memo, value) => [...memo, ...value], [])
     .map(parseFile);

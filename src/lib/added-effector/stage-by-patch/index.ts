@@ -23,7 +23,7 @@ export const createStageByPatch = (_: {
       )
         .run()
         .promise();
-      const coreEditorValue = configCoreEditor[0].value;
+      const coreEditorValue = configCoreEditor.data()[0];
 
       const coreEditor =
         typeof coreEditorValue === "string"
