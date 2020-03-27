@@ -17,10 +17,16 @@ interface Props<Option> {
   onEsc?: (ref: Ref) => void;
   onEnter?: (ref: Ref) => void;
   autoFocus?: boolean;
+  size?: "small" | "middle" | "large";
 }
 
 export function Autocomplete<Option>(props: Props<Option>) {
-  const { onSelect = () => {}, onEsc = () => {}, onEnter = () => {} } = props;
+  const {
+    onSelect = () => {},
+    onEsc = () => {},
+    onEnter = () => {},
+    size = "middle",
+  } = props;
 
   const select = React.useCallback((_, option) => onSelect(option as Option), [
     onSelect,
@@ -59,7 +65,7 @@ export function Autocomplete<Option>(props: Props<Option>) {
   // TODO bug in types antd
   return (
     <Container
-      size="small"
+      size={size}
       ref={ref}
       placeholder={props.placeholder}
       options={props.options as any}
