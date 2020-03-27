@@ -9,8 +9,13 @@ export const RowBase = styled.div`
   min-height: 24px;
 `;
 
-export const Row = styled(RowBase)`
+export const Row = styled(RowBase)<{ bottom?: boolean }>`
+  & > *:last-child {
+    margin-bottom: ${({ bottom }) => (bottom ? "8px" : "0px")};
+  }
+
   & > *:not(:last-child) {
+    margin-bottom: ${({ bottom }) => (bottom ? "8px" : "0px")};
     margin-right: 8px;
   }
 `;
