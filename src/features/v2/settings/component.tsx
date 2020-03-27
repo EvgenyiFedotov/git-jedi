@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Column, Row } from "ui";
-import { Form, Tag, Input } from "antd";
+import { Tag, Input, Divider } from "antd";
 import { useStore } from "effector-react";
 import styled from "styled-components";
 import { PlusOutlined } from "@ant-design/icons";
@@ -8,31 +8,43 @@ import { Branch } from "lib/branch";
 
 import * as model from "./model";
 
-const layout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
-};
-
 export const Settings: React.FC = () => {
   const settings = useStore(model.$settings);
 
   return (
-    <Column>
+    <Column style={{ width: "100%" }}>
       <b>Settings</b>
-      <Row>
-        <FormStyled size="small" {...layout}>
-          <Form.Item label="Path">
-            <div>{settings.cwd}</div>
-          </Form.Item>
-          <Form.Item label="Hot keys">
-            <div>{settings.hotKeys.join(",")}</div>
-          </Form.Item>
-          <Form.Item label="Commit types">
-            <CommitTypes />
-          </Form.Item>
-        </FormStyled>
-      </Row>
+
+      <Divider>Main</Divider>
+      <Item label="Path">
+        <div>{settings.cwd}</div>
+      </Item>
+      <Item label="Hot keys">
+        <div>{settings.hotKeys.join(",")}</div>
+      </Item>
+
+      <Divider>Commit</Divider>
+      <Item label="Types">
+        <CommitTypes />
+      </Item>
+
+      <Item label="Scope root">
+        <ScopeRoot />
+      </Item>
+
+      <Item label="Scope length">
+        <ScopeLength />
+      </Item>
     </Column>
+  );
+};
+
+const Item: React.FC<{ label: React.ReactNode }> = ({ label, children }) => {
+  return (
+    <ItemContainer>
+      <ItemLabel>{label}:</ItemLabel>
+      <ItemChildren>{children}</ItemChildren>
+    </ItemContainer>
   );
 };
 
@@ -56,7 +68,7 @@ const CommitTypes: React.FC = () => {
   ));
 
   return (
-    <Row bottom={true}>
+    <CommitTypesContainer bottom={true}>
       {list}
       <Branch if={visibleInput}>
         <CommitTypesImput onBlur={blur} />
@@ -65,7 +77,7 @@ const CommitTypes: React.FC = () => {
           Add type
         </TagDashed>
       </Branch>
-    </Row>
+    </CommitTypesContainer>
   );
 };
 
@@ -83,13 +95,36 @@ const CommitTypesImput: React.FC<{ onBlur: () => void }> = ({ onBlur }) => {
       autoFocus={true}
       value={newCommitType}
       onChange={(event) => model.changeNewCommitType(event.currentTarget.value)}
+      size="small"
     />
   );
 };
 
-const FormStyled = styled(Form)`
-  width: 100%;
-`;
+const ScopeRoot: React.FC = () => {
+  const value = useStore(model.$commitScopeRoot);
+
+  const change = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      model.changeCommitScopeRoot(event.currentTarget.value);
+    },
+    [],
+  );
+
+  return <Input value={value} onChange={change} />;
+};
+
+const ScopeLength: React.FC = () => {
+  const value = useStore(model.$commitScopeLength);
+
+  const change = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      model.changeCommitScopeLength(parseInt(event.currentTarget.value, 10));
+    },
+    [],
+  );
+
+  return <Input type="number" value={value} onChange={change} />;
+};
 
 const TagDashed = styled(Tag)`
   border-style: dashed !important;
@@ -98,4 +133,24 @@ const TagDashed = styled(Tag)`
 
 const InputStyled = styled(Input)`
   max-width: 77px;
+`;
+
+const ItemContainer = styled(Row)`
+  flex-wrap: nowrap;
+  align-items: flex-start;
+`;
+
+const ItemLabel = styled(Column)`
+  width: 25%;
+  padding: 5px 2px;
+  align-items: flex-end;
+  justify-content: center;
+`;
+
+const ItemChildren = styled.div`
+  width: 75%;
+`;
+
+const CommitTypesContainer = styled(Row)`
+  padding-top: 5px;
 `;

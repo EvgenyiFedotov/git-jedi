@@ -105,3 +105,18 @@ ef.sample({
   fn: (store, { result }) => (result ? result.commitTypes || store : store),
   target: model.$commitTypes,
 });
+
+ef.sample({
+  source: model.$commitScopeRoot,
+  clock: model.readSettings.done,
+  fn: (store, { result }) => (result ? result.commitScopeRoot || store : store),
+  target: model.$commitScopeRoot,
+});
+
+ef.sample({
+  source: model.$commitScopeLength,
+  clock: model.readSettings.done,
+  fn: (store, { result }) =>
+    result ? result.commitScopeLength || store : store,
+  target: model.$commitScopeLength,
+});

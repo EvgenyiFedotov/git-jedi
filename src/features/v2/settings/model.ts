@@ -25,6 +25,8 @@ export type Settings = {
   cwd: string | null;
   hotKeys: HotKey[];
   commitTypes: string[];
+  commitScopeRoot: string;
+  commitScopeLength: number;
 };
 
 export const readSettings = createEffect<void, Settings | null>({
@@ -47,6 +49,8 @@ export const changedCwd = createEvent<string | null>();
 export const changeNewCommitType = createEvent<string>();
 export const addNewCommitType = createEvent<void>();
 export const removeCommitType = createEvent<string>();
+export const changeCommitScopeRoot = createEvent<string>();
+export const changeCommitScopeLength = createEvent<number>();
 
 export const $cwd = createStore<Settings["cwd"]>(null);
 export const $hotKeys = createStore<Settings["hotKeys"]>([
@@ -61,10 +65,14 @@ export const $commitTypes = createStore<string[]>([
   "refacor",
 ]);
 export const $newCommitType = restore(changeNewCommitType, "");
+export const $commitScopeRoot = restore(changeCommitScopeRoot, "");
+export const $commitScopeLength = restore(changeCommitScopeLength, 2);
 export const $settings = combine({
   cwd: $cwd,
   hotKeys: $hotKeys,
   commitTypes: $commitTypes,
+  commitScopeRoot: $commitScopeRoot,
+  commitScopeLength: $commitScopeLength,
 });
 export const $pendingReadSettings = createPendingStore(readSettings);
 export const $runCommandOptions = $cwd.map(
