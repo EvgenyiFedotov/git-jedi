@@ -6,6 +6,7 @@ import {
   sample,
   Event,
   Effect,
+  restore,
 } from "effector";
 import { createPendingStore } from "lib/added-effector/create-pending-store";
 import { existsSync, writeFileSync, readFileSync } from "fs";
@@ -19,10 +20,12 @@ export type HotKey = {
   targetId: string;
   command: string;
 };
-export interface Settings {
+
+export type Settings = {
   cwd: string | null;
   hotKeys: HotKey[];
-}
+  commitTypes: string[];
+};
 
 export const readSettings = createEffect<void, Settings | null>({
   handler: () => {
@@ -41,13 +44,28 @@ export const writeSettings = createEffect<Settings, void>({
 
 export const initSettings = createEvent<void>();
 export const changedCwd = createEvent<string | null>();
+export const changeNewCommitType = createEvent<string>();
+export const addNewCommitType = createEvent<void>();
+export const removeCommitType = createEvent<string>();
 
 export const $cwd = createStore<Settings["cwd"]>(null);
 export const $hotKeys = createStore<Settings["hotKeys"]>([
   { type: "command", targetId: "changePathRepo", command: "command+shift+o" },
   { type: "command", targetId: "changeBranch", command: "command+shift+b" },
 ]);
-export const $settings = combine({ cwd: $cwd, hotKeys: $hotKeys });
+export const $commitTypes = createStore<string[]>([
+  "feat",
+  "fix",
+  "build",
+  "chore",
+  "refacor",
+]);
+export const $newCommitType = restore(changeNewCommitType, "");
+export const $settings = combine({
+  cwd: $cwd,
+  hotKeys: $hotKeys,
+  commitTypes: $commitTypes,
+});
 export const $pendingReadSettings = createPendingStore(readSettings);
 export const $runCommandOptions = $cwd.map(
   (cwd): RunCommandOptions => ({

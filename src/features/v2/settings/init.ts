@@ -1,41 +1,26 @@
-import { guard, forward, sample } from "effector";
+import * as ef from "effector";
 import { showSelectCwdDialog } from "features/v2/path-repo/model";
 
-import {
-  readSettings,
-  initSettings,
-  $settings,
-  writeSettings,
-  $cwd,
-  changedCwd,
-  $hotKeys,
-} from "./model";
+import * as model from "./model";
 
-const setupDefaultSettings = guard({
-  source: readSettings.done,
+const setupDefaultSettings = ef.guard({
+  source: model.readSettings.done,
   filter: ({ result }) => !result,
 });
 
-forward({
-  from: initSettings,
-  to: readSettings,
+ef.forward({
+  from: model.initSettings,
+  to: model.readSettings,
 });
 
-sample({
-  source: $settings,
+ef.sample({
+  source: model.$settings,
   clock: setupDefaultSettings,
-  target: writeSettings,
+  target: model.writeSettings,
 });
 
-sample({
-  source: $cwd,
-  clock: readSettings.done,
-  fn: (store, { result }) => (result ? result.cwd || store || null : store),
-  target: $cwd,
-});
-
-const changeCwdAfterSelect = sample({
-  source: $cwd,
+const changeCwdAfterSelect = ef.sample({
+  source: model.$cwd,
   clock: showSelectCwdDialog.done,
   fn: (store, { result }) => ({
     store,
@@ -43,27 +28,80 @@ const changeCwdAfterSelect = sample({
   }),
 });
 
-forward({
+ef.forward({
   from: changeCwdAfterSelect.map(({ next }) => next),
-  to: $cwd,
+  to: model.$cwd,
 });
 
-guard({
+ef.guard({
   source: changeCwdAfterSelect,
   filter: ({ store, next }) => store !== next,
-  target: changedCwd.prepend(
+  target: model.changedCwd.prepend(
     ({ next }: { store: string | null; next: string | null }) => next,
   ),
 });
 
-forward({
-  from: $settings,
-  to: writeSettings,
+ef.forward({
+  from: model.$settings,
+  to: model.writeSettings,
 });
 
-sample({
-  source: $hotKeys,
-  clock: readSettings.done,
+// Add, remove commit types
+ef.sample({
+  source: ef.combine([model.$newCommitType, model.$commitTypes]),
+  clock: model.addNewCommitType,
+  fn: ([newType, commitTypes]) => {
+    const index = commitTypes.indexOf(newType);
+
+    if (index === -1) {
+      return [...commitTypes, newType];
+    }
+
+    return commitTypes;
+  },
+  target: model.$commitTypes,
+});
+
+ef.sample({
+  source: model.$commitTypes,
+  clock: model.removeCommitType,
+  fn: (commitTypes, removeType) => {
+    const index = commitTypes.indexOf(removeType);
+
+    if (index === -1) {
+      return commitTypes;
+    }
+
+    const next = [...commitTypes];
+
+    next.splice(index, 1);
+
+    return next;
+  },
+  target: model.$commitTypes,
+});
+
+model.$newCommitType.on(model.$commitTypes, () => "");
+
+// Setup default item settings
+
+ef.sample({
+  source: model.$cwd,
+  clock: model.readSettings.done,
+  fn: (store, { result }) => (result ? result.cwd || store || null : store),
+  target: model.$cwd,
+});
+
+ef.sample({
+  source: model.$hotKeys,
+  clock: model.readSettings.done,
   fn: (store, { result }) => (result ? result.hotKeys || store || null : store),
-  target: $hotKeys,
+  target: model.$hotKeys,
+});
+
+ef.sample({
+  source: model.$commitTypes,
+  clock: model.readSettings.done,
+  fn: (store, { result }) => (result ? result.commitTypes || store : store),
+  target: model.$commitTypes,
 });
