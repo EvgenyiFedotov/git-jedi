@@ -1,6 +1,9 @@
 import * as ef from "effector";
 import { $commitTypes } from "features/v2/settings/model";
-import { $status } from "features/v2/status/model";
+import {
+  $unstagedStatus,
+  stageChangesByDir,
+} from "features/v2/unstaged-status/model";
 import {
   $commitScopeRoot,
   $commitScopeLength,
@@ -29,26 +32,29 @@ ef.sample({
 // Filter scope
 const filteredScope = ef
   .combine([
-    $status,
+    $unstagedStatus,
     $commitScopeRoot,
     $commitScopeLength,
     model.scopes.$search,
   ])
   .map(([status, scopeRoot, scopeLength, search]) => {
-    return status.reduce<Set<string>>((memo, statusFile) => {
-      let calcPath = path
-        .dirname(statusFile.path)
-        .replace(new RegExp(`^${scopeRoot}`, "g"), "")
-        .split("/")
-        .slice(0, scopeLength || 0)
-        .join("/");
+    return Array.from(status.ref.values()).reduce<Set<string>>(
+      (memo, statusFile) => {
+        let calcPath = path
+          .dirname(statusFile.path)
+          .replace(new RegExp(`^${scopeRoot}`, "g"), "")
+          .split("/")
+          .slice(0, scopeLength || 0)
+          .join("/");
 
-      if (calcPath.toLocaleLowerCase().match(search.toLocaleLowerCase())) {
-        memo.add(calcPath);
-      }
+        if (calcPath.toLocaleLowerCase().match(search.toLocaleLowerCase())) {
+          memo.add(calcPath);
+        }
 
-      return memo;
-    }, new Set());
+        return memo;
+      },
+      new Set(),
+    );
   })
   .map((scopes) => Array.from(scopes).map((value) => ({ value })));
 
@@ -163,4 +169,10 @@ ef.forward({
 ef.forward({
   from: model.clear.map(() => ""),
   to: [model.$title, model.$body, model.$breakingChanges],
+});
+
+// Autostage by scope
+ef.forward({
+  from: model.scopes.selectValue.map(({ value }) => value),
+  to: stageChangesByDir,
 });

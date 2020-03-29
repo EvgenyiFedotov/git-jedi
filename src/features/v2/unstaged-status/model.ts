@@ -72,6 +72,7 @@ export const stageByPatchLine = createStageByPatch({
 
 export const discardChanges = createEvent<StatusFile>();
 export const stageChanges = createEvent<StatusFile>();
+export const stageChangesByDir = createEvent<string>();
 export const discardAllChanges = createEvent<void>();
 export const stageAllChanges = createEvent<void>();
 export const getDiff = createEvent<StatusFile>();

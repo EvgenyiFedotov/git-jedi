@@ -48,6 +48,26 @@ createDependRunCommandOptions({
   effect: model.stage,
 });
 
+// Stage changes by directory
+const pathsByDir = sample({
+  source: model.$unstagedStatus,
+  clock: model.stageChangesByDir,
+  fn: (unstaged, dir) => {
+    const paths = Array.from(unstaged.ref.values())
+      .filter(({ path }) => {
+        return path.match(dir);
+      })
+      .map(({ path }) => path);
+
+    return { paths };
+  },
+});
+
+createDependRunCommandOptions({
+  event: pathsByDir,
+  effect: model.stage,
+});
+
 createDependRunCommandOptions({
   event: sample({
     source: model.$unstagedStatus,
