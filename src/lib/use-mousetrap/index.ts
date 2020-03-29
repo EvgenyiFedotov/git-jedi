@@ -7,7 +7,6 @@ export const useMousetrap = (
   callback: (event: KeyboardEvent, combo: string) => any,
   action?: string,
 ) => {
-  // TODO Error with type HTMLTextAreaElement
   const ref = React.useRef(null);
 
   React.useEffect(() => {

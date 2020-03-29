@@ -13,8 +13,6 @@ export const Settings: React.FC = () => {
 
   return (
     <Column style={{ width: "100%" }}>
-      <b>Settings</b>
-
       <Divider>Main</Divider>
       <Item label="Path">
         <div>{settings.cwd}</div>
