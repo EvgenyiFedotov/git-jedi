@@ -1,6 +1,7 @@
 import * as ef from "effector";
 import { $branches } from "features/v2/branches/model";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
+import { $remotes } from "features/v2/git-config/model";
 
 import * as model from "./model";
 
@@ -72,3 +73,6 @@ ef.forward({
   from: diffPush,
   to: model.$diffPush,
 });
+
+// Get $existRemote
+model.$existRemote.on($remotes, (_, remotes) => !!remotes.size);

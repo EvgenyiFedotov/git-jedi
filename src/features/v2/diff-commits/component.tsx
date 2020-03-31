@@ -3,6 +3,7 @@ import {
   CloudUploadOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { RowBase, Row } from "ui";
 import styled from "styled-components";
@@ -13,6 +14,21 @@ import { Branch } from "lib/branch";
 import * as model from "./model";
 
 export const DiffCommits: React.FC = () => {
+  const existRemote = useStore(model.$existRemote);
+
+  return (
+    <Branch if={existRemote}>
+      <PublisedhOrNot />
+      <Tooltip title="Not remote">
+        <RowBlock>
+          <WarningOutlined style={{ color: "#eb2f96" }} />
+        </RowBlock>
+      </Tooltip>
+    </Branch>
+  );
+};
+
+const PublisedhOrNot: React.FC = () => {
   const published = useStore(model.$published);
 
   return (
@@ -23,11 +39,13 @@ export const DiffCommits: React.FC = () => {
             <DiffPull />
             <DiffPush />
           </>
-          <Tooltip title="Publish branch">
-            <RowBlock>
-              <CloudUploadOutlined />
-            </RowBlock>
-          </Tooltip>
+          <>
+            <Tooltip title="Publish branch">
+              <RowBlock>
+                <CloudUploadOutlined />
+              </RowBlock>
+            </Tooltip>
+          </>
         </Branch>
       </Row>
     </Spin>

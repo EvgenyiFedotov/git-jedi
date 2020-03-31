@@ -1,5 +1,4 @@
 import * as React from "react";
-import { loadBranches } from "features/v2/branches/model";
 import {
   $cwd,
   initSettings,
@@ -11,7 +10,6 @@ import { Button, Spin } from "antd";
 import mousetrap from "mousetrap";
 import { selectPathRepo } from "features/v2/path-repo";
 import {} from "features/v2/settings/model";
-import { getStatusS } from "features/v2/status";
 
 export const Init: React.FC = ({ children }) => {
   const pendingReadSettings = useStore($pendingReadSettings);
@@ -40,11 +38,6 @@ const Setup: React.FC = ({ children }) => {
 };
 
 const AfterSetup: React.FC = ({ children }) => {
-  React.useEffect(() => {
-    loadBranches();
-    getStatusS();
-  }, []);
-
   return <>{children}</>;
 };
 

@@ -18,3 +18,4 @@ export const diffPush = createCommandEffect<{ range: string }>(
 export const $published = ef.createStore<boolean | null>(null);
 export const $diffPull = ef.createStore<number>(0);
 export const $diffPush = ef.createStore<number>(0);
+export const $existRemote = ef.createStore<boolean>(false);

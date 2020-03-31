@@ -15,5 +15,6 @@ import "features/v2/staged-status/init";
 import "features/v2/form-create-commit/init";
 import "features/v2/diff-commits/init";
 import "features/v2/branch-list/init";
+import "features/v2/git-config/init";
 
 export { Init } from "./component";

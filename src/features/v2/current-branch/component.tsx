@@ -15,9 +15,9 @@ export const CurrentBranch: React.FC = () => {
     openBranchList();
   }, []);
 
-  React.useEffect(() => {
-    updateCurrentBranch();
-  }, []);
+  // React.useEffect(() => {
+  //   updateCurrentBranch();
+  // }, []);
 
   return (
     <Spin size="small" spinning={!currentBranch}>
