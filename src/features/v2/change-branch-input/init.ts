@@ -25,8 +25,8 @@ forward({
 });
 
 createDependRunCommandOptions({
-  event: selectOption.map(({ name, isRemote }) => {
-    if (isRemote) {
+  event: selectOption.map(({ name, remoteName }) => {
+    if (!!remoteName) {
       const [_, ...otherName] = name.split("/");
 
       return { branch: otherName.join("/") };

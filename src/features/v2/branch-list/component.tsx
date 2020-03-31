@@ -6,6 +6,8 @@ import { useStore } from "effector-react";
 import { Branch as BranchRender } from "lib/branch";
 import { ListItem } from "ui/antd";
 
+import * as model from "./model";
+
 export const BranchList: React.FC = () => {
   const { ref: branches } = useStore($branches);
 
@@ -17,15 +19,28 @@ export const BranchList: React.FC = () => {
 };
 
 const Branch: React.FC<{ branch: Branch }> = ({ branch }) => {
+  const click = React.useCallback(() => {
+    const nameArr = branch.name.split("/");
+
+    // TODO check list remotes
+    if (nameArr[0] === "origin" && !branch.remoteName) {
+      const [_, ...name] = nameArr;
+
+      model.changeBranch({ branch: name.join("/") });
+    } else {
+      model.changeBranch({ branch: branch.name });
+    }
+  }, [branch]);
+
   return (
-    <ListItem>
+    <ListItem onClick={click}>
       <Row>
         <Row>
           <BranchRender if={branch.head}>
             <b>{branch.name}</b>
             <div>{branch.name}</div>
           </BranchRender>
-          <BranchRender if={!branch.isRemote && !!branch.remoteName}>
+          <BranchRender if={!!branch.remoteName}>
             <Tag color="blue">{branch.remoteName}</Tag>
           </BranchRender>
         </Row>

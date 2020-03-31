@@ -10,7 +10,7 @@ export type BranchGit<H = string> = {
   push: string;
   remoteName: string;
 };
-export type Branch = BranchGit<boolean> & { isRemote: boolean };
+export type Branch = BranchGit<boolean>;
 
 export const gitBranches = createCommandEffect("git", () => [
   "branch",

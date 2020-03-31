@@ -2,6 +2,7 @@ import { merge, guard } from "effector";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
 import { gitCheckout } from "features/v2/change-branch-input/model";
 import { gitCreateBranch } from "features/v2/create-branch-input/model";
+import { $branches } from "features/v2/branches/model";
 
 import {
   $currentBranch,
@@ -16,6 +17,7 @@ createDependRunCommandOptions({
     updateCurrentBranch,
     gitCheckout.done,
     gitCreateBranch.done,
+    $branches,
   ]).map(() => {}),
   effect: gitCurrentBranchName,
 });

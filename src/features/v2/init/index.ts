@@ -13,5 +13,7 @@ import "features/v2/drawer-status/init";
 import "features/v2/unstaged-status/init";
 import "features/v2/staged-status/init";
 import "features/v2/form-create-commit/init";
+import "features/v2/diff-commits/init";
+import "features/v2/branch-list/init";
 
 export { Init } from "./component";

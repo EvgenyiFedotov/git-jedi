@@ -1,8 +1,8 @@
-import { merge } from "effector";
+// import { merge } from "effector";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
-import { gitCreateBranch } from "features/v2/create-branch-input/model";
-import { gitRemoveBranchD } from "features/v2/remove-branch-input/model";
-import { gitCheckout } from "features/v2/change-branch-input/model";
+// import { gitCreateBranch } from "features/v2/create-branch-input/model";
+// import { gitRemoveBranchD } from "features/v2/remove-branch-input/model";
+// import { gitCheckout } from "features/v2/change-branch-input/model";
 
 import {
   $branches,
@@ -12,27 +12,31 @@ import {
   loadBranches,
 } from "./model";
 
+// createDependRunCommandOptions({
+//   event: merge([
+//     loadBranches,
+//     gitCreateBranch.done,
+//     gitRemoveBranchD.done,
+//     gitCheckout.done,
+//   ]).map(() => {}),
+//   effect: gitBranches,
+// });
+
 createDependRunCommandOptions({
-  event: merge([
-    loadBranches,
-    gitCreateBranch.done,
-    gitRemoveBranchD.done,
-    gitCheckout.done,
-  ]).map(() => {}),
+  event: loadBranches,
   effect: gitBranches,
 });
 
 $branches.on(gitBranches.done, (_, { result }) => {
-  if (!(result instanceof Array)) {
+  const data = result.data();
+
+  if (!(data instanceof Array)) {
     return { ref: new Map() };
   }
 
-  const branches = result
-    .filter(({ action }) => action === "data")
-    .map<BranchGit[]>(({ value }) =>
-      JSON.parse(
-        `[${(value as string).substr(0, (value as string).length - 2)}]`,
-      ),
+  const branches = data
+    .map<BranchGit[]>((value) =>
+      JSON.parse(`[${value.substr(0, value.length - 2)}]`),
     )
     .reduce((memo, list) => [...memo, ...list], [])
     .filter(({ name, refName }) => name !== refName);
@@ -76,6 +80,6 @@ function toBranch(branch: BranchGit): Branch {
     objectType: branch.objectType,
     push: branch.push,
     remoteName: branch.remoteName,
-    isRemote: firstChunkName === "origin", // TODO use remote names
+    // isRemote: firstChunkName === "origin", // TODO use remote names
   };
 }

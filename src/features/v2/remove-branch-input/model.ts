@@ -10,7 +10,6 @@ export type Option = {
   push: string;
   remoteName: string;
   value: string;
-  isRemote: boolean;
 };
 
 export const gitRemoveBranchD = createCommandEffect<{ branch: string }>(
