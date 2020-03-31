@@ -1,12 +1,16 @@
 import * as React from "react";
 import { loadBranches } from "features/v2/branches/model";
-import { $cwd } from "features/v2/settings";
+import {
+  $cwd,
+  initSettings,
+  $pendingReadSettings,
+} from "features/v2/settings/model";
 import { useStore } from "effector-react";
 import styled from "styled-components";
 import { Button, Spin } from "antd";
 import mousetrap from "mousetrap";
 import { selectPathRepo } from "features/v2/path-repo";
-import { initSettings, $pendingReadSettings } from "features/v2/settings";
+import {} from "features/v2/settings/model";
 import { getStatusS } from "features/v2/status";
 
 export const Init: React.FC = ({ children }) => {

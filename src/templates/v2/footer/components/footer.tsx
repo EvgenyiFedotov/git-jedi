@@ -6,6 +6,7 @@ import { Divider } from "antd";
 import { CurrentBranch } from "features/v2/current-branch";
 import { CountChanges } from "features/v2/status";
 import { DiffCommits } from "features/v2/diff-commits/component";
+import { ButtonSettings } from "features/v2/button-settings/component";
 
 export const Footer: React.FC = () => {
   return (
@@ -19,7 +20,9 @@ export const Footer: React.FC = () => {
         <Divider type="vertical" />
         <DiffCommits />
       </RowBase>
-      <RowBase></RowBase>
+      <RowBase>
+        <ButtonSettings />
+      </RowBase>
     </Container>
   );
 };

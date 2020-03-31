@@ -135,7 +135,7 @@ const formattedCommit = ef.sample({
     }
 
     // Breaking changes
-    if (commit.breakingChanges) {
+    if (commit.breakingChangesFlag && commit.breakingChanges) {
       result.push(`\nBREAKING CHANGE: ${commit.breakingChanges}`);
     }
 

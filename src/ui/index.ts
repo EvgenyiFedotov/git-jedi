@@ -20,6 +20,10 @@ export const Row = styled(RowBase)<{ bottom?: boolean }>`
   }
 `;
 
+export const RowPadding = styled(Row)`
+  padding: 0 8px;
+`;
+
 export const Column = styled.div`
   display: flex;
   flex: none;

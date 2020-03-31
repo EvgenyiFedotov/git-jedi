@@ -1,6 +1,6 @@
 import { sample, forward, merge, guard } from "effector";
 import { $status, getStatusS } from "features/v2/status/model";
-import { createDependRunCommandOptions } from "features/v2/settings";
+import { createDependRunCommandOptions } from "features/v2/settings/model";
 import { parseResult, createPatchByChunk, createPatchByLine } from "lib/diff";
 
 import * as model from "./model";

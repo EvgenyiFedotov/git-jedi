@@ -17,7 +17,7 @@ export const App = () => {
       <GlobalStyle />
       <Container>
         <Init>
-          <Header />
+          {/* <Header /> */}
           <Content />
           <Footer />
           <DrawerBranchList />

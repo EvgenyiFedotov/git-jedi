@@ -1,9 +1,13 @@
-import { createDependRunCommandOptions } from "features/v2/settings/model";
+import {
+  createDependRunCommandOptions,
+  $cwd,
+} from "features/v2/settings/model";
+import * as ef from "effector";
 
 import { gitStatusS, getStatusS, $status } from "./model";
 
 createDependRunCommandOptions({
-  event: getStatusS,
+  event: ef.merge([getStatusS, $cwd]).map(() => {}),
   effect: gitStatusS,
 });
 
