@@ -34,6 +34,18 @@ export const Column = styled.div`
   }
 `;
 
+export const CenterFlex = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+`;
+
+export const FullCenterFlex = styled(CenterFlex)`
+  width: 100%;
+  height: 100%;
+`;
+
 export const LinkBlock = styled.div`
   &:hover {
     text-decoration: underline;
