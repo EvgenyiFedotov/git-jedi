@@ -1,15 +1,14 @@
 import * as ef from "effector";
 
 import { $cwd } from "../static/settings";
+import { checkoutTo } from "../static/change-branch";
 import { attachRunCommand } from "../static/run-command";
 import * as model from "../static/branches";
 
 ef.forward({
-  from: $cwd,
+  from: ef.merge([$cwd, checkoutTo.done]),
   to: model.loadBranches,
 });
-
-model.loadBranches.watch(() => console.log("load"));
 
 attachRunCommand({
   event: model.loadBranches,

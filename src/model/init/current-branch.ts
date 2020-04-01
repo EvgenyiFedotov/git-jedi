@@ -1,11 +1,12 @@
 import * as ef from "effector";
 
 import { $cwd } from "../static/settings";
+import { checkoutTo } from "../static/change-branch";
 import { attachRunCommand } from "../static/run-command";
 import * as model from "../static/current-branch";
 
 ef.forward({
-  from: $cwd,
+  from: ef.merge([$cwd, checkoutTo.done]),
   to: model.loadCurrentBranch,
 });
 
