@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { sha1 } from "object-hash";
 import { Pipe, createPipe } from "lib/pipe";
-import * as fsPromise from "lib/v2/fs-promise";
+import * as fsPromise from "lib/fs-promise";
 
 export type Options = {
   path: string;

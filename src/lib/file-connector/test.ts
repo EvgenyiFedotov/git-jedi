@@ -1,5 +1,5 @@
 import "lib/crypto-polyfill";
-import { createFileWatcher } from "lib/v2/file-watcher";
+import { createFileWatcher } from "lib/file-watcher";
 import * as fs from "fs";
 import { v4 as uuid } from "uuid";
 

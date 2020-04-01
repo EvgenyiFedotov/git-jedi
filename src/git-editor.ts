@@ -1,6 +1,6 @@
 import path from "path";
-import { createFileWatcher } from "lib/v2/file-watcher";
-import { createFileConnector } from "lib/v2/file-connector";
+import { createFileWatcher } from "lib/file-watcher";
+import { createFileConnector } from "lib/file-connector";
 
 const args = process.argv;
 const PATH_EDITOR_MESSAGE = `${path.dirname(args[0])}/GIT_EDITOR_MESSAGE`;

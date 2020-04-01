@@ -1,4 +1,4 @@
-import * as fsPromise from "lib/v2/fs-promise";
+import * as fsPromise from "lib/fs-promise";
 
 export type Options = {
   path: string;

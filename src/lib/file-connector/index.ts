@@ -1,6 +1,6 @@
-import { FileWatcher } from "lib/v2/file-watcher";
+import { FileWatcher } from "lib/file-watcher";
 import { createPipe } from "lib/pipe";
-import * as fsPromise from "lib/v2/fs-promise";
+import * as fsPromise from "lib/fs-promise";
 
 export type Options = {
   watcher: FileWatcher;
