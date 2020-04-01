@@ -8,7 +8,7 @@ import {
   Effect,
   restore,
 } from "effector";
-import { createPendingStore } from "lib/added-effector/create-pending-store";
+import { createStatusEffect } from "lib/added-effector/status-effect";
 import { existsSync, writeFileSync, readFileSync } from "fs";
 import { PATH_SETTINGS } from "app/const";
 import { RunCommandOptions } from "lib/run-command";
@@ -74,7 +74,7 @@ export const $settings = combine({
   commitScopeRoot: $commitScopeRoot,
   commitScopeLength: $commitScopeLength,
 });
-export const $pendingReadSettings = createPendingStore(readSettings);
+export const { $value: $statusReadSettings } = createStatusEffect(readSettings);
 export const $runCommandOptions = $cwd.map(
   (cwd): RunCommandOptions => ({
     spawnOptions: { cwd: cwd || "/" },

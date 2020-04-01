@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   $cwd,
   initSettings,
-  $pendingReadSettings,
+  $statusReadSettings,
 } from "features/v2/settings/model";
 import { useStore } from "effector-react";
 import styled from "styled-components";
@@ -12,12 +12,16 @@ import { selectPathRepo } from "features/v2/path-repo";
 import {} from "features/v2/settings/model";
 
 export const Init: React.FC = ({ children }) => {
-  const pendingReadSettings = useStore($pendingReadSettings);
+  const statusReadSettings = useStore($statusReadSettings);
 
   React.useEffect(() => initSettings(), []);
 
-  if (pendingReadSettings !== false) {
+  if (statusReadSettings === null || statusReadSettings === "pending") {
     return <Spin />;
+  }
+
+  if (statusReadSettings === "fail") {
+    return <div>Error read settings</div>;
   }
 
   return <Setup>{children}</Setup>;
