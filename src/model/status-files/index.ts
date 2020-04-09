@@ -1,11 +1,7 @@
 import { createCommandEffect } from "lib/added-effector/command-effect";
 import * as ef from "effector";
 
-export type StatusFile = {
-  stage: string;
-  unstage: string;
-  path: string;
-};
+import { StatusFile } from "../types";
 
 export const gitStatus = createCommandEffect("git", () => [
   "status",

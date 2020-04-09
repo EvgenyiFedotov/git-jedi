@@ -7,15 +7,12 @@ import * as model from "model";
 import { useStore } from "effector-react";
 import { toStatusFileAction, toColor } from "lib/status-file-action";
 import * as antdIcons from "@ant-design/icons";
+import { DiffFile } from "ui/diff-file";
 
 const { $statusFiles, $unstagedFiles } = model.statusFiles;
 const { $discardingFiles, dicardFile, discardAll } = model.discardingFiles;
-const {
-  stageFile,
-  stageAll: stagetAll,
-  stageChunk,
-  stageLine,
-} = model.stageFiles;
+const { stageFile, stageAll } = model.stageFiles;
+const { loadUnstagedDiff, $unstagedDiffs } = model.unstagedDiffFiles;
 
 export const UnstagedFiles: React.FC = () => {
   return (
@@ -83,7 +80,7 @@ const ButtonDirscardAll: React.FC = () => {
 
 const ButtinStageAll: React.FC = () => {
   const click = React.useCallback(() => {
-    stagetAll();
+    stageAll();
   }, []);
 
   return (
@@ -110,26 +107,52 @@ const List: React.FC = () => {
 };
 
 type ItemProps = {
-  statusFile: model.statusFiles.StatusFile;
+  statusFile: model.types.StatusFile;
 };
 
 const Item: React.FC<ItemProps> = ({ statusFile }) => {
-  // const [showDiff, setShowDiff] = React.useState<boolean>(false);
+  const [showDiff, setShowDiff] = React.useState<boolean>(false);
+
+  const click = React.useCallback(() => {
+    if (showDiff) {
+      setShowDiff(false);
+    } else {
+      loadUnstagedDiff(statusFile);
+      setShowDiff(true);
+    }
+  }, [showDiff, statusFile]);
+
+  const diff = React.useMemo(() => {
+    return showDiff ? <Diff statusFile={statusFile} /> : null;
+  }, [showDiff, statusFile]);
 
   return (
-    <ListItem>
-      <ui.Row>
+    <>
+      <ListItem onClick={click}>
         <ui.Row>
-          <Status statusFile={statusFile} />
-          <span>{statusFile.path}</span>
+          <ui.Row>
+            <Status statusFile={statusFile} />
+            <span>{statusFile.path}</span>
+          </ui.Row>
+          <ui.Row>
+            <CheckDiscardingFile statusFile={statusFile} />
+            <ButtonStageFile statusFile={statusFile} />
+          </ui.Row>
         </ui.Row>
-        <ui.Row>
-          <CheckDiscardingFile statusFile={statusFile} />
-          <ButtonStageFile statusFile={statusFile} />
-        </ui.Row>
-      </ui.Row>
-    </ListItem>
+      </ListItem>
+      {diff}
+    </>
   );
+};
+
+const Diff: React.FC<ItemProps> = ({ statusFile }) => {
+  const diffFile = useStore($unstagedDiffs).ref.get(statusFile.path);
+
+  if (diffFile) {
+    return <DiffFile diffFile={diffFile} status="unstage" />;
+  }
+
+  return null;
 };
 
 const Status: React.FC<ItemProps> = ({ statusFile }) => {
@@ -180,9 +203,13 @@ const ButtonDiscardFile: React.FC<ItemProps> = ({ statusFile }) => {
 };
 
 const ButtonStageFile: React.FC<ItemProps> = ({ statusFile }) => {
-  const click = React.useCallback(() => {
-    stageFile(statusFile.path);
-  }, [statusFile]);
+  const click = React.useCallback(
+    (event) => {
+      event.stopPropagation();
+      stageFile(statusFile.path);
+    },
+    [statusFile],
+  );
 
   return (
     <antd.Tooltip title="stage" mouseEnterDelay={1.5}>

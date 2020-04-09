@@ -7,14 +7,11 @@ import styled from "styled-components";
 import * as model from "model";
 import { useStore } from "effector-react";
 import { toStatusFileAction, toColor } from "lib/status-file-action";
+import { DiffFile } from "ui/diff-file";
 
 const { $stagedFiles } = model.statusFiles;
-const {
-  unstageAll,
-  unstageFile,
-  unstageChunk,
-  unstageLine,
-} = model.unstageFiles;
+const { unstageAll, unstageFile } = model.unstageFiles;
+const { loadStageDiff, $stagedDiffs } = model.stagedDiffFiles;
 
 export const StagedFiles: React.FC = () => {
   return (
@@ -63,23 +60,51 @@ const List: React.FC = () => {
 };
 
 type ItemProps = {
-  statusFile: model.statusFiles.StatusFile;
+  statusFile: model.types.StatusFile;
 };
 
 const Item: React.FC<ItemProps> = ({ statusFile }) => {
+  const [showDiff, setShowDiff] = React.useState<boolean>(false);
+
+  const click = React.useCallback(() => {
+    if (showDiff) {
+      setShowDiff(false);
+    } else {
+      loadStageDiff(statusFile.path);
+      setShowDiff(true);
+    }
+  }, [showDiff, statusFile]);
+
+  const diff = React.useMemo(() => {
+    return showDiff ? <Diff statusFile={statusFile} /> : null;
+  }, [showDiff, statusFile]);
+
   return (
-    <uiAntd.ListItem>
-      <ui.Row>
+    <>
+      <uiAntd.ListItem onClick={click}>
         <ui.Row>
-          <Status statusFile={statusFile} />
-          <span>{statusFile.path}</span>
+          <ui.Row>
+            <Status statusFile={statusFile} />
+            <span>{statusFile.path}</span>
+          </ui.Row>
+          <ui.Row>
+            <ButtonUnstage statusFile={statusFile} />
+          </ui.Row>
         </ui.Row>
-        <ui.Row>
-          <ButtonUnstage statusFile={statusFile} />
-        </ui.Row>
-      </ui.Row>
-    </uiAntd.ListItem>
+      </uiAntd.ListItem>
+      {diff}
+    </>
   );
+};
+
+const Diff: React.FC<ItemProps> = ({ statusFile }) => {
+  const diffFile = useStore($stagedDiffs).ref.get(statusFile.path);
+
+  if (diffFile) {
+    return <DiffFile diffFile={diffFile} status="stage" />;
+  }
+
+  return null;
 };
 
 const Status: React.FC<ItemProps> = ({ statusFile }) => {
@@ -96,9 +121,13 @@ const Status: React.FC<ItemProps> = ({ statusFile }) => {
 };
 
 const ButtonUnstage: React.FC<ItemProps> = ({ statusFile }) => {
-  const click = React.useCallback(() => {
-    unstageFile(statusFile.path);
-  }, [statusFile]);
+  const click = React.useCallback(
+    (event) => {
+      event.stopPropagation();
+      unstageFile(statusFile.path);
+    },
+    [statusFile],
+  );
 
   return (
     <antd.Tooltip title="unstage" mouseEnterDelay={1.5}>
