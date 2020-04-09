@@ -8,14 +8,16 @@ import { useStore } from "effector-react";
 import { toStatusFileAction, toColor } from "lib/status-file-action";
 import * as antdIcons from "@ant-design/icons";
 
-const { $statusFiles } = model.statusFiles;
+const { $statusFiles, $unstagedFiles } = model.statusFiles;
 const { $discardingFiles, dicardFile, discardAll } = model.discardingFiles;
+const {
+  stageFile,
+  stageAll: stagetAll,
+  stageChunk,
+  stageLine,
+} = model.stageFiles;
 
-const $unstageFiles = $statusFiles.map((statusFiles) => {
-  return statusFiles.filter(({ unstage }) => unstage !== " ");
-});
-
-export const UnstageFiles: React.FC = () => {
+export const UnstagedFiles: React.FC = () => {
   return (
     <ui.Column>
       <Header />
@@ -34,7 +36,7 @@ const Header: React.FC = () => {
 };
 
 const HeaderButtons: React.FC = () => {
-  const unstageFiles = useStore($unstageFiles);
+  const unstageFiles = useStore($unstagedFiles);
 
   if (unstageFiles.length === 0) {
     return null;
@@ -80,9 +82,13 @@ const ButtonDirscardAll: React.FC = () => {
 };
 
 const ButtinStageAll: React.FC = () => {
+  const click = React.useCallback(() => {
+    stagetAll();
+  }, []);
+
   return (
     <antd.Tooltip title="stage all" mouseEnterDelay={1.5}>
-      <ui.ButtonIcon>
+      <ui.ButtonIcon onClick={click}>
         <antdIcons.PlusOutlined />
       </ui.ButtonIcon>
     </antd.Tooltip>
@@ -90,15 +96,15 @@ const ButtinStageAll: React.FC = () => {
 };
 
 const List: React.FC = () => {
-  const unstageFiles = useStore($unstageFiles);
+  const unstageFiles = useStore($unstagedFiles);
+
+  if (unstageFiles.length === 0) {
+    return <ui.RowPadding>List is empty</ui.RowPadding>;
+  }
 
   const list = unstageFiles.map((statusFile) => (
     <Item statusFile={statusFile} key={statusFile.path} />
   ));
-
-  if (list.length === 0) {
-    return <ui.RowPadding>List is empty</ui.RowPadding>;
-  }
 
   return <antd.List size="small">{list}</antd.List>;
 };
@@ -108,6 +114,8 @@ type ItemProps = {
 };
 
 const Item: React.FC<ItemProps> = ({ statusFile }) => {
+  // const [showDiff, setShowDiff] = React.useState<boolean>(false);
+
   return (
     <ListItem>
       <ui.Row>
@@ -171,10 +179,14 @@ const ButtonDiscardFile: React.FC<ItemProps> = ({ statusFile }) => {
   );
 };
 
-const ButtonStageFile: React.FC<ItemProps> = () => {
+const ButtonStageFile: React.FC<ItemProps> = ({ statusFile }) => {
+  const click = React.useCallback(() => {
+    stageFile(statusFile.path);
+  }, [statusFile]);
+
   return (
     <antd.Tooltip title="stage" mouseEnterDelay={1.5}>
-      <ui.ButtonIcon>
+      <ui.ButtonIcon onClick={click}>
         <antdIcons.PlusOutlined />
       </ui.ButtonIcon>
     </antd.Tooltip>

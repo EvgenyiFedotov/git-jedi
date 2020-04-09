@@ -25,7 +25,7 @@ export type DiffFile = {
   chunks: DiffChunk[];
 };
 
-export function parseResult(result: ResultPromise): DiffFile[] {
+export function toDiffFiles(result: ResultPromise): DiffFile[] {
   return result
     .data()
     .map((value) => value.split("diff --git ").filter(Boolean))

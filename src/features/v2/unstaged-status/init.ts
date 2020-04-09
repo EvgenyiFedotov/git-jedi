@@ -1,7 +1,7 @@
 import { sample, forward, merge, guard } from "effector";
 import { $status, getStatusS } from "features/v2/status/model";
 import { createDependRunCommandOptions } from "features/v2/settings/model";
-import { parseResult, createPatchByChunk, createPatchByLine } from "lib/diff";
+import { toDiffFiles, createPatchByChunk, createPatchByLine } from "lib/diff";
 
 import * as model from "./model";
 
@@ -149,7 +149,7 @@ createDependRunCommandOptions({
 });
 
 model.$unstagedStatus.on(model.diff.done, (store, { result }) => {
-  const diffFiles = parseResult(result);
+  const diffFiles = toDiffFiles(result);
 
   if (diffFiles.length) {
     diffFiles.forEach((diffFile) => {
