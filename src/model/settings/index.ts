@@ -3,7 +3,7 @@ import * as fsPromise from "lib/fs-promise";
 import { createStatusEffect } from "lib/added-effector/status-effect";
 import * as electron from "electron";
 
-import * as consts from "./constants";
+import * as consts from "../constants";
 
 const DEF_HOT_KEYS: Settings["hotKeys"] = [
   { type: "command", targetId: "changePathRepo", command: "command+shift+o" },

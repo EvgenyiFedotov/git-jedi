@@ -1,9 +1,9 @@
 import * as ef from "effector";
 
-import { $branches } from "../static/branches";
-import { attachRunCommand } from "../static/run-command";
-import { $remotes } from "../static/git-config";
-import * as model from "../static/diff-commits";
+import { $branches } from "../branches";
+import { attachRunCommand } from "../run-command";
+import { $remotes } from "../git-config";
+import * as st from ".";
 
 // Calc published
 const $currentBranch = $branches.map((branches) => {
@@ -12,7 +12,7 @@ const $currentBranch = $branches.map((branches) => {
   );
 });
 
-model.$published.on($currentBranch, (_, currBranch) => !!currBranch.remoteName);
+st.$published.on($currentBranch, (_, currBranch) => !!currBranch.remoteName);
 
 // Diff pull
 const diffPullParams = ef.sample({
@@ -31,10 +31,10 @@ const diffPullParams = ef.sample({
 
 attachRunCommand({
   event: diffPullParams,
-  effect: model.diffPull,
+  effect: st.diffPull,
 });
 
-const diffPull = model.diffPull.done.map(({ result }) => {
+const diffPull = st.diffPull.done.map(({ result }) => {
   return result.data().reduce((memo, value) => {
     return memo + value.split("\n").length - 1;
   }, 0);
@@ -42,7 +42,7 @@ const diffPull = model.diffPull.done.map(({ result }) => {
 
 ef.forward({
   from: diffPull,
-  to: model.$diffPull,
+  to: st.$diffPull,
 });
 
 // Diff push
@@ -62,10 +62,10 @@ const diffPushParams = ef.sample({
 
 attachRunCommand({
   event: diffPushParams,
-  effect: model.diffPush,
+  effect: st.diffPush,
 });
 
-const diffPush = model.diffPush.done.map(({ result }) => {
+const diffPush = st.diffPush.done.map(({ result }) => {
   return result.data().reduce((memo, value) => {
     return memo + value.split("\n").length - 1;
   }, 0);
@@ -73,8 +73,8 @@ const diffPush = model.diffPush.done.map(({ result }) => {
 
 ef.forward({
   from: diffPush,
-  to: model.$diffPush,
+  to: st.$diffPush,
 });
 
 // Get $existRemote
-model.$existRemote.on($remotes, (_, remotes) => !!remotes.size);
+st.$existRemote.on($remotes, (_, remotes) => !!remotes.size);

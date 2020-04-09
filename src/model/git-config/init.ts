@@ -1,8 +1,8 @@
 import * as ef from "effector";
 
-import { $cwd } from "../static/settings";
-import { attachRunCommand } from "../static/run-command";
-import * as model from "../static/git-config";
+import { $cwd } from "../settings";
+import { attachRunCommand } from "../run-command";
+import * as model from ".";
 
 // Load config
 ef.forward({

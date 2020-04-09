@@ -1,20 +1,20 @@
 import * as ef from "effector";
 
-import { $cwd } from "../static/settings";
-import { attachRunCommand } from "../static/run-command";
-import * as model from "../static/status-files";
+import { $cwd } from "../settings";
+import { attachRunCommand } from "../run-command";
+import * as st from ".";
 
 ef.forward({
   from: $cwd,
-  to: model.loadStatusFiles,
+  to: st.loadStatusFiles,
 });
 
 attachRunCommand({
-  event: model.loadStatusFiles,
-  effect: model.gitStatus,
+  event: st.loadStatusFiles,
+  effect: st.gitStatus,
 });
 
-model.$statusFiles.on(model.gitStatus.done, (_, { result }) =>
+st.$statusFiles.on(st.gitStatus.done, (_, { result }) =>
   result
     .data()
     .map((value) => value.split("\n"))

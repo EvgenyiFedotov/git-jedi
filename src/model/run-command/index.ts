@@ -3,7 +3,7 @@ import { Params } from "lib/added-effector/command-effect";
 import { ResultPromise } from "lib/create-command";
 import { RunCommandOptions } from "lib/run-command";
 
-import { $cwd } from "./settings";
+import { $cwd } from "../settings";
 
 export const $runCommandOptions = $cwd.map(
   (cwd): RunCommandOptions => ({

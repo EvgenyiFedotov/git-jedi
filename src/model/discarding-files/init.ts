@@ -1,31 +1,31 @@
 import * as ef from "effector";
 
-import { $statusFiles, loadStatusFiles } from "../static/status-files";
-import { attachRunCommand } from "../static/run-command";
-import * as model from "../static/discarding-files";
+import { $statusFiles, loadStatusFiles } from "../status-files";
+import { attachRunCommand } from "../run-command";
+import * as st from ".";
 
 // Event discard all files in $statusFiles
 const discardAll = ef.sample({
   source: $statusFiles.map((files) =>
     files.filter(({ unstage }) => unstage !== " ").map(({ path }) => path),
   ),
-  clock: model.discardAll,
+  clock: st.discardAll,
 });
 
 // Run dicarding
 attachRunCommand({
   event: discardAll.map((paths) => ({ paths })),
-  effect: model.discard,
+  effect: st.discard,
 });
 
 attachRunCommand({
-  event: model.dicardFile.map((path) => ({ paths: [path] })),
-  effect: model.discard,
+  event: st.dicardFile.map((path) => ({ paths: [path] })),
+  effect: st.discard,
 });
 
 // Update $dicardingFiles
-model.$discardingFiles
-  .on(model.dicardFile, ({ ref }, path) => {
+st.$discardingFiles
+  .on(st.dicardFile, ({ ref }, path) => {
     ref.add(path);
 
     return { ref };
@@ -35,7 +35,7 @@ model.$discardingFiles
 
     return { ref };
   })
-  .on(model.discard.done, ({ ref }, { params: { params } }) => {
+  .on(st.discard.done, ({ ref }, { params: { params } }) => {
     params.paths.forEach((path) => ref.delete(path));
 
     return { ref };
@@ -43,6 +43,6 @@ model.$discardingFiles
 
 // Update $statusFiles after discarding
 ef.forward({
-  from: model.discard.done,
+  from: st.discard.done,
   to: loadStatusFiles,
 });

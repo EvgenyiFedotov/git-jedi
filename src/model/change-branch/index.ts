@@ -1,7 +1,7 @@
 import * as ef from "effector";
 import { createCommandEffect } from "lib/added-effector/command-effect";
 
-import { Branch } from "./branches";
+import { Branch } from "../branches";
 
 export const checkoutTo = createCommandEffect<{ branch: Branch }>(
   "git",

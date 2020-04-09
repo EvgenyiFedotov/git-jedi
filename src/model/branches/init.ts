@@ -1,24 +1,24 @@
 import * as ef from "effector";
 
-import { $cwd } from "../static/settings";
-import { checkoutTo } from "../static/change-branch";
-import { attachRunCommand } from "../static/run-command";
-import * as model from "../static/branches";
+import { $cwd } from "../settings";
+import { checkoutTo } from "../change-branch";
+import { attachRunCommand } from "../run-command";
+import * as st from ".";
 
 ef.forward({
   from: ef.merge([$cwd, checkoutTo.done]),
-  to: model.loadBranches,
+  to: st.loadBranches,
 });
 
 attachRunCommand({
-  event: model.loadBranches,
-  effect: model.gitBranchList,
+  event: st.loadBranches,
+  effect: st.gitBranchList,
 });
 
-model.$branches.on(model.gitBranchList.done, (_, { result }) => {
+st.$branches.on(st.gitBranchList.done, (_, { result }) => {
   const branches = result
     .data()
-    .map<model.Branch[]>((value) =>
+    .map<st.Branch[]>((value) =>
       JSON.parse(`[${value.substr(0, value.length - 2)}]`),
     )
     .reduce((memo, list) => [...memo, ...list], [])

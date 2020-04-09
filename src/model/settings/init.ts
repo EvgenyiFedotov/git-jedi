@@ -1,32 +1,32 @@
 import * as ef from "effector";
 
-import * as model from "../static/settings";
+import * as st from ".";
 
 const setupDefaultSettings = ef.guard({
-  source: model.readSettings.done,
+  source: st.readSettings.done,
   filter: ({ result }) => !result,
 });
 
 ef.forward({
-  from: model.initSettings,
-  to: model.readSettings,
+  from: st.initSettings,
+  to: st.readSettings,
 });
 
 ef.sample({
-  source: model.$settings,
+  source: st.$settings,
   clock: setupDefaultSettings,
-  target: model.writeSettings,
+  target: st.writeSettings,
 });
 
 ef.forward({
-  from: model.$settings,
-  to: model.writeSettings,
+  from: st.$settings,
+  to: st.writeSettings,
 });
 
 // Add, remove commit types
 ef.sample({
-  source: ef.combine([model.$newCommitType, model.$commitTypes]),
-  clock: model.addNewCommitType,
+  source: ef.combine([st.$newCommitType, st.$commitTypes]),
+  clock: st.addNewCommitType,
   fn: ([newType, commitTypes]) => {
     const index = commitTypes.indexOf(newType);
 
@@ -36,12 +36,12 @@ ef.sample({
 
     return commitTypes;
   },
-  target: model.$commitTypes,
+  target: st.$commitTypes,
 });
 
 ef.sample({
-  source: model.$commitTypes,
-  clock: model.removeCommitType,
+  source: st.$commitTypes,
+  clock: st.removeCommitType,
   fn: (commitTypes, removeType) => {
     const index = commitTypes.indexOf(removeType);
 
@@ -55,66 +55,66 @@ ef.sample({
 
     return next;
   },
-  target: model.$commitTypes,
+  target: st.$commitTypes,
 });
 
-model.$newCommitType.on(model.$commitTypes, () => "");
+st.$newCommitType.on(st.$commitTypes, () => "");
 
 // Setup default item settings
 
 ef.sample({
-  source: model.$cwd,
-  clock: model.readSettings.done,
+  source: st.$cwd,
+  clock: st.readSettings.done,
   fn: (store, { result }) => (result ? result.cwd || store || null : store),
-  target: model.$cwd,
+  target: st.$cwd,
 });
 
 ef.sample({
-  source: model.$hotKeys,
-  clock: model.readSettings.done,
+  source: st.$hotKeys,
+  clock: st.readSettings.done,
   fn: (store, { result }) => (result ? result.hotKeys || store || null : store),
-  target: model.$hotKeys,
+  target: st.$hotKeys,
 });
 
 ef.sample({
-  source: model.$commitTypes,
-  clock: model.readSettings.done,
+  source: st.$commitTypes,
+  clock: st.readSettings.done,
   fn: (store, { result }) => (result ? result.commitTypes || store : store),
-  target: model.$commitTypes,
+  target: st.$commitTypes,
 });
 
 ef.sample({
-  source: model.$commitScopeRoot,
-  clock: model.readSettings.done,
+  source: st.$commitScopeRoot,
+  clock: st.readSettings.done,
   fn: (store, { result }) => (result ? result.commitScopeRoot || store : store),
-  target: model.$commitScopeRoot,
+  target: st.$commitScopeRoot,
 });
 
 ef.sample({
-  source: model.$commitScopeLength,
-  clock: model.readSettings.done,
+  source: st.$commitScopeLength,
+  clock: st.readSettings.done,
   fn: (store, { result }) =>
     result ? result.commitScopeLength || store : store,
-  target: model.$commitScopeLength,
+  target: st.$commitScopeLength,
 });
 
 // Select cwd
 ef.sample({
-  source: model.$cwd,
-  clock: model.selectCwd,
+  source: st.$cwd,
+  clock: st.selectCwd,
   fn: (cwd) => cwd || "/",
-  target: model.showSelectCwdDialog,
+  target: st.showSelectCwdDialog,
 });
 
 ef.guard({
-  source: model.readSettings.done,
+  source: st.readSettings.done,
   filter: ({ result }) => !!result && !result.cwd,
-  target: model.selectCwd.prepend((_: any) => {}),
+  target: st.selectCwd.prepend((_: any) => {}),
 });
 
 const changeCwdAfterSelect = ef.sample({
-  source: model.$cwd,
-  clock: model.showSelectCwdDialog.done,
+  source: st.$cwd,
+  clock: st.showSelectCwdDialog.done,
   fn: (store, { result }) => ({
     store,
     next: result.filePaths[0] || store || null,
@@ -123,13 +123,13 @@ const changeCwdAfterSelect = ef.sample({
 
 ef.forward({
   from: changeCwdAfterSelect.map(({ next }) => next),
-  to: model.$cwd,
+  to: st.$cwd,
 });
 
 ef.guard({
   source: changeCwdAfterSelect,
   filter: ({ store, next }) => store !== next,
-  target: model.changedCwd.prepend(
+  target: st.changedCwd.prepend(
     ({ next }: { store: string | null; next: string | null }) => next,
   ),
 });
