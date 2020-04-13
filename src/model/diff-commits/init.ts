@@ -1,4 +1,5 @@
 import * as ef from "effector";
+import { createCheck } from "lib/added-effector/create-check";
 
 import { $branches } from "../branches";
 import { attachRunCommand } from "../run-command";
@@ -14,13 +15,16 @@ const $currentBranch = $branches.map((branches) => {
 
 st.$published.on($currentBranch, (_, currBranch) => !!currBranch.remoteName);
 
+// Exist remote for $currentBranch
+const isExistRemote = createCheck(
+  $currentBranch,
+  ({ remoteName, remote }) => !!(remoteName && remote),
+);
+
 // Diff pull
 const diffPullParams = ef.sample({
   source: $currentBranch,
-  clock: ef.guard({
-    source: $currentBranch,
-    filter: ({ remoteName }) => !!remoteName,
-  }),
+  clock: isExistRemote.done,
   fn: (currBranch) => {
     const from = currBranch.name;
     const to = `${currBranch.remoteName}/${currBranch.name}`;
@@ -48,10 +52,7 @@ ef.forward({
 // Diff push
 const diffPushParams = ef.sample({
   source: $currentBranch,
-  clock: ef.guard({
-    source: $currentBranch,
-    filter: ({ remoteName }) => !!remoteName,
-  }),
+  clock: isExistRemote.done,
   fn: (currBranch) => {
     const from = `${currBranch.remoteName}/${currBranch.name}`;
     const to = currBranch.name;
@@ -78,3 +79,8 @@ ef.forward({
 
 // Get $existRemote
 st.$existRemote.on($remotes, (_, remotes) => !!remotes.size);
+
+// Reset $diffPull, $diffPush
+st.$diffPull.on(isExistRemote.fail, () => 0);
+
+st.$diffPush.on(isExistRemote.fail, () => 0);

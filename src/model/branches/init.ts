@@ -24,7 +24,7 @@ st.$branches.on(st.gitBranchList.done, (_, { result }) => {
     .reduce((memo, list) => [...memo, ...list], [])
     .filter(({ name, refName }) => name !== refName);
 
-  return branches.reduce((memo, branch) => {
+  return branches.reduce<Map<string, st.Branch>>((memo, branch) => {
     const nameArr = branch.name.split("/");
 
     if (nameArr.length > 1) {
@@ -34,6 +34,7 @@ st.$branches.on(st.gitBranchList.done, (_, { result }) => {
       const branchMemo = memo.get(name);
 
       if (branchMemo && branchMemo.remoteName === remoteName) {
+        branchMemo.remote = branch;
       } else {
         memo.set(branch.name, branch);
       }
@@ -43,4 +44,10 @@ st.$branches.on(st.gitBranchList.done, (_, { result }) => {
 
     return memo;
   }, new Map());
+});
+
+// Command: git fetch -p
+attachRunCommand({
+  event: st.fetchP,
+  effect: st.gitFetchP,
 });

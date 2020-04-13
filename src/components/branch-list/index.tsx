@@ -6,7 +6,7 @@ import * as model from "model";
 import { ListItem } from "ui/antd";
 import { Row } from "ui";
 
-const { $branches } = model.branches;
+const { $branches, fetchP } = model.branches;
 const { changeBranch } = model.changeBranch;
 
 export const BranchList: React.FC = () => {
@@ -20,6 +20,12 @@ export const BranchList: React.FC = () => {
 };
 
 const Item: React.FC<{ branch: model.branches.Branch }> = ({ branch }) => {
+  const colorTag = React.useMemo(() => {
+    if (branch.remote) {
+      return "blue";
+    }
+  }, [branch]);
+
   return (
     <ListItem onClick={() => changeBranch({ branch })}>
       <Row>
@@ -29,10 +35,18 @@ const Item: React.FC<{ branch: model.branches.Branch }> = ({ branch }) => {
             <div>{branch.name}</div>
           </Branch>
           <Branch if={!!branch.remoteName}>
-            <antd.Tag color="blue">{branch.remoteName}</antd.Tag>
+            <antd.Tag color={colorTag}>{branch.remoteName}</antd.Tag>
           </Branch>
         </Row>
       </Row>
     </ListItem>
+  );
+};
+
+export const ButtonFetch: React.FC = () => {
+  return (
+    <antd.Button size="small" type="primary" onClick={() => fetchP()}>
+      Fetch
+    </antd.Button>
   );
 };

@@ -1,11 +1,11 @@
 import * as React from "react";
 import styled from "styled-components";
-import { LinkBlock } from "ui";
+import { LinkBlock, Row, Column } from "ui";
 import { useStore } from "effector-react";
 import { Spin, Tooltip, Drawer } from "antd";
 import { BranchesOutlined } from "@ant-design/icons";
 import { createVisible } from "lib/added-effector/visible";
-import { BranchList } from "components/branch-list";
+import { BranchList, ButtonFetch } from "components/branch-list";
 
 import { currentBranch } from "model";
 
@@ -39,7 +39,12 @@ const DrawerBranchList: React.FC = () => {
       placement="right"
       width="460px"
     >
-      <BranchList />
+      <Column>
+        <Row>
+          <ButtonFetch />
+        </Row>
+        <BranchList />
+      </Column>
     </Drawer>
   );
 };
