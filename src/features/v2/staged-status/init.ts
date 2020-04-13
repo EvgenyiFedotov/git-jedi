@@ -82,19 +82,19 @@ forward({
   to: getStatusS,
 });
 
-createDependRunCommandOptions({
-  event: model.createPatchByChunk.map((diffChunk) => ({
-    patch: createPatchByChunk(diffChunk, true),
-  })),
-  effect: model.stageByPatchChunk,
-});
+// createDependRunCommandOptions({
+//   event: model.createPatchByChunk.map((diffChunk) => ({
+//     patch: createPatchByChunk(diffChunk, true),
+//   })),
+//   effect: model.stageByPatchChunk,
+// });
 
-createDependRunCommandOptions({
-  event: model.createPatchByLine.map((diffLine) => ({
-    patch: createPatchByLine(diffLine, true),
-  })),
-  effect: model.stageByPatchLine,
-});
+// createDependRunCommandOptions({
+//   event: model.createPatchByLine.map((diffLine) => ({
+//     patch: createPatchByLine(diffLine, true),
+//   })),
+//   effect: model.stageByPatchLine,
+// });
 
 sample({
   source: model.$stagedStatus,

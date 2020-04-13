@@ -32,9 +32,15 @@ const Header: React.FC = () => {
 };
 
 const ButtonUnstageAll: React.FC = () => {
+  const stagedFiles = useStore($stagedFiles);
+
   const click = React.useCallback(() => {
     unstageAll();
   }, []);
+
+  if (stagedFiles.length === 0) {
+    return null;
+  }
 
   return (
     <antd.Tooltip title="unstage all" mouseEnterDelay={1.5}>

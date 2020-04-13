@@ -177,19 +177,19 @@ model.$unstagedStatus.on(model.hideDiff, (store, path) => {
   return store;
 });
 
-createDependRunCommandOptions({
-  event: model.createPatchByChunk.map((diffChunk) => ({
-    patch: createPatchByChunk(diffChunk),
-  })),
-  effect: model.stageByPatchChunk,
-});
+// createDependRunCommandOptions({
+//   event: model.createPatchByChunk.map((diffChunk) => ({
+//     patch: createPatchByChunk(diffChunk),
+//   })),
+//   effect: model.stageByPatchChunk,
+// });
 
-createDependRunCommandOptions({
-  event: model.createPatchByLine.map((diffLine) => ({
-    patch: createPatchByLine(diffLine),
-  })),
-  effect: model.stageByPatchLine,
-});
+// createDependRunCommandOptions({
+//   event: model.createPatchByLine.map((diffLine) => ({
+//     patch: createPatchByLine(diffLine),
+//   })),
+//   effect: model.stageByPatchLine,
+// });
 
 forward({
   from: merge([

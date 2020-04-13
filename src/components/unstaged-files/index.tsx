@@ -11,7 +11,7 @@ import { DiffFile } from "ui/diff-file";
 
 const { $statusFiles, $unstagedFiles } = model.statusFiles;
 const { $discardingFiles, dicardFile, discardAll } = model.discardingFiles;
-const { stageFile, stageAll } = model.stageFiles;
+const { stageFile, stageAll, stageChunk, stageLine } = model.stageFiles;
 const { loadUnstagedDiff, $unstagedDiffs } = model.unstagedDiffFiles;
 
 export const UnstagedFiles: React.FC = () => {
@@ -149,7 +149,14 @@ const Diff: React.FC<ItemProps> = ({ statusFile }) => {
   const diffFile = useStore($unstagedDiffs).ref.get(statusFile.path);
 
   if (diffFile) {
-    return <DiffFile diffFile={diffFile} status="unstage" />;
+    return (
+      <DiffFile
+        diffFile={diffFile}
+        status="unstage"
+        onClickChunk={stageChunk}
+        onClickLine={stageLine}
+      />
+    );
   }
 
   return null;

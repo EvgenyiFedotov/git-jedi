@@ -5,6 +5,11 @@ import * as fsPromise from "lib/fs-promise";
 import { createCommandEffect } from "lib/added-effector/command-effect";
 import { createCommand } from "lib/create-command";
 
+export type StageByPatchParams = {
+  path: string;
+  patch: string;
+};
+
 export const createStageByPatch = (_: {
   pathGitEditor: string;
   pathGitEditorMessage: string;
@@ -14,7 +19,7 @@ export const createStageByPatch = (_: {
   const watcher = createFileWatcher({ path: pathGitEditorMessage });
   const connector = createFileConnector({ watcher, id: "ustaged-connector" });
 
-  const stageByPatch = createCommandEffect<{ patch: string }>({
+  const stageByPatch = createCommandEffect<StageByPatchParams>({
     command: async ({ options }) => {
       const configCoreEditor = await createCommand(
         "git",
@@ -40,9 +45,7 @@ export const createStageByPatch = (_: {
         .run()
         .promise();
 
-      await createCommand("git", ["add", "-e"], options)
-        .run()
-        .promise();
+      await createCommand("git", ["add", "-e"], options).run().promise();
 
       watcher.stop();
 

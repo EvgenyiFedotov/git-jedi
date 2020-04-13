@@ -20,18 +20,21 @@ attachRunCommand({
 
 attachRunCommand({
   event: st.stageChunk.map((diffChunk) => ({
+    path: diffChunk.file.path,
     patch: createPatchByChunk(diffChunk),
   })),
+  effect: st.stageByPatchChunk,
 });
 
 attachRunCommand({
   event: st.stageLine.map((diffLine) => ({
+    path: diffLine.chunk.file.path,
     patch: createPatchByLine(diffLine),
   })),
   effect: st.stageByPatchLine,
 });
 
-// Updadet $statusFiles
+// Update $statusFiles
 ef.forward({
   from: ef.merge([
     st.stage.done,

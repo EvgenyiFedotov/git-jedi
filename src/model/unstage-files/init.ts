@@ -19,6 +19,7 @@ attachRunCommand({
 
 attachRunCommand({
   event: st.unstageChunk.map((diffChunk) => ({
+    path: diffChunk.file.path,
     patch: createPatchByChunk(diffChunk, true),
   })),
   effect: st.unstageByPatchChunk,
@@ -26,6 +27,7 @@ attachRunCommand({
 
 attachRunCommand({
   event: st.unstageLine.map((diffLine) => ({
+    path: diffLine.chunk.file.path,
     patch: createPatchByLine(diffLine, true),
   })),
   effect: st.unstageByPatchLine,
