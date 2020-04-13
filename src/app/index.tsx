@@ -1,37 +1,63 @@
 import * as React from "react";
-import { GlobalStyle } from "./global-style";
+import { Column, RowBase } from "ui";
 import styled from "styled-components";
-import { Row } from "antd";
+import { Init } from "components/init";
+import { Divider } from "antd";
+import { PathRepo } from "components/path-repo";
+import { CurrentBranch } from "components/current-branch";
+import { DiffCommits } from "components/diff-commits";
+import { ButtonSettings } from "components/button-settings";
+import { UnstagedFiles } from "components/unstaged-files";
+import { StagedFiles } from "components/staged-files";
 
-// import { Settings } from "features/v2/settings";
-import { Init } from "features/v2/init";
-import { Header } from "templates/v2/header";
-import { Footer } from "templates/v2/footer";
-import { Content } from "templates/v2/content";
-import { DrawerBranchList } from "features/v2/drawer-branch-list";
-import { DrawerStatus } from "features/v2/drawer-status/component";
-
-export const App = () => {
+export const App: React.FC = () => {
   return (
-    <>
-      <GlobalStyle />
-      <Container>
-        <Init>
-          {/* <Header /> */}
-          <Content />
-          <Footer />
-          <DrawerBranchList />
-          <DrawerStatus />
-        </Init>
-      </Container>
-    </>
+    <SApp>
+      <Init>
+        <Content />
+        <Footer />
+      </Init>
+    </SApp>
   );
 };
 
-export const Container = styled(Row)`
-  display: flex;
-  flex: none;
-  flex-direction: column;
+const Content: React.FC = () => {
+  return (
+    <Column>
+      <UnstagedFiles />
+      <StagedFiles />
+    </Column>
+  );
+};
+
+const Footer: React.FC = () => {
+  return (
+    <SFooter>
+      <RowBase>
+        <PathRepo />
+        <Divider type="vertical" />
+        <CurrentBranch />
+        <Divider type="vertical" />
+        <DiffCommits />
+      </RowBase>
+
+      <RowBase>
+        <ButtonSettings />
+      </RowBase>
+    </SFooter>
+  );
+};
+
+const SApp = styled.div``;
+
+const SFooter = styled(RowBase)`
+  justify-content: space-between;
+  position: fixed;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 24px;
+  padding: 0 8px;
+  background-color: white;
+  border-top: 1px solid #f5f5f5;
 `;
