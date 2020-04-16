@@ -1,11 +1,16 @@
 import "normalize.css";
 import styled, { createGlobalStyle } from "styled-components";
-import { RowBase } from "ui";
+import { RowBase, Column } from "ui";
 
 export const Style = createGlobalStyle`
   :root {
     --bg-color: #FFFFFF;
     --bg-border-color: #f5f5f5;
+  }
+
+  html, body, #app {
+    width: 100%;
+    height: 100%;
   }
 
   * {
@@ -16,7 +21,11 @@ export const Style = createGlobalStyle`
 export const AppContainer = styled.div`
   background-color: var(--bg-color);
   padding: 0 8px;
+  width: 100%;
+  height: 100%;
 `;
+
+export const ContentContainer = styled(Column)``;
 
 export const FooterContainer = styled(RowBase)`
   justify-content: space-between;

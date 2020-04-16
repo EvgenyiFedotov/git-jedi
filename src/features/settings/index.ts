@@ -1,1 +1,3 @@
-export { Setting } from "./component";
+import "./init";
+
+export { Settings, WordDir } from "./components";

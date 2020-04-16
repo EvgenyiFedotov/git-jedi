@@ -1,29 +1,31 @@
 import * as React from "react";
 import { Column, RowBase } from "ui";
-import { Setting } from "features/settings";
+import { Settings, WordDir } from "features/settings";
 
-import { AppContainer, Style, FooterContainer } from "./ui";
+import { AppContainer, Style, ContentContainer, FooterContainer } from "./ui";
 
 export const App: React.FC = () => {
   return (
     <AppContainer>
       <Style />
-      <Setting>
+      <Settings>
         <Content />
         <Footer />
-      </Setting>
+      </Settings>
     </AppContainer>
   );
 };
 
 const Content: React.FC = () => {
-  return <Column>123</Column>;
+  return <ContentContainer>123</ContentContainer>;
 };
 
 const Footer: React.FC = () => {
   return (
     <FooterContainer>
-      <RowBase></RowBase>
+      <RowBase>
+        <WordDir />
+      </RowBase>
 
       <RowBase></RowBase>
     </FooterContainer>

@@ -53,7 +53,7 @@ export const LinkBlock = styled.div`
   }
 `;
 
-export const StatusFileRow = styled(Row)`
+export const RowHover = styled(Row)`
   width: 100%;
   justify-content: space-between;
   cursor: default;
@@ -63,11 +63,7 @@ export const StatusFileRow = styled(Row)`
   }
 `;
 
-export const StatusFileAction = styled.div<{ color?: string }>`
+export const Monospace = styled.div<{ color?: string }>`
   font-family: monospace;
   color: ${({ color }) => color};
-`;
-
-export const ButtonIcon = styled.div`
-  cursor: pointer;
 `;
