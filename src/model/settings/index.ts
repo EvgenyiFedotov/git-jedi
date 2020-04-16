@@ -2,6 +2,7 @@ import * as ef from "effector";
 import * as fsPromise from "lib/fs-promise";
 import { createStatusEffect } from "lib/added-effector/status-effect";
 import * as electron from "electron";
+import { createFormField } from "lib/added-effector/form-field";
 
 import * as consts from "../constants";
 
@@ -21,6 +22,7 @@ export type HotKey = {
 export type Settings = {
   cwd: string | null;
   hotKeys: HotKey[];
+  defaultBranch: string;
   commitTypes: string[];
   commitScopeRoot: string;
   commitScopeLength: number;
@@ -71,6 +73,10 @@ export const selectCwd = ef.createEvent<void>();
 
 export const $cwd = ef.createStore<Settings["cwd"]>(null);
 export const $hotKeys = ef.createStore<Settings["hotKeys"]>(DEF_HOT_KEYS);
+export const defaultBranch = createFormField(
+  "master",
+  (event: React.ChangeEvent<HTMLInputElement>) => event.currentTarget.value,
+);
 export const $commitTypes = ef.createStore<string[]>(DEF_COMMIT_TYPES);
 export const $newCommitType = ef.restore(changeNewCommitType, "");
 export const $commitScopeRoot = ef.restore(changeCommitScopeRoot, "");
@@ -78,6 +84,7 @@ export const $commitScopeLength = ef.restore(changeCommitScopeLength, 2);
 export const $settings = ef.combine({
   cwd: $cwd,
   hotKeys: $hotKeys,
+  defaultBranch: defaultBranch.$value,
   commitTypes: $commitTypes,
   commitScopeRoot: $commitScopeRoot,
   commitScopeLength: $commitScopeLength,

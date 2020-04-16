@@ -5,7 +5,6 @@ import { Tag, Input, Divider } from "antd";
 import { useStore } from "effector-react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Branch } from "lib/branch";
-
 import * as model from "model";
 
 export const Settings: React.FC = () => {
@@ -13,14 +12,42 @@ export const Settings: React.FC = () => {
 
   return (
     <Column style={{ width: "100%" }}>
-      <Divider>Main</Divider>
-      <Item label="Path">
-        <div>{settings.cwd}</div>
-      </Item>
-      <Item label="Hot keys">
-        <div>{settings.hotKeys.join(",")}</div>
-      </Item>
+      <Main />
+      <Commit />
+    </Column>
+  );
+};
 
+const Main: React.FC = () => {
+  const cwd = useStore(model.settings.$cwd);
+  // const hotKeys = useStore(model.settings.$hotKeys);
+
+  return (
+    <>
+      <Item label="Path">
+        <div>{cwd}</div>
+      </Item>
+      {/* <Item label="Hot keys">
+        <div>{hotKeys.join(",")}</div>
+      </Item> */}
+      {/* <DefaultBranch /> */}
+    </>
+  );
+};
+
+const DefaultBranch: React.FC = () => {
+  const value = useStore(model.settings.defaultBranch.$value);
+
+  return (
+    <Item label="Default branch">
+      <Input value={value} onChange={model.settings.defaultBranch.change} />
+    </Item>
+  );
+};
+
+const Commit: React.FC = () => {
+  return (
+    <>
       <Divider>Commit</Divider>
       <Item label="Types">
         <CommitTypes />
@@ -33,7 +60,7 @@ export const Settings: React.FC = () => {
       <Item label="Scope length">
         <ScopeLength />
       </Item>
-    </Column>
+    </>
   );
 };
 
@@ -155,8 +182,9 @@ const ItemLabel = styled(Column)`
 
 const ItemChildren = styled.div`
   width: 75%;
+  padding: 5px 2px;
 `;
 
 const CommitTypesContainer = styled(Row)`
-  padding-top: 5px;
+  /* padding-top: 5px; */
 `;

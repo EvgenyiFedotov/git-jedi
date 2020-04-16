@@ -77,6 +77,14 @@ ef.sample({
 });
 
 ef.sample({
+  source: st.defaultBranch.$value,
+  clock: st.readSettings.done,
+  fn: (store, { result }) =>
+    result ? result.defaultBranch || store || "" : store,
+  target: st.defaultBranch.$value,
+});
+
+ef.sample({
   source: st.$commitTypes,
   clock: st.readSettings.done,
   fn: (store, { result }) => (result ? result.commitTypes || store : store),

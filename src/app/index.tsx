@@ -9,6 +9,7 @@ import { DiffCommits } from "components/diff-commits";
 import { ButtonSettings } from "components/button-settings";
 import { UnstagedFiles } from "components/unstaged-files";
 import { StagedFiles } from "components/staged-files";
+import { NewCommit } from "components/new-commit";
 
 export const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const Content: React.FC = () => {
     <Column>
       <UnstagedFiles />
       <StagedFiles />
+      <NewCommit />
     </Column>
   );
 };

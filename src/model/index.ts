@@ -12,6 +12,7 @@ import * as stageFiles from "./stage-files";
 import * as unstageFiles from "./unstage-files";
 import * as stagedDiffFiles from "./staged-diff-files";
 import * as unstagedDiffFiles from "./unstaged-diff-files";
+import * as newCommit from "./new-commit";
 
 import "./settings/init";
 import "./status-files/init";
@@ -25,6 +26,7 @@ import "./stage-files/init";
 import "./unstage-files/init";
 import "./staged-diff-files/init";
 import "./unstaged-diff-files/init";
+import "./new-commit/init";
 
 export {
   constants,
@@ -41,4 +43,5 @@ export {
   unstageFiles,
   stagedDiffFiles,
   unstagedDiffFiles,
+  newCommit,
 };
