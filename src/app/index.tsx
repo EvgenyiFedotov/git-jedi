@@ -1,51 +1,25 @@
 import * as React from "react";
 import { Column, RowBase } from "ui";
-import styled from "styled-components";
-import { Init } from "components/init";
-import { Divider } from "antd";
-import { PathRepo } from "components/path-repo";
-import { CurrentBranch } from "components/current-branch";
-import { DiffCommits } from "components/diff-commits";
-import { ButtonSettings } from "components/button-settings";
-import { UnstagedFiles } from "components/unstaged-files";
-import { StagedFiles } from "components/staged-files";
-import { NewCommit } from "components/new-commit";
 
 export const App: React.FC = () => {
   return (
     <SApp>
-      <Init>
-        <Content />
-        <Footer />
-      </Init>
+      <Content />
+      <Footer />
     </SApp>
   );
 };
 
 const Content: React.FC = () => {
-  return (
-    <Column>
-      <UnstagedFiles />
-      <StagedFiles />
-      <NewCommit />
-    </Column>
-  );
+  return <Column></Column>;
 };
 
 const Footer: React.FC = () => {
   return (
     <SFooter>
-      <RowBase>
-        <PathRepo />
-        <Divider type="vertical" />
-        <CurrentBranch />
-        <Divider type="vertical" />
-        <DiffCommits />
-      </RowBase>
+      <RowBase></RowBase>
 
-      <RowBase>
-        <ButtonSettings />
-      </RowBase>
+      <RowBase></RowBase>
     </SFooter>
   );
 };
