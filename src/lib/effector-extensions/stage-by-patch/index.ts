@@ -2,7 +2,7 @@ import { createFileWatcher } from "lib/file-watcher";
 import { createFileConnector } from "lib/file-connector";
 import * as ef from "effector";
 import * as fsPromise from "lib/fs-promise";
-import { createCommandEffect } from "lib/added-effector/command-effect";
+import { createCommandEffect } from "lib/effector-extensions/command-effect";
 import { createCommand } from "lib/create-command";
 
 export type StageByPatchParams = {

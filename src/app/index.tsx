@@ -1,39 +1,31 @@
 import * as React from "react";
 import { Column, RowBase } from "ui";
+import { Setting } from "features/settings";
+
+import { AppContainer, Style, FooterContainer } from "./ui";
 
 export const App: React.FC = () => {
   return (
-    <SApp>
-      <Content />
-      <Footer />
-    </SApp>
+    <AppContainer>
+      <Style />
+      <Setting>
+        <Content />
+        <Footer />
+      </Setting>
+    </AppContainer>
   );
 };
 
 const Content: React.FC = () => {
-  return <Column></Column>;
+  return <Column>123</Column>;
 };
 
 const Footer: React.FC = () => {
   return (
-    <SFooter>
+    <FooterContainer>
       <RowBase></RowBase>
 
       <RowBase></RowBase>
-    </SFooter>
+    </FooterContainer>
   );
 };
-
-const SApp = styled.div``;
-
-const SFooter = styled(RowBase)`
-  justify-content: space-between;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 24px;
-  padding: 0 8px;
-  background-color: white;
-  border-top: 1px solid #f5f5f5;
-`;

@@ -1,6 +1,6 @@
 import * as ef from "effector";
 
-import { createStatusEffect, Status } from ".";
+import { createStatusEffect, Status } from "../status-effect";
 
 test("pending-done", async () => {
   const event = ef.createEvent();
