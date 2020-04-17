@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Column, RowBase } from "ui";
-import { Settings, WordDir } from "features/settings";
+import { Settings, WordDir, SettingsButton } from "features/settings";
 
 import { AppContainer, Style, ContentContainer, FooterContainer } from "./ui";
 
@@ -27,7 +27,9 @@ const Footer: React.FC = () => {
         <WordDir />
       </RowBase>
 
-      <RowBase></RowBase>
+      <RowBase>
+        <SettingsButton />
+      </RowBase>
     </FooterContainer>
   );
 };

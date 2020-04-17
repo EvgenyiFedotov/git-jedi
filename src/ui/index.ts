@@ -67,3 +67,7 @@ export const Monospace = styled.div<{ color?: string }>`
   font-family: monospace;
   color: ${({ color }) => color};
 `;
+
+export const Pointer = styled.div`
+  cursor: pointer;
+`;
