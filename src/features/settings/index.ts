@@ -1,3 +1,5 @@
-import "./init";
+import "./model/init";
 
-export { Settings, WordDir, SettingsButton } from "./components";
+export { Settings } from "./components/settings";
+export { WordDir } from "./components/work-dir";
+export { SettingsButton } from "./components/settings-button";

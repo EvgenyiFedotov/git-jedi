@@ -1,7 +1,7 @@
 import * as ef from "effector";
 import * as electron from "electron";
 
-import * as model from "./model";
+import * as model from "./";
 
 model.openningDialogSelectWorkDir.use(({ path }) => {
   return electron.remote.dialog.showOpenDialog({
