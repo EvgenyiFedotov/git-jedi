@@ -1,6 +1,10 @@
+import "./model/init";
+
 import * as React from "react";
-import { Column, RowBase } from "ui";
+import { RowBase } from "ui";
 import { Settings, WordDir, SettingsButton } from "features/settings";
+import { CurrentBranch } from "features/branches";
+import { Divider } from "antd";
 
 import { AppContainer, Style, ContentContainer, FooterContainer } from "./ui";
 
@@ -25,6 +29,8 @@ const Footer: React.FC = () => {
     <FooterContainer>
       <RowBase>
         <WordDir />
+        <Divider type="vertical" />
+        <CurrentBranch />
       </RowBase>
 
       <RowBase>
