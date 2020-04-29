@@ -39,6 +39,21 @@ export const checkoutTo = ({ branch }: CheckoutToParams) => {
   return gitCommand("checkout", [name]);
 };
 
+export const configL = () =>
+  gitCommand("config", ["-l"]).then((result) =>
+    result.data().reduce<Map<string, string>>((memo, value) => {
+      const lines = value.split("\n").filter(Boolean);
+
+      lines.forEach((line) => {
+        const [key, value] = line.split("=");
+
+        memo.set(key, value);
+      });
+
+      return memo;
+    }, new Map()),
+  );
+
 // Added
 function formatBranchList(result: ResultPromise) {
   const branches = result
