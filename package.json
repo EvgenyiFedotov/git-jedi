@@ -52,7 +52,7 @@
     "diff": "^4.0.2",
     "effector": "^20.9.1",
     "effector-react": "^20.6.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mousetrap": "^1.6.3",
     "object-hash": "^2.0.2",
     "styled-components": "^4.4.1",
